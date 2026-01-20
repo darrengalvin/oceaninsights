@@ -280,8 +280,34 @@ class ThemeOptions {
     ),
   );
 
+  // ============================================
+  // THEME 11: OCEAN INSIGHT (Light blue-grey - Client's preference)
+  // ============================================
+  static final oceanInsight = ThemeOption(
+    id: 'ocean_insight',
+    name: 'Ocean Insight',
+    tagline: 'Light and clear, like calm seas',
+    description: 'The signature Ocean Insight theme. Light blue-grey background with clean, minimal styling.',
+    bestFor: 'Clean, professional',
+    previewBackground: const Color(0xFFCFD8E3),  // Light blue-grey
+    previewCard: const Color(0xFFFFFFFF),        // White cards
+    previewAccent: const Color(0xFF2B3A4A),      // Dark blue-grey accent
+    themeData: _buildLightTheme(
+      background: const Color(0xFFCFD8E3),       // Light blue-grey
+      card: const Color(0xFFFFFFFF),             // White
+      cardLight: const Color(0xFFE8EDF2),        // Very light grey
+      border: const Color(0xFF4A5568),           // Darker border
+      accent: const Color(0xFF2B3A4A),           // Dark blue-grey
+      accentSecondary: const Color(0xFF4A6680),  // Medium blue-grey
+      textBright: const Color(0xFF1A202C),       // Near black
+      textLight: const Color(0xFF4A5568),        // Grey
+      textMuted: const Color(0xFF718096),        // Light grey
+    ),
+  );
+  
   /// All available themes
   static final List<ThemeOption> all = [
+    oceanInsight,  // Client's preferred theme first
     aqua,
     turquoise,
     deepOcean,
@@ -496,6 +522,205 @@ class ThemeOptions {
           success: const Color(0xFF34D399),
           warning: const Color(0xFFFBBF24),
           error: const Color(0xFFFB7185),
+        ),
+      ],
+    );
+  }
+  
+  /// Build a LIGHT theme from colour parameters
+  static ThemeData _buildLightTheme({
+    required Color background,
+    required Color card,
+    required Color cardLight,
+    required Color border,
+    required Color accent,
+    required Color accentSecondary,
+    required Color textBright,
+    required Color textLight,
+    required Color textMuted,
+  }) {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      
+      colorScheme: ColorScheme.light(
+        primary: accent,
+        secondary: accentSecondary,
+        surface: card,
+        error: const Color(0xFFDC2626),
+        onPrimary: Colors.white,
+        onSecondary: textBright,
+        onSurface: textBright,
+        onError: Colors.white,
+      ),
+      
+      scaffoldBackgroundColor: background,
+      
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: textBright,
+        titleTextStyle: GoogleFonts.inter(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: textBright,
+          letterSpacing: -0.3,
+        ),
+        iconTheme: IconThemeData(color: textBright, size: 24),
+      ),
+      
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: border, width: 1),
+        ),
+      ),
+      
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: accent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+      
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: accent,
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+          side: BorderSide(color: accent, width: 1.5),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+      
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: accent,
+          textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+      ),
+      
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: card,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: accent, width: 2),
+        ),
+        hintStyle: GoogleFonts.inter(color: textMuted, fontSize: 16),
+        labelStyle: GoogleFonts.inter(color: textLight, fontSize: 16),
+      ),
+      
+      textTheme: TextTheme(
+        displayLarge: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.w700, color: textBright, letterSpacing: -1.0, height: 1.2),
+        displayMedium: GoogleFonts.inter(fontSize: 30, fontWeight: FontWeight.w600, color: textBright, letterSpacing: -0.8, height: 1.2),
+        displaySmall: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w600, color: textBright, letterSpacing: -0.5, height: 1.3),
+        headlineMedium: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600, color: textBright, letterSpacing: -0.4),
+        headlineSmall: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: textBright, letterSpacing: -0.3),
+        titleLarge: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: textBright, letterSpacing: -0.2),
+        titleMedium: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: textLight),
+        bodyLarge: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w400, color: textLight, height: 1.6),
+        bodyMedium: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400, color: textLight, height: 1.5),
+        bodySmall: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400, color: textMuted),
+        labelLarge: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: textBright, letterSpacing: 0.1),
+        labelMedium: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: textLight),
+      ),
+      
+      dividerTheme: DividerThemeData(color: border, thickness: 1, space: 1),
+      
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: card,
+        selectedItemColor: accent,
+        unselectedItemColor: textMuted,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+        selectedLabelStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400),
+      ),
+      
+      dialogTheme: DialogThemeData(
+        backgroundColor: card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titleTextStyle: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600, color: textBright),
+        contentTextStyle: GoogleFonts.inter(fontSize: 16, color: textLight),
+      ),
+      
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: textBright,
+        contentTextStyle: GoogleFonts.inter(color: card),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        behavior: SnackBarBehavior.floating,
+      ),
+      
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: accent,
+        linearTrackColor: border,
+        circularTrackColor: border,
+      ),
+      
+      sliderTheme: SliderThemeData(
+        activeTrackColor: accent,
+        inactiveTrackColor: border,
+        thumbColor: accent,
+        overlayColor: accent.withOpacity(0.2),
+      ),
+      
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return accent;
+          return Colors.transparent;
+        }),
+        checkColor: WidgetStateProperty.all(Colors.white),
+        side: BorderSide(color: textMuted, width: 2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      ),
+      
+      radioTheme: RadioThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return accent;
+          return textMuted;
+        }),
+      ),
+      
+      listTileTheme: ListTileThemeData(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        iconColor: textLight,
+        textColor: textBright,
+      ),
+      
+      iconTheme: IconThemeData(color: textLight, size: 24),
+      
+      // Store custom colours in extensions
+      extensions: [
+        AppColours(
+          background: background,
+          card: card,
+          cardLight: cardLight,
+          border: border,
+          accent: accent,
+          accentSecondary: accentSecondary,
+          textBright: textBright,
+          textLight: textLight,
+          textMuted: textMuted,
+          success: const Color(0xFF22C55E),
+          warning: const Color(0xFFF59E0B),
+          error: const Color(0xFFDC2626),
         ),
       ],
     );

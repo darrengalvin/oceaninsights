@@ -16,19 +16,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   
-  String? _selectedName;
+  String? _selectedUserType;
   String? _selectedAgeBracket;
-  
-  // Pre-set name options (no typing required - OPSEC safe)
-  // Generic, welcoming names - not role-specific to avoid identity issues
-  static const List<String> nameOptions = [
-    'Friend',
-    'Traveller',
-    'Explorer',
-    'Companion',
-    'Guest',
-    'Mate',
-  ];
   
   @override
   void dispose() {
@@ -57,8 +46,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _completeOnboarding() async {
     final userProvider = context.read<UserProvider>();
     
-    if (_selectedName != null) {
-      await userProvider.setFirstName(_selectedName!);
+    if (_selectedUserType != null) {
+      await userProvider.setUserType(_selectedUserType!);
     }
     
     if (_selectedAgeBracket != null) {
@@ -115,7 +104,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
                 children: [
                   _buildWelcomePage(),
-                  _buildNamePage(),
+                  _buildUserTypePage(),
                   _buildAgePage(),
                   _buildDisclaimerPage(),
                 ],
@@ -165,7 +154,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       case 0:
         return true;
       case 1:
-        return _selectedName != null;
+        return _selectedUserType != null;
       case 2:
         return _selectedAgeBracket != null;
       case 3:
@@ -183,147 +172,111 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Logo with glow effect
+          // Ocean wave logo
           Container(
-            width: 120,
-            height: 120,
+            width: 140,
+            height: 140,
             decoration: BoxDecoration(
               color: colours.card,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: colours.accent.withOpacity(0.3), width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: colours.accent.withOpacity(0.2),
-                  blurRadius: 30,
-                  spreadRadius: 5,
-                ),
-              ],
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: colours.border, width: 2),
             ),
-            child: Center(
-              child: Text(
-                'DD',
-                style: TextStyle(
-                  color: colours.accent,
-                  fontSize: 48,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -2,
-                ),
-              ),
+            child: CustomPaint(
+              painter: WaveLogoPainter(colour: colours.accent),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'OCEAN INSIGHT',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 4,
+              color: colours.textMuted,
             ),
           ),
           const SizedBox(height: 48),
           Text(
-            'Welcome to Deep Dive',
-            style: Theme.of(context).textTheme.displaySmall,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Your personal mental health companion,\ndesigned to support you when you need it most.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            'Welcome to',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: colours.textLight,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 48),
-          _buildFeatureRow(Icons.wifi_off_rounded, 'Works completely offline'),
-          const SizedBox(height: 16),
-          _buildFeatureRow(Icons.shield_outlined, 'Your privacy protected'),
-          const SizedBox(height: 16),
-          _buildFeatureRow(Icons.favorite_outline_rounded, 'Supporting mental health charities'),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildFeatureRow(IconData icon, String text) {
-    final colours = context.colours;
-    
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      decoration: BoxDecoration(
-        color: colours.cardLight,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colours.border),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 22, color: colours.accent),
-          const SizedBox(width: 16),
+          const SizedBox(height: 8),
           Text(
-            text,
-            style: Theme.of(context).textTheme.bodyLarge,
+            'OCEAN INSIGHT',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w300,
+              letterSpacing: 6,
+              color: colours.textBright,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Life requires constant navigation.\nSet your course and adjust when needed.',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: colours.textLight,
+              height: 1.6,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
   
-  Widget _buildNamePage() {
+  Widget _buildUserTypePage() {
     final colours = context.colours;
     
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Spacer(),
           Text(
-            'What should we call you?',
-            style: Theme.of(context).textTheme.displaySmall,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Choose a name for your journey. This keeps things personal while protecting your privacy.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: colours.textLight,
+            'Please select for statistics',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: colours.textBright,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: nameOptions.map((name) {
-              final isSelected = _selectedName == name;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedName = name;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected ? colours.accent : colours.cardLight,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isSelected ? colours.accent : colours.border,
-                      width: isSelected ? 2 : 1,
-                    ),
-                    boxShadow: isSelected ? [
-                      BoxShadow(
-                        color: colours.accent.withOpacity(0.3),
-                        blurRadius: 12,
-                        spreadRadius: 0,
-                      ),
-                    ] : null,
-                  ),
-                  child: Text(
-                    name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? colours.background : colours.textBright,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+          // First row: Serving, Veteran
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildSelectionButton('Serving', _selectedUserType == 'Serving', () {
+                setState(() => _selectedUserType = 'Serving');
+              }),
+              const SizedBox(width: 16),
+              _buildSelectionButton('Veteran', _selectedUserType == 'Veteran', () {
+                setState(() => _selectedUserType = 'Veteran');
+              }),
+            ],
           ),
+          const SizedBox(height: 16),
+          // Second row: Deployed, Alongside
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildSelectionButton('Deployed', _selectedUserType == 'Deployed', () {
+                setState(() => _selectedUserType = 'Deployed');
+              }),
+              const SizedBox(width: 16),
+              _buildSelectionButton('Alongside', _selectedUserType == 'Alongside', () {
+                setState(() => _selectedUserType = 'Alongside');
+              }),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Third row: Young Person (centered)
+          _buildSelectionButton('Young Person', _selectedUserType == 'Young Person', () {
+            setState(() => _selectedUserType = 'Young Person');
+          }),
           const Spacer(flex: 2),
         ],
       ),
@@ -336,77 +289,81 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Spacer(),
           Text(
-            'What\'s your age bracket?',
-            style: Theme.of(context).textTheme.displaySmall,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'This helps us show you relevant content and relatable scenarios.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: colours.textLight,
+            'Please select for statistics',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: colours.textBright,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          ...UserProvider.ageBrackets.map((bracket) {
-            final isSelected = _selectedAgeBracket == bracket;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedAgeBracket = bracket;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected ? colours.accent : colours.cardLight,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isSelected ? colours.accent : colours.border,
-                      width: isSelected ? 2 : 1,
-                    ),
-                    boxShadow: isSelected ? [
-                      BoxShadow(
-                        color: colours.accent.withOpacity(0.3),
-                        blurRadius: 12,
-                        spreadRadius: 0,
-                      ),
-                    ] : null,
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        bracket,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected ? colours.background : colours.textBright,
-                        ),
-                      ),
-                      const Spacer(),
-                      if (isSelected)
-                        Icon(
-                          Icons.check_circle_rounded,
-                          color: colours.background,
-                          size: 24,
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            );
+          // First row: Teen, 18-24
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildSelectionButton('TEEN', _selectedAgeBracket == 'Teen', () {
+                setState(() => _selectedAgeBracket = 'Teen');
+              }),
+              const SizedBox(width: 16),
+              _buildSelectionButton('18-24', _selectedAgeBracket == '18-24', () {
+                setState(() => _selectedAgeBracket = '18-24');
+              }),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Second row: 25-30, 31-40
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildSelectionButton('25-30', _selectedAgeBracket == '25-30', () {
+                setState(() => _selectedAgeBracket = '25-30');
+              }),
+              const SizedBox(width: 16),
+              _buildSelectionButton('31-40', _selectedAgeBracket == '31-40', () {
+                setState(() => _selectedAgeBracket = '31-40');
+              }),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Third row: 40+ (centered)
+          _buildSelectionButton('40+', _selectedAgeBracket == '40+', () {
+            setState(() => _selectedAgeBracket = '40+');
           }),
           const Spacer(flex: 2),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildSelectionButton(String label, bool isSelected, VoidCallback onTap) {
+    final colours = context.colours;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 140,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? colours.accent : colours.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? colours.accent : colours.border,
+            width: 2,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? colours.background : colours.textBright,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
@@ -417,60 +374,41 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: colours.warning.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colours.warning.withOpacity(0.3)),
+              color: colours.card,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: colours.border, width: 2),
             ),
-            child: Row(
+            child: Column(
               children: [
-                Icon(
-                  Icons.info_outline_rounded,
-                  color: colours.warning,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Important Information',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: colours.warning,
-                    ),
+                Text(
+                  'OCEAN INSIGHT',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 3,
+                    color: colours.textBright,
                   ),
+                ),
+                const SizedBox(height: 24),
+                _buildDisclaimerItem(
+                  'Designed to support you in times of need. This is not a replacement for professional help.',
+                ),
+                const SizedBox(height: 16),
+                _buildDisclaimerItem(
+                  'Provides educational content and self-help tools only.',
+                ),
+                const SizedBox(height: 16),
+                _buildDisclaimerItem(
+                  'If you are in a crisis or experiencing a mental health emergency, please seek immediate professional help.',
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
-          Text(
-            'Before you begin',
-            style: Theme.of(context).textTheme.displaySmall,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Deep Dive is designed to support your mental wellbeing, but it is not a replacement for professional help.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: colours.textLight,
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildDisclaimerItem(
-            'This app provides educational content and self-help tools only.',
-          ),
-          _buildDisclaimerItem(
-            'It is not a substitute for professional medical advice, diagnosis, or treatment.',
-          ),
-          _buildDisclaimerItem(
-            'If you are in crisis or experiencing a mental health emergency, please seek immediate professional help.',
-          ),
-          _buildDisclaimerItem(
-            'Always consult a qualified healthcare provider with any questions about your mental health.',
-          ),
-          const Spacer(flex: 2),
         ],
       ),
     );
@@ -479,29 +417,74 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildDisclaimerItem(String text) {
     final colours = context.colours;
     
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 8),
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              color: colours.accent,
-              borderRadius: BorderRadius.circular(3),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '–',
+          style: TextStyle(
+            fontSize: 16,
+            color: colours.textLight,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colours.textLight,
+              height: 1.5,
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
+}
+
+/// Custom painter for the wave logo
+class WaveLogoPainter extends CustomPainter {
+  final Color colour;
+  
+  WaveLogoPainter({required this.colour});
+  
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = colour.withOpacity(0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    
+    final centerY = size.height / 2;
+    final amplitude = size.height * 0.15;
+    
+    // Draw multiple wave lines
+    for (int i = 0; i < 3; i++) {
+      final path = Path();
+      final yOffset = centerY + (i - 1) * amplitude * 1.5;
+      
+      path.moveTo(size.width * 0.15, yOffset);
+      
+      // Create wave pattern
+      for (double x = 0; x <= 1; x += 0.01) {
+        final xPos = size.width * 0.15 + (size.width * 0.7 * x);
+        final yPos = yOffset + amplitude * 0.8 * 
+            (0.5 * _sin(x * 4 * 3.14159 + i * 0.5) + 
+             0.3 * _sin(x * 6 * 3.14159 + i * 0.3));
+        
+        if (x == 0) {
+          path.moveTo(xPos, yPos);
+        } else {
+          path.lineTo(xPos, yPos);
+        }
+      }
+      
+      canvas.drawPath(path, paint);
+    }
+  }
+  
+  double _sin(double x) => (x - x * x * x / 6 + x * x * x * x * x / 120).clamp(-1.0, 1.0);
+  
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

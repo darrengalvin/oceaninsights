@@ -4,26 +4,42 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// User Provider
 /// 
 /// Manages user profile data stored locally
-/// Only stores: first name and age bracket (minimal data per privacy policy)
+/// Stores: user type, age bracket, and profile answers (minimal data per privacy policy)
 class UserProvider extends ChangeNotifier {
   final Box _userBox = Hive.box('user_data');
   
   String? get firstName => _userBox.get('firstName');
+  String? get userType => _userBox.get('userType');
   String? get ageBracket => _userBox.get('ageBracket');
   bool get isOnboarded => _userBox.get('isOnboarded', defaultValue: false);
   
+  /// User types available for selection (for statistics)
+  static const List<String> userTypes = [
+    'Serving',
+    'Veteran', 
+    'Deployed',
+    'Alongside',
+    'Young Person',
+  ];
+  
   /// Age brackets available for selection
   static const List<String> ageBrackets = [
+    'Teen',
     '18-24',
-    '25-34',
-    '35-44',
-    '45-54',
-    '55+',
+    '25-30',
+    '31-40',
+    '40+',
   ];
   
   /// Set user's first name
   Future<void> setFirstName(String name) async {
     await _userBox.put('firstName', name.trim());
+    notifyListeners();
+  }
+  
+  /// Set user's type (Serving, Veteran, etc.)
+  Future<void> setUserType(String type) async {
+    await _userBox.put('userType', type);
     notifyListeners();
   }
   

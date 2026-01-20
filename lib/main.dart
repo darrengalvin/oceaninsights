@@ -24,11 +24,11 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   
-  runApp(const DeepDiveApp());
+  runApp(const OceanInsightApp());
 }
 
-class DeepDiveApp extends StatelessWidget {
-  const DeepDiveApp({super.key});
+class OceanInsightApp extends StatelessWidget {
+  const OceanInsightApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class DeepDiveApp extends StatelessWidget {
           );
           
           return MaterialApp(
-            title: 'Deep Dive',
+            title: 'Ocean Insight',
             debugShowCheckedModeBanner: false,
             theme: themeProvider.themeData,
             darkTheme: themeProvider.themeData,
