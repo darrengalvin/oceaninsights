@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS scenarios (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   situation TEXT NOT NULL, -- 2-3 sentences describing the situation
-  context TEXT NOT NULL CHECK (context IN ('hierarchy', 'peer', 'high-pressure', 'close-quarters', 'leadership')),
+  context TEXT NOT NULL CHECK (context IN ('hierarchy', 'peer', 'high-pressure', 'close-quarters', 'leadership', 'military_workplace', 'civilian_workplace', 'family', 'social')),
   difficulty INTEGER NOT NULL CHECK (difficulty BETWEEN 1 AND 3),
   content_pack_id UUID REFERENCES content_packs(id) ON DELETE SET NULL,
   tags TEXT[] DEFAULT '{}', -- for filtering and unlocks
@@ -231,4 +231,5 @@ COMMENT ON TABLE scenario_options IS 'Response choices for scenarios with outcom
 COMMENT ON TABLE perspective_shifts IS 'How different people interpret each response choice';
 COMMENT ON TABLE protocols IS 'Step-by-step communication and conflict management guides';
 COMMENT ON TABLE analytics_monthly IS 'Anonymous aggregate usage data for learning and improvement';
+
 
