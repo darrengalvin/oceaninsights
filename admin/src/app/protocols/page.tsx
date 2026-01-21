@@ -12,6 +12,8 @@ export default function ProtocolsPage() {
   const [generateCount, setGenerateCount] = useState(3)
   const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
   const [filter, setFilter] = useState<'all' | 'new' | 'published' | 'draft'>('all')
+  const [bulkPublishing, setBulkPublishing] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetchProtocols()
@@ -67,6 +69,111 @@ export default function ProtocolsPage() {
     }
   }
 
+  const handleBulkPublish = async () => {
+    const draftProtocols = protocols.filter(p => !p.published)
+    if (draftProtocols.length === 0) {
+      alert('No draft protocols to publish!')
+      return
+    }
+
+    if (!confirm(`Publish all ${draftProtocols.length} draft protocols?`)) {
+      return
+    }
+
+    setBulkPublishing(true)
+
+    try {
+      await Promise.all(
+        draftProtocols.map(protocol =>
+          fetch(`/api/protocols/${protocol.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ published: true })
+          })
+        )
+      )
+
+      alert(`✅ Published ${draftProtocols.length} protocols!`)
+      setSelectedIds(new Set())
+      fetchProtocols()
+    } catch (error) {
+      console.error('Bulk publish error:', error)
+      alert('❌ Failed to publish some protocols')
+    } finally {
+      setBulkPublishing(false)
+    }
+  }
+
+  const handlePublishSelected = async () => {
+    if (selectedIds.size === 0) {
+      alert('No protocols selected!')
+      return
+    }
+
+    if (!confirm(`Publish ${selectedIds.size} selected protocol(s)?`)) {
+      return
+    }
+
+    setBulkPublishing(true)
+
+    try {
+      await Promise.all(
+        Array.from(selectedIds).map(id =>
+          fetch(`/api/protocols/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ published: true })
+          })
+        )
+      )
+
+      alert(`✅ Published ${selectedIds.size} protocols!`)
+      setSelectedIds(new Set())
+      fetchProtocols()
+    } catch (error) {
+      console.error('Publish selected error:', error)
+      alert('❌ Failed to publish some protocols')
+    } finally {
+      setBulkPublishing(false)
+    }
+  }
+
+  const toggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds)
+    if (newSelected.has(id)) {
+      newSelected.delete(id)
+    } else {
+      newSelected.add(id)
+    }
+    setSelectedIds(newSelected)
+  }
+
+  const toggleSelectAll = () => {
+    const draftProtocols = filteredProtocols.filter((p: any) => !p.published)
+    if (selectedIds.size === draftProtocols.length && draftProtocols.length > 0) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(draftProtocols.map((p: any) => p.id)))
+    }
+  }
+
+  const togglePublished = async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetch(`/api/protocols/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ published: !currentStatus })
+      })
+
+      if (!res.ok) throw new Error('Failed to update')
+
+      fetchProtocols()
+    } catch (error) {
+      console.error('Toggle publish error:', error)
+      alert('Failed to update protocol')
+    }
+  }
+
   const categoryBadgeColor = (category: string) => {
     const colors: Record<string, string> = {
       communication: 'bg-blue-100 text-blue-700',
@@ -113,7 +220,45 @@ export default function ProtocolsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Communication Protocols</h1>
           <p className="text-gray-600 mt-1">Manage step-by-step communication guides</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
+          {selectedIds.size > 0 && (
+            <button
+              onClick={handlePublishSelected}
+              disabled={bulkPublishing}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            >
+              {bulkPublishing ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  Publish Selected ({selectedIds.size})
+                </>
+              )}
+            </button>
+          )}
+          {protocols.filter(p => !p.published).length > 0 && (
+            <button
+              onClick={handleBulkPublish}
+              disabled={bulkPublishing}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            >
+              {bulkPublishing ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  Publish All Drafts ({protocols.filter(p => !p.published).length})
+                </>
+              )}
+            </button>
+          )}
           <button
             onClick={() => setShowGenerateDialog(true)}
             disabled={generating}
@@ -303,10 +448,19 @@ export default function ProtocolsPage() {
         <div className="grid gap-4 grid-cols-1">
           {filteredProtocols?.map((protocol: any) => (
             <div key={protocol.id} className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between">
+              <div className="flex items-start gap-4">
+                {!protocol.published && (
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(protocol.id)}
+                    onChange={() => toggleSelect(protocol.id)}
+                    className="w-5 h-5 mt-1 text-ocean-600 bg-gray-100 border-gray-300 rounded focus:ring-ocean-500"
+                  />
+                )}
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">{protocol.title}</h3>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-semibold text-gray-900">{protocol.title}</h3>
                     {isNew(protocol.created_at) && (
                       <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full bg-green-100 text-green-700 animate-pulse">
                         <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
@@ -316,15 +470,27 @@ export default function ProtocolsPage() {
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${categoryBadgeColor(protocol.category)}`}>
                       {protocol.category.replace(/_/g, ' ').replace('-', ' ')}
                     </span>
-                    {protocol.published ? (
-                      <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
-                        Published
-                      </span>
-                    ) : (
-                      <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700">
-                        Draft
-                      </span>
-                    )}
+                    <button
+                      onClick={() => togglePublished(protocol.id, protocol.published)}
+                      className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full transition-colors ${
+                        protocol.published
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                      }`}
+                      title={`Click to ${protocol.published ? 'unpublish' : 'publish'}`}
+                    >
+                      {protocol.published ? (
+                        <>
+                          <CheckCircle className="w-3 h-3" />
+                          Published
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="w-3 h-3" />
+                          Draft
+                        </>
+                      )}
+                    </button>
                   </div>
                   
                   {protocol.description && (

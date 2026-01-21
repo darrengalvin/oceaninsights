@@ -97,7 +97,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
               const SizedBox(height: 16),
               Text(
                 isSubscription
-                    ? 'Every month, someone who needs this tool will get it — because of you.'
+                    ? 'Every month, someone who needs this tool will get it - because of you.'
                     : 'You just gave someone access when they needed it most. That matters.',
                 style: GoogleFonts.inter(
                   fontSize: 16,
@@ -200,7 +200,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
                     
                     // Tab Content
                     SizedBox(
-                      height: 500,
+                      height: 420,
                       child: TabBarView(
                         controller: _tabController,
                         children: [
@@ -296,7 +296,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'This app costs money to run — servers, updates, content creation. If users don\'t contribute, it shuts down.',
+                  'This app costs money to run - servers, updates, content creation. If users don\'t contribute, it shuts down.',
                   style: GoogleFonts.inter(
                     fontSize: 15,
                     color: Colors.white70,
@@ -362,6 +362,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
   Widget _buildPaymentTabs() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xFF1A2332),
         borderRadius: BorderRadius.circular(12),
@@ -370,7 +371,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
         controller: _tabController,
         indicator: BoxDecoration(
           color: const Color(0xFF4A9B8E),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
         labelColor: Colors.white,
         unselectedLabelColor: Colors.white60,
@@ -628,7 +629,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
           ),
           const SizedBox(height: 12),
           Text(
-            'If you\'re between postings, transitioning, or just can\'t spare it — you\'re already in. Your access stays free.',
+            'If you\'re between postings, transitioning, or just can\'t spare it - you\'re already in. Your access stays free.',
             style: GoogleFonts.inter(
               fontSize: 15,
               color: Colors.white70,
