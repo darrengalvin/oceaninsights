@@ -175,13 +175,21 @@ export default function ScenariosPage() {
                 <option value={2}>2 scenarios</option>
                 <option value={3}>3 scenarios</option>
                 <option value={5}>5 scenarios</option>
+                <option value={10}>10 scenarios</option>
+                <option value={25}>25 scenarios</option>
+                <option value={50}>50 scenarios</option>
               </select>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-              <p className="text-sm text-blue-800">
+              <p className="text-sm text-blue-800 mb-2">
                 <strong>Note:</strong> Generated scenarios will be saved as drafts. Review and publish when ready.
               </p>
+              {generateCount >= 10 && (
+                <p className="text-sm text-blue-700">
+                  ⏱️ Larger batches (10+) may take 1-2 minutes to generate.
+                </p>
+              )}
             </div>
 
             <div className="flex gap-3">
