@@ -19,7 +19,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 1); // Start on Monthly Support tab
     _loadProducts();
   }
 
@@ -488,7 +488,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                'MOST IMPACT',
+                                option.isSubscription ? 'MOST IMPACT' : 'RECOMMENDED',
                                 style: GoogleFonts.inter(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,

@@ -26,22 +26,26 @@ class IAPService {
   
   // Product IDs - you'll need to set these up in App Store Connect
   // One-time purchases
-  static const String oneTimeSmallId = 'com.ocean.darrengalvin.onetime.small';
-  static const String oneTimeMediumId = 'com.ocean.darrengalvin.onetime.medium';
-  static const String oneTimeLargeId = 'com.ocean.darrengalvin.onetime.large';
+  static const String onetime5Id = 'com.ocean.darrengalvin.onetime.5';
+  static const String onetime10Id = 'com.ocean.darrengalvin.onetime.10';
+  static const String onetime25Id = 'com.ocean.darrengalvin.onetime.25';
+  static const String onetime50Id = 'com.ocean.darrengalvin.onetime.50';
+  static const String onetime100Id = 'com.ocean.darrengalvin.onetime.100';
   
   // Subscriptions
-  static const String monthlySubId = 'com.ocean.darrengalvin.sub.monthly';
-  static const String yearlySubId = 'com.ocean.darrengalvin.sub.yearly';
+  static const String monthly5SubId = 'com.ocean.darrengalvin.sub.monthly5';
+  static const String monthly10SubId = 'com.ocean.darrengalvin.sub.monthly10';
   
   static const Set<String> _productIds = {
     // One-time
-    oneTimeSmallId,
-    oneTimeMediumId,
-    oneTimeLargeId,
+    onetime5Id,
+    onetime10Id,
+    onetime25Id,
+    onetime50Id,
+    onetime100Id,
     // Subscriptions
-    monthlySubId,
-    yearlySubId,
+    monthly5SubId,
+    monthly10SubId,
   };
 
   List<ProductDetails> _products = [];
@@ -90,29 +94,44 @@ class IAPService {
       return [
         // One-time purchases
         PurchaseOption(
-          productId: oneTimeSmallId,
+          productId: onetime5Id,
           price: '£5',
           description: 'Cover 1 person',
           duration: 'One-time',
           isSubscription: false,
         ),
         PurchaseOption(
-          productId: oneTimeMediumId,
-          price: '£15',
-          description: 'Cover 3 people',
+          productId: onetime10Id,
+          price: '£10',
+          description: 'Cover 2 people',
           duration: 'One-time',
           isSubscription: false,
         ),
         PurchaseOption(
-          productId: oneTimeLargeId,
+          productId: onetime25Id,
+          price: '£25',
+          description: 'Cover 5 people',
+          duration: 'One-time',
+          isSubscription: false,
+          isRecommended: true,
+        ),
+        PurchaseOption(
+          productId: onetime50Id,
           price: '£50',
           description: 'Cover 10 people',
           duration: 'One-time',
           isSubscription: false,
         ),
+        PurchaseOption(
+          productId: onetime100Id,
+          price: '£100',
+          description: 'Cover 20 people',
+          duration: 'One-time',
+          isSubscription: false,
+        ),
         // Subscriptions
         PurchaseOption(
-          productId: monthlySubId,
+          productId: monthly5SubId,
           price: '£5/month',
           description: 'Cover 1 person every month',
           duration: 'Monthly',
@@ -120,10 +139,10 @@ class IAPService {
           isRecommended: true,
         ),
         PurchaseOption(
-          productId: yearlySubId,
-          price: '£50/year',
-          description: 'Cover 10 people per year',
-          duration: 'Yearly',
+          productId: monthly10SubId,
+          price: '£10/month',
+          description: 'Cover 2 people every month',
+          duration: 'Monthly',
           isSubscription: true,
         ),
       ];
@@ -139,28 +158,37 @@ class IAPService {
       
       switch (product.id) {
         // One-time
-        case oneTimeSmallId:
+        case onetime5Id:
           description = 'Cover 1 person';
           duration = 'One-time';
           break;
-        case oneTimeMediumId:
-          description = 'Cover 3 people';
+        case onetime10Id:
+          description = 'Cover 2 people';
           duration = 'One-time';
           break;
-        case oneTimeLargeId:
+        case onetime25Id:
+          description = 'Cover 5 people';
+          duration = 'One-time';
+          isRecommended = true;
+          break;
+        case onetime50Id:
           description = 'Cover 10 people';
           duration = 'One-time';
           break;
+        case onetime100Id:
+          description = 'Cover 20 people';
+          duration = 'One-time';
+          break;
         // Subscriptions
-        case monthlySubId:
+        case monthly5SubId:
           description = 'Cover 1 person every month';
           duration = 'Monthly';
           isSubscription = true;
           isRecommended = true;
           break;
-        case yearlySubId:
-          description = 'Cover 10 people per year';
-          duration = 'Yearly';
+        case monthly10SubId:
+          description = 'Cover 2 people every month';
+          duration = 'Monthly';
           isSubscription = true;
           break;
         default:
