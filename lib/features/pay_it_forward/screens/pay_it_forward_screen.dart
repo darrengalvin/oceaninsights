@@ -9,31 +9,21 @@ class PayItForwardScreen extends StatefulWidget {
   State<PayItForwardScreen> createState() => _PayItForwardScreenState();
 }
 
-class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTickerProviderStateMixin {
+class _PayItForwardScreenState extends State<PayItForwardScreen> {
   final IAPService _iapService = IAPService();
   bool _isLoading = true;
-  List<PurchaseOption> _oneTimeOptions = [];
   List<PurchaseOption> _subscriptionOptions = [];
-  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 1); // Start on Monthly Support tab
     _loadProducts();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadProducts() async {
     setState(() => _isLoading = true);
     final options = await _iapService.loadProducts();
     setState(() {
-      _oneTimeOptions = options.where((o) => !o.isSubscription).toList();
       _subscriptionOptions = options.where((o) => o.isSubscription).toList();
       _isLoading = false;
     });
@@ -86,7 +76,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
               ),
               const SizedBox(height: 32),
               Text(
-                isSubscription ? 'You\'re Now Covering Others' : 'Mission Complete',
+                'You\'re Now Covering Others',
                 style: GoogleFonts.inter(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
@@ -96,9 +86,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
               ),
               const SizedBox(height: 16),
               Text(
-                isSubscription
-                    ? 'Every month, someone who needs this tool will get it - because of you.'
-                    : 'You just gave someone access when they needed it most. That matters.',
+                'Every month, someone who needs this tool will get it - because of you.',
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   color: Colors.white70,
@@ -189,26 +177,17 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
                 ),
               )
             : SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
                     // Hero Section
                     _buildHeroSection(),
                     const SizedBox(height: 32),
                     
-                    // Payment Options Tabs
-                    _buildPaymentTabs(),
+                    // Monthly Support Options
+                    _buildSubscriptionOptions(),
                     
-                    // Tab Content
-                    SizedBox(
-                      height: 400,
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _buildOneTimeOptions(),
-                          _buildSubscriptionOptions(),
-                        ],
-                      ),
-                    ),
+                    const SizedBox(height: 32),
                     
                     // Can't Pay Section
                     _buildCantPaySection(),
@@ -222,121 +201,118 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
   }
 
   Widget _buildHeroSection() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: [
-          // Icon
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFF4A9B8E).withOpacity(0.2),
-                  const Color(0xFF4A9B8E).withOpacity(0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.volunteer_activism_rounded,
-              size: 48,
-              color: Color(0xFF4A9B8E),
-            ),
-          ),
-          const SizedBox(height: 24),
-          
-          // Title
-          Text(
-            'Your Access is Free',
-            style: GoogleFonts.inter(
-              fontSize: 34,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          
-          // Subtitle
-          Text(
-            'Someone before you covered your access.\nBut we can\'t keep running without you.',
-            style: GoogleFonts.inter(
-              fontSize: 18,
-              color: Colors.white70,
-              height: 1.6,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          
-          // Reality Check Box
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A2332),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: const Color(0xFFFFC857).withOpacity(0.4),
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  'The Reality:',
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFFFFC857),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'This app costs money to run - servers, updates, content creation. If users don\'t contribute, it shuts down.',
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    color: Colors.white70,
-                    height: 1.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'We\'re not asking for you. We\'re asking for them.',
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF4A9B8E),
-                    fontStyle: FontStyle.italic,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+    return Column(
+      children: [
+        // Icon
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF4A9B8E).withOpacity(0.2),
+                const Color(0xFF4A9B8E).withOpacity(0.05),
               ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.volunteer_activism_rounded,
+            size: 48,
+            color: Color(0xFF4A9B8E),
+          ),
+        ),
+        const SizedBox(height: 24),
+        
+        // Title
+        Text(
+          'Your Access is Free',
+          style: GoogleFonts.inter(
+            fontSize: 34,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            height: 1.2,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 12),
+        
+        // Subtitle
+        Text(
+          'Someone before you covered your access.\nBut we can\'t keep running without you.',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            color: Colors.white70,
+            height: 1.6,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 24),
+        
+        // Reality Check Box
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A2332),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFFFC857).withOpacity(0.4),
+              width: 1.5,
             ),
           ),
-          const SizedBox(height: 24),
-          
-          // Visual Chain Indicator
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
             children: [
-              _buildChainLink('Them', const Color(0xFF4A9B8E)),
-              const SizedBox(width: 8),
-              const Icon(Icons.arrow_forward, color: Colors.white38, size: 20),
-              const SizedBox(width: 8),
-              _buildChainLink('You', const Color(0xFFFFC857)),
-              const SizedBox(width: 8),
-              const Icon(Icons.arrow_forward, color: Colors.white38, size: 20),
-              const SizedBox(width: 8),
-              _buildChainLink('Next', Colors.white38),
+              Text(
+                'The Reality:',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFFFFC857),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'This app costs money to run - servers, updates, content creation. If users don\'t contribute, it shuts down.',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  color: Colors.white70,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Monthly support covers someone\'s access - every month.',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF4A9B8E),
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 24),
+        
+        // Visual Chain Indicator
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildChainLink('Them', const Color(0xFF4A9B8E)),
+            const SizedBox(width: 8),
+            const Icon(Icons.arrow_forward, color: Colors.white38, size: 20),
+            const SizedBox(width: 8),
+            _buildChainLink('You', const Color(0xFFFFC857)),
+            const SizedBox(width: 8),
+            const Icon(Icons.arrow_forward, color: Colors.white38, size: 20),
+            const SizedBox(width: 8),
+            _buildChainLink('Next', Colors.white38),
+          ],
+        ),
+      ],
     );
   }
 
@@ -359,90 +335,30 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
     );
   }
 
-  Widget _buildPaymentTabs() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A2332),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          color: const Color(0xFF4A9B8E),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.white60,
-        labelStyle: GoogleFonts.inter(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
-        tabs: const [
-          Tab(text: 'One-Time'),
-          Tab(text: 'Monthly Support'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOneTimeOptions() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Cover someone once',
-            style: GoogleFonts.inter(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'A single payment. No ongoing commitment.',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: Colors.white60,
-            ),
-          ),
-          const SizedBox(height: 20),
-          ..._oneTimeOptions.map((option) => _buildPurchaseCard(option)),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSubscriptionOptions() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Keep us alive',
-            style: GoogleFonts.inter(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Choose Your Support',
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Monthly support keeps the servers running and covers others automatically.',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: Colors.white60,
-              height: 1.4,
-            ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Monthly support keeps the servers running and covers others automatically.',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            color: Colors.white70,
+            height: 1.5,
           ),
-          const SizedBox(height: 20),
-          ..._subscriptionOptions.map((option) => _buildPurchaseCard(option)),
-        ],
-      ),
+        ),
+        const SizedBox(height: 24),
+        ..._subscriptionOptions.map((option) => _buildPurchaseCard(option)),
+      ],
     );
   }
 
