@@ -354,9 +354,8 @@ class ScenarioService extends ChangeNotifier {
       final response = await _supabase
           .from('scenarios')
           .select('id')
-          .eq('published', true)
-          .count();
-      return response.count;
+          .eq('published', true);
+      return (response as List).length;
     } catch (e) {
       debugPrint('⚠️ Error getting remote count: $e');
       return 0;
