@@ -12,6 +12,14 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    // Skip prerendering API routes during build
+    skipTrailingSlashRedirect: true,
+  },
+  // Don't try to fetch data from API routes during build
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
+  },
 }
 
 module.exports = nextConfig

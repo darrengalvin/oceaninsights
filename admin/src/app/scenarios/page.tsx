@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ScenariosPage() {
   // Fetch scenarios with their content pack
   const { data: scenarios, error } = await supabase
