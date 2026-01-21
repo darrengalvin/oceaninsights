@@ -134,10 +134,13 @@ export async function POST(request: NextRequest) {
     const { getSupabaseAdmin } = await import('@/lib/supabase')
     
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+    
+    console.log('Scenarios Generate - API Key check:', OPENAI_API_KEY ? 'Key exists' : 'Key missing')
+    console.log('All env vars:', Object.keys(process.env).filter(k => k.includes('OPENAI')))
 
     if (!OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: 'OpenAI API key not configured' },
+        { error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to Vercel environment variables.' },
         { status: 500 }
       )
     }
