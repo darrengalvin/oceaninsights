@@ -7,12 +7,16 @@ class PurchaseOption {
   final String price;
   final String description;
   final String duration;
+  final bool isSubscription;
+  final bool isRecommended;
 
   PurchaseOption({
     required this.productId,
     required this.price,
     required this.description,
     required this.duration,
+    this.isSubscription = false,
+    this.isRecommended = false,
   });
 }
 
@@ -21,14 +25,23 @@ class IAPService {
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   
   // Product IDs - you'll need to set these up in App Store Connect
-  static const String monthlyProductId = 'com.ocean.darrengalvin.monthly';
-  static const String quarterlyProductId = 'com.ocean.darrengalvin.quarterly';
-  static const String yearlyProductId = 'com.ocean.darrengalvin.yearly';
+  // One-time purchases
+  static const String oneTimeSmallId = 'com.ocean.darrengalvin.onetime.small';
+  static const String oneTimeMediumId = 'com.ocean.darrengalvin.onetime.medium';
+  static const String oneTimeLargeId = 'com.ocean.darrengalvin.onetime.large';
+  
+  // Subscriptions
+  static const String monthlySubId = 'com.ocean.darrengalvin.sub.monthly';
+  static const String yearlySubId = 'com.ocean.darrengalvin.sub.yearly';
   
   static const Set<String> _productIds = {
-    monthlyProductId,
-    quarterlyProductId,
-    yearlyProductId,
+    // One-time
+    oneTimeSmallId,
+    oneTimeMediumId,
+    oneTimeLargeId,
+    // Subscriptions
+    monthlySubId,
+    yearlySubId,
   };
 
   List<ProductDetails> _products = [];
@@ -75,23 +88,43 @@ class IAPService {
     if (!_isAvailable) {
       // Return mock data for development/testing
       return [
+        // One-time purchases
         PurchaseOption(
-          productId: monthlyProductId,
+          productId: oneTimeSmallId,
           price: '£5',
-          description: '1 month for someone deployed',
-          duration: '1 month',
+          description: 'Cover 1 person',
+          duration: 'One-time',
+          isSubscription: false,
         ),
         PurchaseOption(
-          productId: quarterlyProductId,
+          productId: oneTimeMediumId,
           price: '£15',
-          description: '3 months for a mate who needs it',
-          duration: '3 months',
+          description: 'Cover 3 people',
+          duration: 'One-time',
+          isSubscription: false,
         ),
         PurchaseOption(
-          productId: yearlyProductId,
+          productId: oneTimeLargeId,
           price: '£50',
-          description: '1 year for someone transitioning out',
-          duration: '1 year',
+          description: 'Cover 10 people',
+          duration: 'One-time',
+          isSubscription: false,
+        ),
+        // Subscriptions
+        PurchaseOption(
+          productId: monthlySubId,
+          price: '£5/month',
+          description: 'Cover 1 person every month',
+          duration: 'Monthly',
+          isSubscription: true,
+          isRecommended: true,
+        ),
+        PurchaseOption(
+          productId: yearlySubId,
+          price: '£50/year',
+          description: 'Cover 10 people per year',
+          duration: 'Yearly',
+          isSubscription: true,
         ),
       ];
     }
@@ -101,19 +134,34 @@ class IAPService {
     return _products.map((product) {
       String description;
       String duration;
+      bool isSubscription = false;
+      bool isRecommended = false;
       
       switch (product.id) {
-        case monthlyProductId:
-          description = '1 month for someone deployed';
-          duration = '1 month';
+        // One-time
+        case oneTimeSmallId:
+          description = 'Cover 1 person';
+          duration = 'One-time';
           break;
-        case quarterlyProductId:
-          description = '3 months for a mate who needs it';
-          duration = '3 months';
+        case oneTimeMediumId:
+          description = 'Cover 3 people';
+          duration = 'One-time';
           break;
-        case yearlyProductId:
-          description = '1 year for someone transitioning out';
-          duration = '1 year';
+        case oneTimeLargeId:
+          description = 'Cover 10 people';
+          duration = 'One-time';
+          break;
+        // Subscriptions
+        case monthlySubId:
+          description = 'Cover 1 person every month';
+          duration = 'Monthly';
+          isSubscription = true;
+          isRecommended = true;
+          break;
+        case yearlySubId:
+          description = 'Cover 10 people per year';
+          duration = 'Yearly';
+          isSubscription = true;
           break;
         default:
           description = 'Support access';
@@ -125,11 +173,13 @@ class IAPService {
         price: product.price,
         description: description,
         duration: duration,
+        isSubscription: isSubscription,
+        isRecommended: isRecommended,
       );
     }).toList();
   }
 
-  Future<bool> purchase(String productId) async {
+  Future<bool> purchase(String productId, {required bool isSubscription}) async {
     if (!_isAvailable) {
       debugPrint('⚠️ IAP not available - simulating successful purchase');
       // For development/testing, return success after a delay
@@ -145,10 +195,18 @@ class IAPService {
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     
     try {
-      final bool success = await _iap.buyConsumable(
-        purchaseParam: purchaseParam,
-        autoConsume: true,
-      );
+      final bool success;
+      
+      if (isSubscription) {
+        // For subscriptions, use buyNonConsumable
+        success = await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      } else {
+        // For one-time purchases, use buyConsumable
+        success = await _iap.buyConsumable(
+          purchaseParam: purchaseParam,
+          autoConsume: true,
+        );
+      }
       
       debugPrint(success ? '✅ Purchase initiated' : '❌ Purchase failed');
       return success;
