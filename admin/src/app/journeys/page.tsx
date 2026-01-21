@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Route, Plus, Eye, EyeOff, Pencil, Trash2, Users } from 'lucide-react'
+import { Route, Plus, Eye, EyeOff, Pencil, Trash2, Users, Sparkles, CheckCircle, AlertCircle, RefreshCw, X } from 'lucide-react'
 
 interface Journey {
   id: string
@@ -26,6 +26,10 @@ const AUDIENCE_LABELS = {
 export default function JourneysPage() {
   const [journeys, setJourneys] = useState<Journey[]>([])
   const [loading, setLoading] = useState(true)
+  const [generating, setGenerating] = useState(false)
+  const [showGenerateDialog, setShowGenerateDialog] = useState(false)
+  const [generateCount, setGenerateCount] = useState(3)
+  const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
 
   useEffect(() => {
     fetchJourneys()
@@ -67,6 +71,51 @@ export default function JourneysPage() {
     }
   }
 
+  const handleGenerate = async () => {
+    if (generateCount >= 10 && !confirm(`Generating ${generateCount} journeys may take 30-60 seconds. Continue?`)) {
+      return
+    }
+
+    setGenerating(true)
+    setGenerationResult(null)
+    setShowGenerateDialog(false)
+
+    try {
+      const res = await fetch('/api/journeys/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ count: generateCount })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Generation failed')
+      }
+
+      setGenerationResult({
+        success: true,
+        message: data.message || `Generated ${data.inserted} journeys`
+      })
+
+      fetchJourneys()
+    } catch (error: any) {
+      console.error('Generation error:', error)
+      setGenerationResult({
+        success: false,
+        message: error.message || 'Failed to generate journeys'
+      })
+    } finally {
+      setGenerating(false)
+    }
+  }
+
+  const isNew = (createdAt: string) => {
+    const created = new Date(createdAt)
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    return created > hourAgo
+  }
+
   if (loading) {
     return (
       <div className="flex-1 p-8">
@@ -85,13 +134,32 @@ export default function JourneysPage() {
             <h1 className="text-2xl font-bold text-gray-900">Content Journeys</h1>
             <p className="text-gray-500 mt-1">Curated pathways through content (e.g. "7-Day Sleep Recovery")</p>
           </div>
-          <Link 
-            href="/journeys/new"
-            className="flex items-center gap-2 bg-ocean-600 text-white px-4 py-2 rounded-lg hover:bg-ocean-700"
-          >
-            <Plus className="w-4 h-4" />
-            New Journey
-          </Link>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowGenerateDialog(true)}
+              disabled={generating}
+              className="flex items-center gap-2 bg-ocean-600 text-white px-4 py-2 rounded-lg hover:bg-ocean-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors shadow-sm"
+            >
+              {generating ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Generate with AI
+                </>
+              )}
+            </button>
+            <Link 
+              href="/journeys/new"
+              className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              New Journey
+            </Link>
+          </div>
         </div>
 
         {journeys.length === 0 ? (
@@ -118,9 +186,16 @@ export default function JourneysPage() {
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {journey.title}
-                    </h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {journey.title}
+                      </h3>
+                      {isNew(journey.created_at) && (
+                        <span className="px-2 py-0.5 text-xs font-bold text-green-700 bg-green-100 rounded animate-pulse">
+                          NEW
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-500 mb-2">{journey.slug}</p>
                   </div>
                   <button
@@ -173,6 +248,94 @@ export default function JourneysPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Generation Dialog */}
+        {showGenerateDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Generate Journeys</h3>
+                <button
+                  onClick={() => setShowGenerateDialog(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">
+                AI will generate curated content pathway ideas for military personnel, veterans, and families.
+              </p>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  How many journeys to generate?
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 5, 10, 25, 50].map((num) => (
+                    <button
+                      key={num}
+                      onClick={() => setGenerateCount(num)}
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                        generateCount === num
+                          ? 'bg-ocean-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {generateCount >= 10 && (
+                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    Generating {generateCount} journeys may take 30-60 seconds.
+                  </p>
+                </div>
+              )}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleGenerate}
+                  className="flex-1 bg-ocean-600 text-white px-4 py-2 rounded-lg hover:bg-ocean-700 font-medium transition-colors"
+                >
+                  Generate
+                </button>
+                <button
+                  onClick={() => setShowGenerateDialog(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Generation Result Notification */}
+        {generationResult && (
+          <div className="fixed bottom-4 right-4 max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50">
+            <div className="flex items-start gap-3">
+              {generationResult.success ? (
+                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              )}
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">
+                  {generationResult.success ? 'Success!' : 'Error'}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {generationResult.message}
+                </p>
+              </div>
+              <button
+                onClick={() => setGenerationResult(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>
