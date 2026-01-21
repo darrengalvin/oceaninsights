@@ -492,6 +492,7 @@ export default function ProtocolsPage() {
                         </>
                       )}
                     </button>
+                    </div>
                   </div>
                   
                   {protocol.description && (
