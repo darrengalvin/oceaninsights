@@ -102,6 +102,7 @@ Generate protocols now.`
 export async function POST(request: NextRequest) {
   try {
     const { count = 3 } = await request.json()
+    const { getSupabaseAdmin } = await import('@/lib/supabase')
 
     if (!OPENAI_API_KEY) {
       return NextResponse.json(
@@ -109,6 +110,14 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Get existing protocol titles to avoid duplicates
+    const supabaseAdmin = getSupabaseAdmin()
+    const { data: existingProtocols } = await supabaseAdmin
+      .from('protocols')
+      .select('title')
+    
+    const existingTitles = new Set(existingProtocols?.map(p => p.title.toLowerCase()) || [])
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -125,10 +134,10 @@ export async function POST(request: NextRequest) {
           },
           {
             role: 'user',
-            content: `${PROTOCOL_PROMPT}\n\nGenerate ${count} protocols.`
+            content: `${PROTOCOL_PROMPT}\n\nGenerate ${count} protocols.\n\nIMPORTANT: Avoid these existing titles:\n${Array.from(existingTitles).join(', ')}`
           }
         ],
-        temperature: 0.7,
+        temperature: 0.8,
         max_tokens: 4000,
       }),
     })
@@ -146,9 +155,30 @@ export async function POST(request: NextRequest) {
       throw new Error('No valid JSON found in response')
     }
 
-    const protocols = JSON.parse(jsonMatch[0])
+    const result = JSON.parse(jsonMatch[0])
 
-    return NextResponse.json(protocols)
+    // Filter out any duplicates that might still have been generated
+    const newProtocols = result.protocols?.filter((p: any) => 
+      !existingTitles.has(p.title.toLowerCase())
+    ) || []
+
+    // Insert protocols into database
+    if (newProtocols.length > 0) {
+      const { error } = await supabaseAdmin
+        .from('protocols')
+        .insert(newProtocols.map((p: any) => ({
+          ...p,
+          published: false, // Always save as draft
+          created_at: new Date().toISOString()
+        })))
+
+      if (error) throw error
+    }
+
+    return NextResponse.json({ 
+      protocols: newProtocols,
+      duplicatesSkipped: (result.protocols?.length || 0) - newProtocols.length
+    })
   } catch (error) {
     console.error('Failed to generate protocols:', error)
     return NextResponse.json(

@@ -11,6 +11,7 @@ export default function ProtocolsPage() {
   const [showGenerateDialog, setShowGenerateDialog] = useState(false)
   const [generateCount, setGenerateCount] = useState(3)
   const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
+  const [filter, setFilter] = useState<'all' | 'new' | 'published' | 'draft'>('all')
 
   useEffect(() => {
     fetchProtocols()
@@ -80,6 +81,22 @@ export default function ProtocolsPage() {
     }
     return colors[category] || 'bg-gray-100 text-gray-700'
   }
+
+  const isNew = (createdAt: string) => {
+    const created = new Date(createdAt)
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    return created > hourAgo
+  }
+
+  const filteredProtocols = protocols.filter(protocol => {
+    if (filter === 'all') return true
+    if (filter === 'new') return isNew(protocol.created_at)
+    if (filter === 'published') return protocol.published
+    if (filter === 'draft') return !protocol.published
+    return true
+  })
+
+  const newCount = protocols.filter(p => isNew(p.created_at)).length
 
   if (loading) {
     return (
@@ -197,6 +214,57 @@ export default function ProtocolsPage() {
         </div>
       )}
 
+      {/* Filter Tabs */}
+      {protocols.length > 0 && (
+        <div className="mb-6 border-b border-gray-200">
+          <nav className="flex gap-6">
+            <button
+              onClick={() => setFilter('all')}
+              className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                filter === 'all'
+                  ? 'border-ocean-600 text-ocean-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              All ({protocols.length})
+            </button>
+            {newCount > 0 && (
+              <button
+                onClick={() => setFilter('new')}
+                className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2 ${
+                  filter === 'new'
+                    ? 'border-ocean-600 text-ocean-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                New ({newCount})
+                <span className="inline-flex items-center justify-center w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              </button>
+            )}
+            <button
+              onClick={() => setFilter('published')}
+              className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                filter === 'published'
+                  ? 'border-ocean-600 text-ocean-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Published ({protocols.filter(p => p.published).length})
+            </button>
+            <button
+              onClick={() => setFilter('draft')}
+              className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                filter === 'draft'
+                  ? 'border-ocean-600 text-ocean-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Drafts ({protocols.filter(p => !p.published).length})
+            </button>
+          </nav>
+        </div>
+      )}
+
       {protocols && protocols.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
           <div className="text-gray-400 mb-4">
@@ -225,12 +293,18 @@ export default function ProtocolsPage() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {protocols?.map((protocol: any) => (
+          {filteredProtocols?.map((protocol: any) => (
             <div key={protocol.id} className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900">{protocol.title}</h3>
+                    {isNew(protocol.created_at) && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full bg-green-100 text-green-700 animate-pulse">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                        NEW
+                      </span>
+                    )}
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${categoryBadgeColor(protocol.category)}`}>
                       {protocol.category.replace(/_/g, ' ').replace('-', ' ')}
                     </span>
@@ -272,7 +346,7 @@ export default function ProtocolsPage() {
 
       <div className="mt-6 flex items-center justify-between text-sm text-gray-600">
         <div>
-          Showing {protocols?.length || 0} protocol{protocols?.length !== 1 ? 's' : ''}
+          Showing {filteredProtocols?.length || 0} of {protocols?.length || 0} protocol{protocols?.length !== 1 ? 's' : ''}
         </div>
         <Link href="/scenarios" className="text-blue-600 hover:text-blue-900">
           ← Back to Scenarios

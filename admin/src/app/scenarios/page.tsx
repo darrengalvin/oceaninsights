@@ -11,6 +11,7 @@ export default function ScenariosPage() {
   const [showGenerateDialog, setShowGenerateDialog] = useState(false)
   const [generateCount, setGenerateCount] = useState(3)
   const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
+  const [filter, setFilter] = useState<'all' | 'new' | 'published' | 'draft'>('all')
 
   useEffect(() => {
     fetchScenarios()
@@ -84,6 +85,22 @@ export default function ScenariosPage() {
   const difficultyStars = (difficulty: number) => {
     return '★'.repeat(difficulty) + '☆'.repeat(3 - difficulty)
   }
+
+  const isNew = (createdAt: string) => {
+    const created = new Date(createdAt)
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    return created > hourAgo
+  }
+
+  const filteredScenarios = scenarios.filter(scenario => {
+    if (filter === 'all') return true
+    if (filter === 'new') return isNew(scenario.created_at)
+    if (filter === 'published') return scenario.published
+    if (filter === 'draft') return !scenario.published
+    return true
+  })
+
+  const newCount = scenarios.filter(s => isNew(s.created_at)).length
 
   if (loading) {
     return (
@@ -201,6 +218,57 @@ export default function ScenariosPage() {
         </div>
       )}
 
+      {/* Filter Tabs */}
+      {scenarios.length > 0 && (
+        <div className="mb-6 border-b border-gray-200">
+          <nav className="flex gap-6">
+            <button
+              onClick={() => setFilter('all')}
+              className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                filter === 'all'
+                  ? 'border-ocean-600 text-ocean-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              All ({scenarios.length})
+            </button>
+            {newCount > 0 && (
+              <button
+                onClick={() => setFilter('new')}
+                className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2 ${
+                  filter === 'new'
+                    ? 'border-ocean-600 text-ocean-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                New ({newCount})
+                <span className="inline-flex items-center justify-center w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              </button>
+            )}
+            <button
+              onClick={() => setFilter('published')}
+              className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                filter === 'published'
+                  ? 'border-ocean-600 text-ocean-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Published ({scenarios.filter(s => s.published).length})
+            </button>
+            <button
+              onClick={() => setFilter('draft')}
+              className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                filter === 'draft'
+                  ? 'border-ocean-600 text-ocean-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Drafts ({scenarios.filter(s => !s.published).length})
+            </button>
+          </nav>
+        </div>
+      )}
+
       {scenarios && scenarios.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
           <div className="text-gray-400 mb-4">
@@ -253,10 +321,17 @@ export default function ScenariosPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {scenarios?.map((scenario: any) => (
+              {filteredScenarios?.map((scenario: any) => (
                 <tr key={scenario.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{scenario.title}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-medium text-gray-900">{scenario.title}</div>
+                      {isNew(scenario.created_at) && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 animate-pulse">
+                          NEW
+                        </span>
+                      )}
+                    </div>
                     <div className="text-sm text-gray-500 truncate max-w-md">{scenario.situation}</div>
                     {scenario.content_pack && (
                       <div className="text-xs text-gray-400 mt-1">
@@ -310,7 +385,7 @@ export default function ScenariosPage() {
 
       <div className="mt-6 flex items-center justify-between text-sm text-gray-600">
         <div>
-          Showing {scenarios?.length || 0} scenario{scenarios?.length !== 1 ? 's' : ''}
+          Showing {filteredScenarios?.length || 0} of {scenarios?.length || 0} scenario{scenarios?.length !== 1 ? 's' : ''}
         </div>
         <Link href="/protocols" className="text-blue-600 hover:text-blue-900">
           Manage Protocols →

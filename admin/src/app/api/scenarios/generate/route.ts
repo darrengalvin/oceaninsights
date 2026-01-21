@@ -133,6 +133,7 @@ Generate scenarios now.`
 export async function POST(request: NextRequest) {
   try {
     const { count = 3 } = await request.json()
+    const { getSupabaseAdmin } = await import('@/lib/supabase')
 
     if (!OPENAI_API_KEY) {
       return NextResponse.json(
@@ -140,6 +141,14 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Get existing scenario titles to avoid duplicates
+    const supabaseAdmin = getSupabaseAdmin()
+    const { data: existingScenarios } = await supabaseAdmin
+      .from('scenarios')
+      .select('title')
+    
+    const existingTitles = new Set(existingScenarios?.map(s => s.title.toLowerCase()) || [])
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -156,7 +165,7 @@ export async function POST(request: NextRequest) {
           },
           {
             role: 'user',
-            content: `${SCENARIO_PROMPT}\n\nGenerate ${count} scenarios.`
+            content: `${SCENARIO_PROMPT}\n\nGenerate ${count} scenarios.\n\nIMPORTANT: Avoid these existing titles:\n${Array.from(existingTitles).join(', ')}`
           }
         ],
         temperature: 0.8,
@@ -177,9 +186,51 @@ export async function POST(request: NextRequest) {
       throw new Error('No valid JSON found in response')
     }
 
-    const scenarios = JSON.parse(jsonMatch[0])
+    const result = JSON.parse(jsonMatch[0])
 
-    return NextResponse.json(scenarios)
+    // Filter out any duplicates that might still have been generated
+    const newScenarios = result.scenarios?.filter((s: any) => 
+      !existingTitles.has(s.title.toLowerCase())
+    ) || []
+
+    // Insert scenarios and their options into database
+    if (newScenarios.length > 0) {
+      for (const scenario of newScenarios) {
+        const { options, ...scenarioData } = scenario
+        
+        // Insert scenario
+        const { data: insertedScenario, error: scenarioError } = await supabaseAdmin
+          .from('scenarios')
+          .insert({
+            ...scenarioData,
+            published: false, // Always save as draft
+            created_at: new Date().toISOString()
+          })
+          .select()
+          .single()
+
+        if (scenarioError) throw scenarioError
+
+        // Insert options
+        if (options && options.length > 0 && insertedScenario) {
+          const optionsToInsert = options.map((opt: any) => ({
+            ...opt,
+            scenario_id: insertedScenario.id
+          }))
+
+          const { error: optionsError } = await supabaseAdmin
+            .from('scenario_options')
+            .insert(optionsToInsert)
+
+          if (optionsError) throw optionsError
+        }
+      }
+    }
+
+    return NextResponse.json({ 
+      scenarios: newScenarios,
+      duplicatesSkipped: (result.scenarios?.length || 0) - newScenarios.length
+    })
   } catch (error) {
     console.error('Failed to generate scenarios:', error)
     return NextResponse.json(
