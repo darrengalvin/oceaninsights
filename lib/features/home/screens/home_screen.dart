@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/ui_preferences_service.dart';
 import '../../breathing/screens/breathing_screen.dart';
 import '../../affirmations/screens/affirmations_screen.dart';
 import '../../assessment/screens/assessment_screen.dart';
@@ -394,6 +395,18 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 10),
+            Consumer<UIPreferencesService>(
+              builder: (context, prefs, _) => _SettingsSwitchTile(
+                icon: Icons.volume_up_rounded,
+                title: 'Navigation Sounds',
+                subtitle: prefs.soundsEnabled ? 'Click sounds enabled' : 'Click sounds disabled',
+                value: prefs.soundsEnabled,
+                onChanged: (value) async {
+                  await prefs.setSoundsEnabled(value);
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -610,6 +623,64 @@ class _SettingsTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SettingsSwitchTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  
+  const _SettingsSwitchTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = context.colours;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colours.cardLight,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: colours.accent, size: 24),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: colours.accent,
+          ),
+        ],
       ),
     );
   }

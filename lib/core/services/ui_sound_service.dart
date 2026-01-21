@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'ui_preferences_service.dart';
 
 /// Service for playing short UI feedback sounds
 class UISoundService {
@@ -30,6 +31,11 @@ class UISoundService {
   void playClick() {
     if (!_isInitialized || _clickPlayer == null) {
       debugPrint('⚠️ Click sound not initialized');
+      return;
+    }
+
+    // Check if sounds are enabled
+    if (!UIPreferencesService().soundsEnabled) {
       return;
     }
 

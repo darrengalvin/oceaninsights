@@ -8,6 +8,7 @@ import 'core/providers/mood_provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/services/content_service.dart';
 import 'core/services/ui_sound_service.dart';
+import 'core/services/ui_preferences_service.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/home/screens/home_screen.dart';
@@ -33,6 +34,9 @@ void main() async {
   // Initialise scenario service
   await ScenarioService.instance.initialize();
   
+  // Initialise UI preferences
+  await UIPreferencesService().initialize();
+  
   // Initialise UI sound service
   await UISoundService().initialize();
   
@@ -56,6 +60,7 @@ class OceanInsightApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MoodProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider.value(value: ScenarioService.instance),
+        ChangeNotifierProvider.value(value: UIPreferencesService()),
       ],
       child: Consumer2<UserProvider, ThemeProvider>(
         builder: (context, userProvider, themeProvider, _) {
