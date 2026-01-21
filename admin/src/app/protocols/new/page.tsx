@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export default function NewProtocolPage() {
   const router = useRouter()
@@ -49,8 +49,6 @@ export default function NewProtocolPage() {
     setError(null)
 
     try {
-      const supabase = createClient()
-
       const { error: insertError } = await supabase
         .from('protocols')
         .insert({

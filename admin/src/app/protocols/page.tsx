@@ -1,9 +1,7 @@
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 export default async function ProtocolsPage() {
-  const supabase = createClient()
-
   const { data: protocols, error } = await supabase
     .from('protocols')
     .select('*')

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export default function NewScenarioPage() {
   const router = useRouter()
@@ -80,8 +80,6 @@ export default function NewScenarioPage() {
     setError(null)
 
     try {
-      const supabase = createClient()
-
       // Create scenario
       const { data: scenario, error: scenarioError } = await supabase
         .from('scenarios')

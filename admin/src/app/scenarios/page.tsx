@@ -1,9 +1,7 @@
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 export default async function ScenariosPage() {
-  const supabase = createClient()
-
   // Fetch scenarios with their content pack
   const { data: scenarios, error } = await supabase
     .from('scenarios')
