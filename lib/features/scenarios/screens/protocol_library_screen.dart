@@ -104,7 +104,7 @@ class _ProtocolLibraryScreenState extends State<ProtocolLibraryScreen> {
       final query = _searchQuery.toLowerCase();
       filteredProtocols = filteredProtocols.where((p) {
         return p.title.toLowerCase().contains(query) ||
-               p.description.toLowerCase().contains(query) ||
+               (p.description?.toLowerCase().contains(query) ?? false) ||
                p.steps.any((step) => step.title.toLowerCase().contains(query));
       }).toList();
     }
