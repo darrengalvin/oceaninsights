@@ -17,25 +17,32 @@ class UISoundService {
     try {
       _clickPlayer = AudioPlayer();
       await _clickPlayer?.setAsset('assets/audio/walkman-button-272973.mp3');
-      await _clickPlayer?.setVolume(0.3); // Subtle volume
+      await _clickPlayer?.setVolume(0.6); // Audible but not loud
       _isInitialized = true;
-      debugPrint('✅ UI Sound Service initialized');
+      debugPrint('✅ UI Sound Service initialized with click sound');
     } catch (e) {
       debugPrint('⚠️ Failed to initialize UI sounds: $e');
+      _isInitialized = false;
     }
   }
 
   /// Play the navigation click sound
-  Future<void> playClick() async {
-    if (!_isInitialized || _clickPlayer == null) return;
-
-    try {
-      // Seek to start and play (don't await to avoid blocking UI)
-      _clickPlayer!.seek(Duration.zero);
-      _clickPlayer!.play();
-    } catch (e) {
-      debugPrint('⚠️ Failed to play click sound: $e');
+  void playClick() {
+    if (!_isInitialized || _clickPlayer == null) {
+      debugPrint('⚠️ Click sound not initialized');
+      return;
     }
+
+    // Don't await - fire and forget for responsive UI
+    _clickPlayer!.stop().then((_) {
+      return _clickPlayer!.seek(Duration.zero);
+    }).then((_) {
+      return _clickPlayer!.play();
+    }).then((_) {
+      debugPrint('🔊 Click sound played');
+    }).catchError((e) {
+      debugPrint('⚠️ Failed to play click sound: $e');
+    });
   }
 
   /// Dispose resources
