@@ -20,6 +20,7 @@ import '../../navigate/screens/navigate_screen.dart';
 import '../widgets/mood_check_card.dart';
 import '../../scenarios/screens/scenario_library_screen.dart';
 import '../../scenarios/screens/protocol_library_screen.dart';
+import '../../pay_it_forward/screens/pay_it_forward_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -229,6 +230,50 @@ class HomeScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Pay It Forward card
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PayItForwardScreen()),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF4A9B8E).withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFF4A9B8E).withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.volunteer_activism_rounded,
+                  color: const Color(0xFF4A9B8E),
+                  size: 22,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Cover someone else\'s access',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF4A9B8E),
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: const Color(0xFF4A9B8E),
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
         // Prominent help card
         GestureDetector(
           onTap: () => Navigator.push(

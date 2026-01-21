@@ -43,6 +43,9 @@ dependencies:
   
   # URL launcher for external links
   url_launcher: ^6.2.2
+  
+  # In-App Purchase for Pay It Forward
+  in_app_purchase: ^3.2.0
 
 dev_dependencies:
   flutter_test:
