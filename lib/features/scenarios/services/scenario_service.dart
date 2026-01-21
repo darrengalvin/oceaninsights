@@ -170,13 +170,21 @@ class ScenarioService extends ChangeNotifier {
   List<ContentPack> getContentPacks() {
     final box = Hive.box(_contentPacksBox);
     return box.values
+        .where((data) => data is String || data is Map) // Skip non-data entries
         .map((data) {
-          // Handle both old format (Map) and new format (JSON string)
-          final json = data is String
-              ? jsonDecode(data) as Map<String, dynamic>
-              : data as Map<String, dynamic>;
-          return ContentPack.fromJson(json);
+          try {
+            // Handle both old format (Map) and new format (JSON string)
+            final json = data is String
+                ? jsonDecode(data) as Map<String, dynamic>
+                : data as Map<String, dynamic>;
+            return ContentPack.fromJson(json);
+          } catch (e) {
+            debugPrint('Error parsing content pack: $e');
+            return null;
+          }
         })
+        .where((pack) => pack != null)
+        .cast<ContentPack>()
         .toList()
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
   }
@@ -185,13 +193,20 @@ class ScenarioService extends ChangeNotifier {
   List<Scenario> getScenariosByPack(String packId) {
     final box = Hive.box(_scenariosBox);
     return box.values
+        .where((data) => data is String || data is Map) // Skip non-data entries like sync metadata
         .map((data) {
-          final json = data is String
-              ? jsonDecode(data) as Map<String, dynamic>
-              : data as Map<String, dynamic>;
-          return Scenario.fromJson(json);
+          try {
+            final json = data is String
+                ? jsonDecode(data) as Map<String, dynamic>
+                : data as Map<String, dynamic>;
+            return Scenario.fromJson(json);
+          } catch (e) {
+            debugPrint('Error parsing scenario in pack: $e');
+            return null;
+          }
         })
-        .where((s) => s.contentPackId == packId)
+        .where((s) => s != null && s.contentPackId == packId)
+        .cast<Scenario>()
         .toList()
       ..sort((a, b) => a.difficulty.compareTo(b.difficulty));
   }
@@ -222,10 +237,16 @@ class ScenarioService extends ChangeNotifier {
     final box = Hive.box(_scenariosBox);
     final data = box.get(id);
     if (data == null) return null;
-    final json = data is String
-        ? jsonDecode(data) as Map<String, dynamic>
-        : data as Map<String, dynamic>;
-    return Scenario.fromJson(json);
+    
+    try {
+      final json = data is String
+          ? jsonDecode(data) as Map<String, dynamic>
+          : data as Map<String, dynamic>;
+      return Scenario.fromJson(json);
+    } catch (e) {
+      debugPrint('Error parsing scenario $id: $e');
+      return null;
+    }
   }
 
   /// Get random scenario (for daily drill)
@@ -250,12 +271,20 @@ class ScenarioService extends ChangeNotifier {
   List<Protocol> getAllProtocols() {
     final box = Hive.box(_protocolsBox);
     return box.values
+        .where((data) => data is String || data is Map) // Skip non-data entries
         .map((data) {
-          final json = data is String
-              ? jsonDecode(data) as Map<String, dynamic>
-              : data as Map<String, dynamic>;
-          return Protocol.fromJson(json);
+          try {
+            final json = data is String
+                ? jsonDecode(data) as Map<String, dynamic>
+                : data as Map<String, dynamic>;
+            return Protocol.fromJson(json);
+          } catch (e) {
+            debugPrint('Error parsing protocol: $e');
+            return null;
+          }
         })
+        .where((p) => p != null)
+        .cast<Protocol>()
         .toList();
   }
 
@@ -263,13 +292,20 @@ class ScenarioService extends ChangeNotifier {
   List<Protocol> getProtocolsByCategory(ProtocolCategory category) {
     final box = Hive.box(_protocolsBox);
     return box.values
+        .where((data) => data is String || data is Map) // Skip non-data entries
         .map((data) {
-          final json = data is String
-              ? jsonDecode(data) as Map<String, dynamic>
-              : data as Map<String, dynamic>;
-          return Protocol.fromJson(json);
+          try {
+            final json = data is String
+                ? jsonDecode(data) as Map<String, dynamic>
+                : data as Map<String, dynamic>;
+            return Protocol.fromJson(json);
+          } catch (e) {
+            debugPrint('Error parsing protocol by category: $e');
+            return null;
+          }
         })
-        .where((p) => p.category == category)
+        .where((p) => p != null && p.category == category)
+        .cast<Protocol>()
         .toList();
   }
 
@@ -278,10 +314,16 @@ class ScenarioService extends ChangeNotifier {
     final box = Hive.box(_protocolsBox);
     final data = box.get(id);
     if (data == null) return null;
-    final json = data is String
-        ? jsonDecode(data) as Map<String, dynamic>
-        : data as Map<String, dynamic>;
-    return Protocol.fromJson(json);
+    
+    try {
+      final json = data is String
+          ? jsonDecode(data) as Map<String, dynamic>
+          : data as Map<String, dynamic>;
+      return Protocol.fromJson(json);
+    } catch (e) {
+      debugPrint('Error parsing protocol $id: $e');
+      return null;
+    }
   }
 
   /// Get random protocol (for daily drill)
