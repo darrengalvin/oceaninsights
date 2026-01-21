@@ -13,6 +13,27 @@ class UserProvider extends ChangeNotifier {
   String? get ageBracket => _userBox.get('ageBracket');
   bool get isOnboarded => _userBox.get('isOnboarded', defaultValue: false);
   
+  /// Get audience for content filtering (lowercase version of userType)
+  String? get audience {
+    final type = userType;
+    if (type == null) return null;
+    
+    switch (type.toLowerCase()) {
+      case 'serving':
+        return 'serving';
+      case 'veteran':
+        return 'veteran';
+      case 'deployed':
+        return 'deployed';
+      case 'alongside':
+        return 'alongside';
+      case 'young person':
+        return 'young_person';
+      default:
+        return null;
+    }
+  }
+  
   /// User types available for selection (for statistics)
   static const List<String> userTypes = [
     'Serving',

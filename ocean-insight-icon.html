@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Insight - App Icon (Vibrant Waves)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+        
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        
+        .instructions {
+            background: #2a2a2a;
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+        
+        .instructions h2 {
+            margin-top: 0;
+            color: #4A9FD8;
+        }
+        
+        .instructions ol {
+            line-height: 1.8;
+        }
+        
+        .instructions code {
+            background: #1a1a1a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #4A9FD8;
+        }
+        
+        .icon-container {
+            background: white;
+            padding: 0;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        #icon {
+            display: block;
+        }
+        
+        .download-btn {
+            margin-top: 30px;
+            padding: 16px 32px;
+            background: #4A9FD8;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .download-btn:hover {
+            background: #3A8FC8;
+        }
+        
+        .alt-btn {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: #2a2a2a;
+            color: white;
+            border: 2px solid #4A9FD8;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .alt-btn:hover {
+            background: #333;
+            border-color: #5AAFD8;
+        }
+        
+        .size-info {
+            color: #888;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .preview-text {
+            color: #4A9FD8;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ocean Insight App Icon (Vibrant Waves!)</h1>
+    
+    <div class="instructions">
+        <h2>How to Use:</h2>
+        <ol>
+            <li>Click <strong>"Download PNG (1024×1024)"</strong> button below</li>
+            <li>Go to <a href="https://appicon.co/" target="_blank" style="color: #4A9FD8;">appicon.co</a></li>
+            <li>Upload the downloaded PNG file</li>
+            <li>Click "Generate" and download the ZIP</li>
+            <li>Unzip and replace files in: <code>ios/Runner/Assets.xcassets/AppIcon.appiconset/</code></li>
+        </ol>
+        <p style="margin-top: 15px; color: #888; font-size: 13px;">
+            ✓ Waves now have much better contrast and visibility!
+        </p>
+    </div>
+    
+    <div class="icon-container">
+        <svg id="icon" width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Light background gradient matching your app -->
+                <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#E5EEF3;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#D8E7EF;stop-opacity:1" />
+                </linearGradient>
+                
+                <!-- Wave colour - much more vibrant blue -->
+                <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#4A9FD8;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#5CB3E8;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#4A9FD8;stop-opacity:1" />
+                </linearGradient>
+                
+                <!-- Subtle shadow for depth -->
+                <filter id="waveShadow">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                    <feOffset dx="0" dy="2" result="offsetblur"/>
+                    <feComponentTransfer>
+                        <feFuncA type="linear" slope="0.3"/>
+                    </feComponentTransfer>
+                    <feMerge>
+                        <feMergeNode/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            
+            <!-- Rounded square background - light blue-grey like your app -->
+            <rect width="1024" height="1024" rx="184" fill="url(#bgGradient)"/>
+            
+            <!-- Container for waves (centered) -->
+            <g id="waves" filter="url(#waveShadow)">
+                <!-- Wave 1 - Top wave (gentle curve) -->
+                <path d="M 120 360 Q 256 320 384 360 T 640 360 Q 768 360 904 340" 
+                      stroke="url(#waveGradient)" 
+                      stroke-width="16" 
+                      fill="none" 
+                      stroke-linecap="round"
+                      opacity="0.75"/>
+                
+                <!-- Wave 2 - Upper mid wave -->
+                <path d="M 120 440 Q 280 380 440 440 T 760 440 Q 840 440 904 420" 
+                      stroke="url(#waveGradient)" 
+                      stroke-width="18" 
+                      fill="none" 
+                      stroke-linecap="round"
+                      opacity="0.85"/>
+                
+                <!-- Wave 3 - Centre wave (main/boldest) -->
+                <path d="M 120 520 Q 256 470 384 520 T 640 520 Q 768 520 904 500" 
+                      stroke="url(#waveGradient)" 
+                      stroke-width="22" 
+                      fill="none" 
+                      stroke-linecap="round"
+                      opacity="1.0"/>
+                
+                <!-- Wave 4 - Lower mid wave -->
+                <path d="M 120 600 Q 300 550 480 600 T 840 600 Q 880 600 904 590" 
+                      stroke="url(#waveGradient)" 
+                      stroke-width="18" 
+                      fill="none" 
+                      stroke-linecap="round"
+                      opacity="0.85"/>
+                
+                <!-- Wave 5 - Bottom wave -->
+                <path d="M 120 670 Q 256 630 384 670 T 640 670 Q 768 670 904 660" 
+                      stroke="url(#waveGradient)" 
+                      stroke-width="16" 
+                      fill="none" 
+                      stroke-linecap="round"
+                      opacity="0.7"/>
+            </g>
+        </svg>
+    </div>
+    
+    <button class="download-btn" onclick="downloadIcon()">Download PNG (1024×1024)</button>
+    <button class="alt-btn" onclick="downloadIconWhiteBg()">Download with White Background</button>
+    
+    <div class="size-info">
+        Icon will be saved at 1024×1024 pixels (required for App Store)
+    </div>
+    
+    <p class="preview-text">
+        ✓ Much more vibrant wave lines!<br>
+        ✓ Better contrast and visibility<br>
+        ✓ Light calming background<br>
+        ✓ Professional and clean
+    </p>
+    
+    <script>
+        function downloadIcon() {
+            downloadIconWithBackground('gradient');
+        }
+        
+        function downloadIconWhiteBg() {
+            downloadIconWithBackground('white');
+        }
+        
+        function downloadIconWithBackground(bgType) {
+            const svg = document.getElementById('icon');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to 1024x1024
+            canvas.width = 1024;
+            canvas.height = 1024;
+            
+            // Clone SVG to modify background if needed
+            const svgClone = svg.cloneNode(true);
+            if (bgType === 'white') {
+                const rect = svgClone.querySelector('rect');
+                rect.setAttribute('fill', '#FFFFFF');
+            }
+            
+            // Convert SVG to blob
+            const svgData = new XMLSerializer().serializeToString(svgClone);
+            const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(svgBlob);
+            
+            // Create image from SVG
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+                URL.revokeObjectURL(url);
+                
+                // Convert canvas to PNG and download
+                canvas.toBlob(function(blob) {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    const filename = bgType === 'white' 
+                        ? 'ocean-insight-icon-white-1024x1024.png'
+                        : 'ocean-insight-icon-1024x1024.png';
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }, 'image/png', 1.0);
+            };
+            img.src = url;
+        }
+    </script>
+</body>
+</html>

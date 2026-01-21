@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_theme.dart';
-import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/theme_options.dart';
 import '../data/learn_content.dart';
 
 class ArticleScreen extends StatelessWidget {
@@ -14,12 +13,14 @@ class ArticleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colours = context.colours;
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(article.title),
       ),
       body: SingleChildScrollView(
-        padding: AppSpacing.pagePadding,
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -27,21 +28,21 @@ class ArticleScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: _getCategoryColor().withOpacity(0.1),
+                color: colours.accent.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: _getCategoryColor().withOpacity(0.3)),
+                border: Border.all(color: colours.border),
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: _getCategoryColor().withOpacity(0.2),
+                      color: colours.accent.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(
                       _getCategoryIcon(),
-                      color: _getCategoryColor(),
+                      color: colours.accent,
                       size: 28,
                     ),
                   ),
@@ -55,13 +56,16 @@ class ArticleScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: _getCategoryColor(),
+                            color: colours.accent,
+                            letterSpacing: 0.5,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(width: 4),
                         Text(
-                          '${article.readTimeMinutes} minute read',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          '${article.readTimeMinutes} min read',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: colours.textMuted,
+                              ),
                         ),
                       ],
                     ),
@@ -69,12 +73,14 @@ class ArticleScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             
             // Title
             Text(
               article.title,
-              style: Theme.of(context).textTheme.displaySmall,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const SizedBox(height: 12),
             
@@ -82,18 +88,11 @@ class ArticleScreen extends StatelessWidget {
             Text(
               article.summary,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppTheme.textLight,
+                color: colours.textMuted,
                 fontStyle: FontStyle.italic,
               ),
             ),
-            const SizedBox(height: 24),
-            
-            // Divider
-            Container(
-              height: 1,
-              color: AppTheme.cardBorder,
-            ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             
             // Content sections
             ...article.sections.map((section) => _buildSection(context, section)),
@@ -104,9 +103,16 @@ class ArticleScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppTheme.aquaGlow.withOpacity(0.1),
+                  gradient: LinearGradient(
+                    colors: [
+                      colours.accent.withOpacity(0.15),
+                      colours.accent.withOpacity(0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.aquaGlow.withOpacity(0.3)),
+                  border: Border.all(color: colours.accent.withOpacity(0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,15 +120,15 @@ class ArticleScreen extends StatelessWidget {
                     Row(
                       children: [
                         Icon(
-                          Icons.lightbulb_rounded,
-                          color: AppTheme.aquaGlow,
+                          Icons.lightbulb_outline_rounded,
+                          color: colours.accent,
                           size: 22,
                         ),
                         const SizedBox(width: 10),
                         Text(
                           'Key Takeaways',
                           style: TextStyle(
-                            color: AppTheme.aquaGlow,
+                            color: colours.accent,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -141,7 +147,7 @@ class ArticleScreen extends StatelessWidget {
                               width: 6,
                               height: 6,
                               decoration: BoxDecoration(
-                                color: AppTheme.aquaGlow,
+                                color: colours.accent,
                                 borderRadius: BorderRadius.circular(3),
                               ),
                             ),
@@ -150,7 +156,7 @@ class ArticleScreen extends StatelessWidget {
                               child: Text(
                                 takeaway,
                                 style: TextStyle(
-                                  color: AppTheme.textBright,
+                                  color: colours.textBright,
                                   fontSize: 14,
                                   height: 1.5,
                                 ),
@@ -173,6 +179,8 @@ class ArticleScreen extends StatelessWidget {
   }
   
   Widget _buildSection(BuildContext context, ArticleSection section) {
+    final colours = context.colours;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
@@ -181,14 +189,17 @@ class ArticleScreen extends StatelessWidget {
           if (section.heading != null) ...[
             Text(
               section.heading!,
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const SizedBox(height: 12),
           ],
           Text(
             section.content,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               height: 1.7,
+              color: colours.textLight,
             ),
           ),
           if (section.tip != null) ...[
@@ -196,18 +207,18 @@ class ArticleScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.warmAmber.withOpacity(0.1),
+                color: colours.accent.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppTheme.warmAmber.withOpacity(0.3),
+                  color: colours.accent.withOpacity(0.2),
                 ),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.tips_and_updates_rounded,
-                    color: AppTheme.warmAmber,
+                    Icons.tips_and_updates_outlined,
+                    color: colours.accent,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
@@ -215,7 +226,7 @@ class ArticleScreen extends StatelessWidget {
                     child: Text(
                       section.tip!,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.textBright,
+                        color: colours.textLight,
                       ),
                     ),
                   ),
@@ -228,25 +239,14 @@ class ArticleScreen extends StatelessWidget {
     );
   }
   
-  Color _getCategoryColor() {
-    switch (article.category) {
-      case ArticleCategory.brainScience:
-        return AppTheme.aquaGlow;
-      case ArticleCategory.psychology:
-        return AppTheme.coralPink;
-      case ArticleCategory.lifeSituation:
-        return AppTheme.warmAmber;
-    }
-  }
-  
   IconData _getCategoryIcon() {
     switch (article.category) {
       case ArticleCategory.brainScience:
-        return Icons.psychology_rounded;
+        return Icons.psychology_outlined;
       case ArticleCategory.psychology:
-        return Icons.favorite_rounded;
+        return Icons.favorite_outline_rounded;
       case ArticleCategory.lifeSituation:
-        return Icons.groups_rounded;
+        return Icons.groups_outlined;
     }
   }
   

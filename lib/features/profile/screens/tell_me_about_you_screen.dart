@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../../core/services/ai_service.dart';
 import '../../../core/theme/theme_options.dart';
+import 'ai_insight_screen.dart';
 
 class TellMeAboutYouScreen extends StatefulWidget {
   const TellMeAboutYouScreen({super.key});
@@ -18,6 +20,8 @@ class _TellMeAboutYouScreenState extends State<TellMeAboutYouScreen> {
   Set<String> _selectedChallenges = {};
   Set<String> _selectedInterests = {};
   Set<String> _selectedGoals = {};
+  
+  bool _isGeneratingInsight = false;
   
   @override
   void initState() {
@@ -38,6 +42,7 @@ class _TellMeAboutYouScreenState extends State<TellMeAboutYouScreen> {
   }
   
   Future<void> _saveAnswers() async {
+    // Save to local storage
     await _userBox.put('aboutYouAnswers', {
       'personality': _selectedPersonality.toList(),
       'challenges': _selectedChallenges.toList(),
@@ -45,12 +50,119 @@ class _TellMeAboutYouScreenState extends State<TellMeAboutYouScreen> {
       'goals': _selectedGoals.toList(),
     });
     
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Your profile has been saved')),
+    // Get user type for audience context
+    final userType = _userBox.get('userType', defaultValue: 'Serving') as String;
+    
+    // Build personalised profile - works online (AI) or offline (smart fallback)
+    setState(() => _isGeneratingInsight = true);
+    
+    PersonalisedInsight insight;
+    
+    if (AIService.hasBuildTimeKey) {
+      // Try to get AI-generated insight, fallback gracefully if offline
+      try {
+        final aiService = AIService.withBuildTimeKey();
+        insight = await aiService.generateInsight(
+          audience: userType,
+          describeChips: _selectedPersonality.toList(),
+          struggleChips: _selectedChallenges.toList(),
+          interestChips: _selectedInterests.toList(),
+          goalChips: _selectedGoals.toList(),
+        );
+      } catch (_) {
+        // Offline or API error - use smart fallback (no error shown to user)
+        insight = _buildOfflineInsight(
+          userType,
+          _selectedChallenges.toList(),
+          _selectedGoals.toList(),
+        );
+      }
+    } else {
+      // No API key configured - use offline fallback
+      insight = _buildOfflineInsight(
+        userType,
+        _selectedChallenges.toList(),
+        _selectedGoals.toList(),
       );
-      Navigator.pop(context);
     }
+    
+    // Save the insight for later reference
+    await _userBox.put('lastInsight', insight.toMap());
+    
+    if (mounted) {
+      setState(() => _isGeneratingInsight = false);
+      
+      // Navigate to insight screen
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AIInsightScreen(insight: insight),
+        ),
+      );
+      
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    }
+  }
+  
+  /// Build a thoughtful offline insight based on user selections
+  PersonalisedInsight _buildOfflineInsight(
+    String audience,
+    List<String> struggles,
+    List<String> goals,
+  ) {
+    final mainStruggle = struggles.isNotEmpty ? struggles.first : 'daily challenges';
+    final mainGoal = goals.isNotEmpty ? goals.first.toLowerCase() : 'wellbeing';
+    
+    // Audience-specific summaries
+    String summary;
+    switch (audience) {
+      case 'Deployed':
+        summary = 'Being deployed often means dealing with limited personal time and connection challenges. '
+            'It sounds like ${mainStruggle.toLowerCase()} might be something to work on, '
+            'while $mainGoal matters to you.';
+        break;
+      case 'Serving':
+        summary = 'Balancing service life with personal wellbeing takes real effort. '
+            'It sounds like ${mainStruggle.toLowerCase()} is on your mind, '
+            'and $mainGoal is something you\'re working towards.';
+        break;
+      case 'Veteran':
+        summary = 'Transitioning to civilian life brings its own set of challenges. '
+            'It sounds like ${mainStruggle.toLowerCase()} might be something to work on, '
+            'while $mainGoal is important to you.';
+        break;
+      case 'Alongside':
+        summary = 'Supporting someone who serves takes strength and patience. '
+            'It sounds like ${mainStruggle.toLowerCase()} is something you\'re navigating, '
+            'while $mainGoal matters to you.';
+        break;
+      case 'Young Person':
+        summary = 'It\'s not always easy to figure things out. '
+            'Sounds like ${mainStruggle.toLowerCase()} is something you deal with sometimes, '
+            'and $mainGoal is on your mind.';
+        break;
+      default:
+        summary = 'Thanks for sharing a bit about yourself. '
+            'It sounds like ${mainStruggle.toLowerCase()} might be something to work on, '
+            'while $mainGoal is important to you.';
+    }
+    
+    return PersonalisedInsight(
+      summary: summary,
+      mightBePartOfIt: [
+        'Everyone\'s experience is different - there\'s no single right approach.',
+        'Small, consistent steps often make the biggest difference over time.',
+        'It can help to start with what feels most manageable right now.',
+      ],
+      quickQuestion: 'What would feel like a good first step for you?',
+      nextSteps: [
+        'Take a look around the app - there\'s no pressure to do everything at once.',
+        'Try a short breathing exercise when you have a quiet moment.',
+        'Come back whenever you need a moment for yourself.',
+      ],
+    );
   }
 
   @override
@@ -189,8 +301,24 @@ class _TellMeAboutYouScreenState extends State<TellMeAboutYouScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _saveAnswers,
-                child: const Text('Save Profile'),
+                onPressed: _isGeneratingInsight ? null : _saveAnswers,
+                child: _isGeneratingInsight
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: colours.background,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text('Building your profile...'),
+                        ],
+                      )
+                    : const Text('Save Profile'),
               ),
             ),
             const SizedBox(height: 20),

@@ -300,7 +300,7 @@ export default function ProtocolsPage() {
           </div>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-4 grid-cols-1">
           {filteredProtocols?.map((protocol: any) => (
             <div key={protocol.id} className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between">

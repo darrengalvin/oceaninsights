@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/theme_options.dart';
 
@@ -50,11 +51,83 @@ class ContactHelpScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
+            
+            // Togetherall - Featured
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    colours.accent.withOpacity(0.15),
+                    colours.accent.withOpacity(0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: colours.accent.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.favorite_rounded, color: colours.accent, size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Togetherall',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: colours.accent,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Anonymous, round-the-clock online support',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '• Trained counsellors available 24/7\n'
+                    '• Supportive community forums\n'
+                    '• Free resources for mental health\n'
+                    '• Available to all armed forces personnel, reservists, veterans and families',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      height: 1.6,
+                      color: colours.textLight,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _launchURL('https://togetherall.com'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colours.accent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Visit Togetherall'),
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 32),
             
             Text(
               'Support Services',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 16),
             
@@ -106,6 +179,15 @@ class ContactHelpScreen extends StatelessWidget {
               'Mon-Fri 9am-6pm',
             ),
             
+            _buildContactCard(
+              context,
+              'Big White Wall',
+              'Online mental health support',
+              'www.bigwhitewall.com',
+              '24/7 online',
+              isUrl: true,
+            ),
+            
             const SizedBox(height: 24),
             
             Container(
@@ -122,6 +204,7 @@ class ContactHelpScreen extends StatelessWidget {
                     'When Deployed',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: colours.accent,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -146,13 +229,21 @@ class ContactHelpScreen extends StatelessWidget {
     );
   }
   
+  Future<void> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+  
   Widget _buildContactCard(
     BuildContext context,
     String name,
     String description,
-    String phone,
-    String availability,
-  ) {
+    String contact,
+    String availability, {
+    bool isUrl = false,
+  }) {
     final colours = context.colours;
     
     return Container(
@@ -169,7 +260,7 @@ class ContactHelpScreen extends StatelessWidget {
           Text(
             name,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 4),
@@ -182,16 +273,21 @@ class ContactHelpScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.phone, size: 18, color: colours.accent),
+              Icon(
+                isUrl ? Icons.language_rounded : Icons.phone,
+                size: 18,
+                color: colours.accent,
+              ),
               const SizedBox(width: 8),
-              Text(
-                phone,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: colours.accent,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  contact,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: colours.accent,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-              const Spacer(),
               Text(
                 availability,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -205,4 +301,3 @@ class ContactHelpScreen extends StatelessWidget {
     );
   }
 }
-

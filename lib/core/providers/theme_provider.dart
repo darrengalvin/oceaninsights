@@ -21,7 +21,7 @@ class ThemeProvider extends ChangeNotifier {
   
   /// Load theme from storage
   void _loadTheme() {
-    final savedThemeId = _settingsBox.get('theme_id', defaultValue: 'deep_ocean');
+    final savedThemeId = _settingsBox.get('theme_id', defaultValue: 'ocean_insight');
     _currentTheme = ThemeOptions.getById(savedThemeId);
   }
   

@@ -1,8 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_theme.dart';
-import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/theme_options.dart';
 import '../data/affirmations_data.dart';
 
 class AffirmationsScreen extends StatefulWidget {
@@ -50,10 +49,10 @@ class _AffirmationsScreenState extends State<AffirmationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colours = context.colours;
+    
     return Scaffold(
-      backgroundColor: AppTheme.abyssBlack,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         title: const Text('Daily Affirmations'),
       ),
       body: Column(
@@ -81,24 +80,27 @@ class _AffirmationsScreenState extends State<AffirmationsScreen> {
   }
   
   Widget _buildAffirmationCard(Affirmation affirmation) {
+    final colours = context.colours;
+    
     return Padding(
-      padding: AppSpacing.pagePadding,
+      padding: const EdgeInsets.all(20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: AppTheme.coralPink.withOpacity(0.15),
+              color: colours.accent.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.coralPink.withOpacity(0.3)),
+              border: Border.all(color: colours.border),
             ),
             child: Text(
               affirmation.category,
               style: TextStyle(
-                color: AppTheme.coralPink,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+                color: colours.accent,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.5,
               ),
             ),
           ),
@@ -106,10 +108,11 @@ class _AffirmationsScreenState extends State<AffirmationsScreen> {
           Text(
             affirmation.text,
             style: TextStyle(
-              color: AppTheme.textBright,
+              color: colours.textBright,
               fontSize: 26,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               height: 1.4,
+              letterSpacing: -0.5,
             ),
             textAlign: TextAlign.center,
           ),
@@ -118,22 +121,22 @@ class _AffirmationsScreenState extends State<AffirmationsScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppTheme.midnightBlue,
+                color: colours.card,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppTheme.cardBorder),
+                border: Border.all(color: colours.border),
               ),
               child: Column(
                 children: [
                   Icon(
                     Icons.lightbulb_outline_rounded,
-                    color: AppTheme.warmAmber,
+                    color: colours.accent,
                     size: 24,
                   ),
                   const SizedBox(height: 12),
                   Text(
                     affirmation.reflection!,
                     style: TextStyle(
-                      color: AppTheme.textLight,
+                      color: colours.textLight,
                       fontSize: 14,
                       height: 1.5,
                     ),
@@ -149,30 +152,32 @@ class _AffirmationsScreenState extends State<AffirmationsScreen> {
   }
   
   Widget _buildControls() {
+    final colours = context.colours;
+    
     return Padding(
-      padding: AppSpacing.pageHorizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
             onPressed: _previousAffirmation,
             icon: const Icon(Icons.arrow_back_rounded),
-            color: AppTheme.textMuted,
-            iconSize: 32,
+            color: colours.textMuted,
+            iconSize: 28,
           ),
           const SizedBox(width: 24),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: AppTheme.midnightBlue,
+              color: colours.card,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.cardBorder),
+              border: Border.all(color: colours.border),
             ),
             child: Text(
               '${_currentIndex + 1} / ${AffirmationsData.affirmations.length}',
               style: TextStyle(
-                color: AppTheme.textLight,
-                fontSize: 14,
+                color: colours.textLight,
+                fontSize: 13,
               ),
             ),
           ),
@@ -180,8 +185,8 @@ class _AffirmationsScreenState extends State<AffirmationsScreen> {
           IconButton(
             onPressed: _nextAffirmation,
             icon: const Icon(Icons.arrow_forward_rounded),
-            color: AppTheme.textMuted,
-            iconSize: 32,
+            color: colours.textMuted,
+            iconSize: 28,
           ),
         ],
       ),

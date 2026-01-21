@@ -220,6 +220,7 @@ class _CategoryCard extends StatelessWidget {
     final colours = context.colours;
     
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(18),

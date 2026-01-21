@@ -307,9 +307,9 @@ class ThemeOptions {
   
   /// All available themes
   static final List<ThemeOption> all = [
-    oceanInsight,  // Client's preferred theme first
-    aqua,
+    aqua,  // Best looking dark theme with aqua accents
     turquoise,
+    oceanInsight,  // Light theme option
     deepOcean,
     midnightSteel,
     arcticDepths,
@@ -324,7 +324,7 @@ class ThemeOptions {
   static ThemeOption getById(String id) {
     return all.firstWhere(
       (t) => t.id == id,
-      orElse: () => deepOcean,
+      orElse: () => oceanInsight,
     );
   }
   

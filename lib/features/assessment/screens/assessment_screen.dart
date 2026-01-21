@@ -122,6 +122,7 @@ class AssessmentScreen extends StatelessWidget {
       runSpacing: 12,
       children: MoodLevel.values.map((mood) {
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             // Show response dialog, then add mood entry
             MoodResponseDialog.show(

@@ -34,6 +34,15 @@ dependencies:
   
   # UUID for generating unique IDs
   uuid: ^4.2.1
+  
+  # HTTP client for AI API calls
+  http: ^1.2.0
+  
+  # Supabase for content management
+  supabase_flutter: ^2.3.0
+  
+  # URL launcher for external links
+  url_launcher: ^6.2.2
 
 dev_dependencies:
   flutter_test:
@@ -47,5 +56,6 @@ flutter:
   
   assets:
     - assets/audio/
+    - assets/audio/soundssection/
     - assets/images/
 

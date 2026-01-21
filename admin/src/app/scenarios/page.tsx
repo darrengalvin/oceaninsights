@@ -304,8 +304,10 @@ export default function ScenariosPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -389,6 +391,64 @@ export default function ScenariosPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {filteredScenarios?.map((scenario: any) => (
+            <div key={scenario.id} className="bg-white rounded-lg shadow p-4">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-semibold text-gray-900">{scenario.title}</h3>
+                    {isNew(scenario.created_at) && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 animate-pulse">
+                        NEW
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600 line-clamp-2 mb-2">{scenario.situation}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${contextBadgeColor(scenario.context)}`}>
+                  {scenario.context.replace(/_/g, ' ').replace('-', ' ')}
+                </span>
+                <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700">
+                  {difficultyStars(scenario.difficulty)}
+                </span>
+                <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+                  {scenario.options?.length || 0} options
+                </span>
+                {scenario.published ? (
+                  <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
+                    Published
+                  </span>
+                ) : (
+                  <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700">
+                    Draft
+                  </span>
+                )}
+              </div>
+
+              <div className="flex gap-2 pt-3 border-t border-gray-100">
+                <Link
+                  href={`/scenarios/${scenario.id}`}
+                  className="flex-1 text-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100"
+                >
+                  Edit
+                </Link>
+                <Link
+                  href={`/scenarios/${scenario.id}/preview`}
+                  className="flex-1 text-center px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+                >
+                  Preview
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
       )}
 
       <div className="mt-6 flex items-center justify-between text-sm text-gray-600">

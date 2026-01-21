@@ -380,6 +380,7 @@ class _SelectionTile extends StatelessWidget {
     final colours = context.colours;
     
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -442,6 +443,7 @@ class _MultiSelectChip extends StatelessWidget {
     final colours = context.colours;
     
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

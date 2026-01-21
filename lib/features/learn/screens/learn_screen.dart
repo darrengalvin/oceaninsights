@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/theme/app_theme.dart';
-import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/user_provider.dart';
 import '../data/learn_content.dart';
 import 'article_screen.dart';
@@ -32,15 +31,17 @@ class _LearnScreenState extends State<LearnScreen>
 
   @override
   Widget build(BuildContext context) {
+    final colours = context.colours;
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Learn & Understand'),
+        title: const Text('Learn'),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppTheme.aquaGlow,
-          unselectedLabelColor: AppTheme.textMuted,
-          indicatorColor: AppTheme.aquaGlow,
-          dividerColor: AppTheme.cardBorder,
+          labelColor: colours.accent,
+          unselectedLabelColor: colours.textMuted,
+          indicatorColor: colours.accent,
+          dividerColor: colours.border,
           tabs: const [
             Tab(text: 'Brain Science'),
             Tab(text: 'Psychology'),
@@ -105,6 +106,8 @@ class _ArticleListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colours = context.colours;
+    
     if (articles.isEmpty) {
       return Center(
         child: Column(
@@ -113,13 +116,13 @@ class _ArticleListView extends StatelessWidget {
             Icon(
               Icons.article_outlined,
               size: 64,
-              color: AppTheme.textMuted,
+              color: colours.textMuted,
             ),
             const SizedBox(height: 16),
             Text(
               emptyMessage,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppTheme.textMuted,
+                color: colours.textMuted,
               ),
             ),
           ],
@@ -128,7 +131,7 @@ class _ArticleListView extends StatelessWidget {
     }
     
     return ListView.separated(
-      padding: AppSpacing.pagePadding,
+      padding: const EdgeInsets.all(20),
       itemCount: articles.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
@@ -163,115 +166,83 @@ class _ArticleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colours = context.colours;
+    
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.midnightBlue,
+          color: colours.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.cardBorder),
+          border: Border.all(color: colours.border),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: _getCategoryColor(article.category).withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: _getCategoryColor(article.category).withOpacity(0.3),
-                    ),
-                  ),
-                  child: Icon(
-                    _getCategoryIcon(article.category),
-                    color: _getCategoryColor(article.category),
-                    size: 22,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        article.title,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${article.readTimeMinutes} min read',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppTheme.textMuted,
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Text(
-              article.summary,
-              style: Theme.of(context).textTheme.bodyMedium,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            if (showAgeTag && article.ageBrackets != null) ...[
-              const SizedBox(height: 14),
-              Wrap(
-                spacing: 8,
-                children: article.ageBrackets!.map((age) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.slateDepth,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      age,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppTheme.textMuted,
-                      ),
-                    ),
-                  );
-                }).toList(),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colours.accent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
+              child: Icon(
+                _getCategoryIcon(article.category),
+                color: colours.accent,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    article.title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    article.summary,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colours.textMuted,
+                        ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${article.readTimeMinutes} min read',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colours.textMuted,
+                          fontSize: 12,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: colours.textMuted,
+              size: 16,
+            ),
           ],
         ),
       ),
     );
   }
   
-  Color _getCategoryColor(ArticleCategory category) {
-    switch (category) {
-      case ArticleCategory.brainScience:
-        return AppTheme.aquaGlow;
-      case ArticleCategory.psychology:
-        return AppTheme.coralPink;
-      case ArticleCategory.lifeSituation:
-        return AppTheme.warmAmber;
-    }
-  }
-  
   IconData _getCategoryIcon(ArticleCategory category) {
     switch (category) {
       case ArticleCategory.brainScience:
-        return Icons.psychology_rounded;
+        return Icons.psychology_outlined;
       case ArticleCategory.psychology:
-        return Icons.favorite_rounded;
+        return Icons.favorite_outline_rounded;
       case ArticleCategory.lifeSituation:
-        return Icons.groups_rounded;
+        return Icons.groups_outlined;
     }
   }
 }
