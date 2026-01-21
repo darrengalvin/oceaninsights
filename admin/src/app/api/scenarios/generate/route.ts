@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
-
 const SCENARIO_PROMPT = `You are GPT-5.2. Generate realistic workplace decision-training scenarios for military personnel, veterans, and their families.
 
 ## GOAL
@@ -134,6 +132,8 @@ export async function POST(request: NextRequest) {
   try {
     const { count = 3 } = await request.json()
     const { getSupabaseAdmin } = await import('@/lib/supabase')
+    
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
     if (!OPENAI_API_KEY) {
       return NextResponse.json(
