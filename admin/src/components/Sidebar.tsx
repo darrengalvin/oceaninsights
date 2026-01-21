@@ -7,7 +7,6 @@ import {
   BookOpen, 
   Folders, 
   Route, 
-  Settings,
   Plus,
   FileText,
 } from 'lucide-react'
@@ -80,11 +79,6 @@ export default function Sidebar() {
         <Link href="/import" className={linkClass('/import')}>
           <Plus className="w-5 h-5" />
           Import from GPT
-        </Link>
-        
-        <Link href="/settings" className={linkClass('/settings')}>
-          <Settings className="w-5 h-5" />
-          Settings
         </Link>
       </nav>
     </aside>
