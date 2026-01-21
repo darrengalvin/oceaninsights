@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/theme/app_theme.dart';
-import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/mood_provider.dart';
+import '../../home/widgets/mood_response_dialog.dart';
 
 class AssessmentScreen extends StatelessWidget {
   const AssessmentScreen({super.key});
@@ -12,19 +12,19 @@ class AssessmentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Self Assessment'),
+        title: const Text('Mood Insights'),
       ),
       body: Consumer<MoodProvider>(
         builder: (context, moodProvider, _) {
           return SingleChildScrollView(
-            padding: AppSpacing.pagePadding,
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildTodaySection(context, moodProvider),
-                const SizedBox(height: 28),
+                const SizedBox(height: 32),
                 _buildStatsSection(context, moodProvider),
-                const SizedBox(height: 28),
+                const SizedBox(height: 32),
                 _buildHistorySection(context, moodProvider),
               ],
             ),
@@ -35,86 +35,107 @@ class AssessmentScreen extends StatelessWidget {
   }
   
   Widget _buildTodaySection(BuildContext context, MoodProvider moodProvider) {
+    final colours = context.colours;
     final todaysMood = moodProvider.getTodaysMood();
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'How are you feeling?',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          todaysMood != null 
+              ? 'You\'ve already logged your mood today. Come back tomorrow!'
+              : 'Tap how you feel right now',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colours.textMuted,
+              ),
+        ),
+        const SizedBox(height: 20),
+        if (todaysMood != null)
+          _buildLoggedMood(context, todaysMood)
+        else
+          _buildMoodSelector(context, moodProvider),
+      ],
+    );
+  }
+  
+  Widget _buildLoggedMood(BuildContext context, MoodEntry entry) {
+    final colours = context.colours;
     
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.midnightBlue,
+        color: colours.background,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.cardBorder),
+        border: Border.all(color: colours.border.withOpacity(0.3)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            'How are you feeling?',
-            style: Theme.of(context).textTheme.headlineMedium,
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: entry.mood.color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              entry.mood.emoji,
+              style: const TextStyle(fontSize: 40),
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            todaysMood != null 
-                ? 'You\'ve already logged your mood today. Come back tomorrow!'
-                : 'Tap how you feel right now. No typing needed - just a simple tap.',
-            style: Theme.of(context).textTheme.bodyMedium,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.mood.label,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Logged at ${_formatTime(entry.timestamp)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colours.textMuted,
+                      ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 20),
-          if (todaysMood != null)
-            _buildLoggedMood(context, todaysMood)
-          else
-            _buildMoodSelector(context, moodProvider),
         ],
       ),
     );
   }
   
-  Widget _buildLoggedMood(BuildContext context, MoodEntry entry) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: entry.mood.color.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: entry.mood.color.withOpacity(0.3)),
-          ),
-          child: Text(
-            entry.mood.emoji,
-            style: const TextStyle(fontSize: 40),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              entry.mood.label,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Logged at ${_formatTime(entry.timestamp)}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-  
   Widget _buildMoodSelector(BuildContext context, MoodProvider moodProvider) {
+    final colours = context.colours;
+    
     return Wrap(
       spacing: 12,
       runSpacing: 12,
       children: MoodLevel.values.map((mood) {
         return GestureDetector(
-          onTap: () => moodProvider.addMoodEntry(mood),
+          onTap: () {
+            // Show response dialog, then add mood entry
+            MoodResponseDialog.show(
+              context: context,
+              mood: mood,
+              onComplete: () => moodProvider.addMoodEntry(mood),
+            );
+          },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
             decoration: BoxDecoration(
-              color: mood.color.withOpacity(0.1),
+              color: colours.background,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: mood.color.withOpacity(0.3)),
+              border: Border.all(color: colours.border.withOpacity(0.3)),
             ),
             child: Column(
               children: [
@@ -122,13 +143,13 @@ class AssessmentScreen extends StatelessWidget {
                   mood.emoji,
                   style: const TextStyle(fontSize: 32),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   mood.label,
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: mood.color,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: colours.textBright,
                   ),
                 ),
               ],
@@ -140,6 +161,7 @@ class AssessmentScreen extends StatelessWidget {
   }
   
   Widget _buildStatsSection(BuildContext context, MoodProvider moodProvider) {
+    final colours = context.colours;
     final streak = moodProvider.getCurrentStreak();
     final average7Days = moodProvider.getAverageMood(7);
     final totalEntries = moodProvider.entries.length;
@@ -149,7 +171,9 @@ class AssessmentScreen extends StatelessWidget {
       children: [
         Text(
           'Your Progress',
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 16),
         Row(
@@ -159,8 +183,7 @@ class AssessmentScreen extends StatelessWidget {
                 label: 'Current Streak',
                 value: '$streak',
                 suffix: streak == 1 ? 'day' : 'days',
-                icon: Icons.local_fire_department_rounded,
-                color: AppTheme.coralPink,
+                icon: Icons.local_fire_department_outlined,
               ),
             ),
             const SizedBox(width: 12),
@@ -169,8 +192,7 @@ class AssessmentScreen extends StatelessWidget {
                 label: '7 Day Average',
                 value: average7Days?.toStringAsFixed(1) ?? '-',
                 suffix: 'of 5',
-                icon: Icons.insights_rounded,
-                color: AppTheme.aquaGlow,
+                icon: Icons.insights_outlined,
               ),
             ),
           ],
@@ -180,8 +202,7 @@ class AssessmentScreen extends StatelessWidget {
           label: 'Total Check-ins',
           value: '$totalEntries',
           suffix: 'entries',
-          icon: Icons.check_circle_rounded,
-          color: AppTheme.seaGreen,
+          icon: Icons.check_circle_outline,
           fullWidth: true,
         ),
       ],
@@ -189,6 +210,7 @@ class AssessmentScreen extends StatelessWidget {
   }
   
   Widget _buildHistorySection(BuildContext context, MoodProvider moodProvider) {
+    final colours = context.colours;
     final recentEntries = moodProvider.getRecentEntries(14);
     
     return Column(
@@ -196,41 +218,47 @@ class AssessmentScreen extends StatelessWidget {
       children: [
         Text(
           'Recent History',
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
         Text(
           'Your mood over the last two weeks',
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colours.textMuted,
+              ),
         ),
         const SizedBox(height: 16),
         if (recentEntries.isEmpty)
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(40),
             decoration: BoxDecoration(
-              color: AppTheme.midnightBlue,
+              color: colours.background,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppTheme.cardBorder),
+              border: Border.all(color: colours.border.withOpacity(0.3)),
             ),
             child: Center(
               child: Column(
                 children: [
                   Icon(
-                    Icons.history_rounded,
+                    Icons.history_outlined,
                     size: 48,
-                    color: AppTheme.textMuted,
+                    color: colours.textMuted,
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'No entries yet',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppTheme.textMuted,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: colours.textMuted,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Start tracking your mood to see patterns',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colours.textMuted,
+                        ),
                   ),
                 ],
               ),
@@ -239,9 +267,9 @@ class AssessmentScreen extends StatelessWidget {
         else
           Container(
             decoration: BoxDecoration(
-              color: AppTheme.midnightBlue,
+              color: colours.background,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppTheme.cardBorder),
+              border: Border.all(color: colours.border.withOpacity(0.3)),
             ),
             child: ListView.separated(
               shrinkWrap: true,
@@ -249,15 +277,16 @@ class AssessmentScreen extends StatelessWidget {
               itemCount: recentEntries.length,
               separatorBuilder: (_, __) => Divider(
                 height: 1,
-                color: AppTheme.cardBorder,
+                color: colours.border,
               ),
               itemBuilder: (context, index) {
                 final entry = recentEntries[index];
                 return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: entry.mood.color.withOpacity(0.15),
+                      color: entry.mood.color.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -265,11 +294,19 @@ class AssessmentScreen extends StatelessWidget {
                       style: const TextStyle(fontSize: 24),
                     ),
                   ),
-                  title: Text(entry.mood.label),
-                  subtitle: Text(_formatDate(entry.timestamp)),
+                  title: Text(
+                    entry.mood.label,
+                    style: TextStyle(color: colours.textBright),
+                  ),
+                  subtitle: Text(
+                    _formatDate(entry.timestamp),
+                    style: TextStyle(color: colours.textMuted),
+                  ),
                   trailing: Text(
                     _formatTime(entry.timestamp),
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colours.textMuted,
+                        ),
                   ),
                 );
               },
@@ -308,7 +345,6 @@ class _StatCard extends StatelessWidget {
   final String value;
   final String suffix;
   final IconData icon;
-  final Color color;
   final bool fullWidth;
   
   const _StatCard({
@@ -316,57 +352,65 @@ class _StatCard extends StatelessWidget {
     required this.value,
     required this.suffix,
     required this.icon,
-    required this.color,
     this.fullWidth = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colours = context.colours;
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.midnightBlue,
+        color: colours.background,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.cardBorder),
+        border: Border.all(color: colours.border.withOpacity(0.3)),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: color.withOpacity(0.3)),
+              color: colours.accent.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(icon, color: colours.accent, size: 22),
           ),
           const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 4),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    value,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(width: 4),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 3),
-                    child: Text(
-                      suffix,
-                      style: Theme.of(context).textTheme.bodySmall,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colours.textMuted,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      value,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 2),
+                      child: Text(
+                        suffix,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: colours.textMuted,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),

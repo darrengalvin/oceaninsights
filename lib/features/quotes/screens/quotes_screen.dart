@@ -108,7 +108,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
               Text(
                 quote.author,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.warmAmber,
+                  color: AppTheme.steelBlue,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -125,22 +125,26 @@ class _QuotesScreenState extends State<QuotesScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.midnightBlue,
+                color: AppTheme.warmAmber.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.cardBorder),
+                border: Border.all(
+                  color: AppTheme.warmAmber.withOpacity(0.2),
+                ),
               ),
               child: Row(
                 children: [
                   Icon(
                     Icons.info_outline_rounded,
-                    color: AppTheme.textMuted,
+                    color: AppTheme.warmAmber,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       quote.context!,
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textBright,
+                      ),
                     ),
                   ),
                 ],

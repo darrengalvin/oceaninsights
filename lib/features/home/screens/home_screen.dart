@@ -1,9 +1,9 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/user_provider.dart';
-import '../../../core/providers/theme_provider.dart';
 import '../../breathing/screens/breathing_screen.dart';
 import '../../affirmations/screens/affirmations_screen.dart';
 import '../../assessment/screens/assessment_screen.dart';
@@ -16,8 +16,10 @@ import '../../profile/screens/tell_me_about_you_screen.dart';
 import '../../settings/screens/about_screen.dart';
 import '../../settings/screens/privacy_policy_screen.dart';
 import '../../settings/screens/contact_help_screen.dart';
-import '../../settings/screens/theme_chooser_screen.dart';
+import '../../navigate/screens/navigate_screen.dart';
 import '../widgets/mood_check_card.dart';
+import '../../scenarios/screens/scenario_library_screen.dart';
+import '../../scenarios/screens/protocol_library_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -29,15 +31,28 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
+              // Minimal logo
+              Center(
+                child: _OceanInsightIcon(size: 44),
+              ),
+              const SizedBox(height: 24),
               _buildHeader(context),
-              const SizedBox(height: 28),
-              _buildMainMenu(context),
-              const SizedBox(height: 20),
+              const SizedBox(height: 32),
+              const MoodCheckCard(),
+              const SizedBox(height: 32),
+              _buildQuickActions(context),
+              const SizedBox(height: 8),
+              // Divider
+              Divider(color: colours.border.withOpacity(0.5), height: 48),
+              _buildExploreSection(context),
+              const SizedBox(height: 8),
+              Divider(color: colours.border.withOpacity(0.5), height: 48),
+              _buildMoreSection(context),
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -51,58 +66,37 @@ class HomeScreen extends StatelessWidget {
     return Consumer<UserProvider>(
       builder: (context, userProvider, _) {
         return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Home icon
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: colours.card,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: colours.border),
-              ),
-              child: Icon(
-                Icons.home_rounded,
-                color: colours.textBright,
-                size: 28,
-              ),
-            ),
-            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     userProvider.getGreeting(),
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Ocean Insight',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    'How are you feeling today?',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: colours.textMuted,
-                      letterSpacing: 1,
                     ),
                   ),
                 ],
               ),
             ),
-            // Theme chooser button
+            // Settings button - minimal
             GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ThemeChooserScreen()),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colours.card,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colours.border),
-                ),
+              onTap: () => _showSettingsSheet(context),
+              child: Padding(
+                padding: const EdgeInsets.all(4),
                 child: Icon(
-                  Icons.palette_outlined,
-                  color: colours.accent,
-                  size: 24,
+                  Icons.settings_outlined,
+                  color: colours.textMuted,
+                  size: 22,
                 ),
               ),
             ),
@@ -112,245 +106,197 @@ class HomeScreen extends StatelessWidget {
     );
   }
   
-  Widget _buildMainMenu(BuildContext context) {
+  Widget _buildQuickActions(BuildContext context) {
     final colours = context.colours;
     
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Row(
       children: [
-        // Main menu items (matching client slides structure)
-        _buildMenuButton(
-          context,
-          'USER',
-          'Change your profile settings',
-          Icons.person_outline_rounded,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const UserSettingsScreen()),
+        Expanded(
+          child: _QuickActionCard(
+            icon: Icons.air_rounded,
+            label: 'Breathe',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BreathingScreen()),
+            ),
           ),
         ),
-        
-        _buildMenuButton(
-          context,
-          'LOG MY MOOD',
-          'Mood tracker and mood reason',
-          Icons.mood_rounded,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AssessmentScreen()),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _QuickActionCard(
+            icon: Icons.auto_awesome_rounded,
+            label: 'Inspire',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const QuotesScreen()),
+            ),
           ),
         ),
-        
-        _buildMenuButton(
-          context,
-          'QUICK ACTIONS',
-          'Breathing, Music, Quotes, Affirmations',
-          Icons.flash_on_rounded,
-          () => _showQuickActionsSheet(context),
-        ),
-        
-        _buildMenuButton(
-          context,
-          'TELL ME ABOUT YOU',
-          'Personalise your experience',
-          Icons.psychology_outlined,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const TellMeAboutYouScreen()),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _QuickActionCard(
+            icon: Icons.waves_rounded,
+            label: 'Sounds',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MusicScreen()),
+            ),
           ),
-        ),
-        
-        _buildMenuButton(
-          context,
-          'SET GOALS',
-          'Set and track your personal goals',
-          Icons.flag_outlined,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const GoalsScreen()),
-          ),
-        ),
-        
-        const SizedBox(height: 8),
-        
-        // Content categories grid
-        Text(
-          'Explore Topics',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: colours.textMuted,
-          ),
-        ),
-        const SizedBox(height: 12),
-        
-        _buildCategoryGrid(context),
-        
-        const SizedBox(height: 16),
-        
-        // Footer menu items
-        _buildMenuButton(
-          context,
-          'ABOUT THE APP',
-          'Learn more about Ocean Insight',
-          Icons.info_outline_rounded,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AboutScreen()),
-          ),
-        ),
-        
-        _buildMenuButton(
-          context,
-          'PRIVACY POLICY',
-          'How we protect your data',
-          Icons.privacy_tip_outlined,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
-          ),
-        ),
-        
-        _buildMenuButton(
-          context,
-          'CONTACT FOR HELP',
-          'Professional support numbers',
-          Icons.support_agent_rounded,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ContactHelpScreen()),
-          ),
-          isHighlighted: true,
         ),
       ],
     );
   }
   
-  Widget _buildMenuButton(
-    BuildContext context,
-    String title,
-    String subtitle,
-    IconData icon,
-    VoidCallback onTap, {
-    bool isHighlighted = false,
-  }) {
-    final colours = context.colours;
-    
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: isHighlighted ? colours.accent.withOpacity(0.1) : colours.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isHighlighted ? colours.accent : colours.border,
+  Widget _buildExploreSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _FeatureRow(
+          icon: Icons.psychology_outlined,
+          title: 'Decision Training',
+          subtitle: 'Practice workplace scenarios',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ScenarioLibraryScreen()),
           ),
         ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: isHighlighted ? colours.accent : colours.textLight,
-              size: 22,
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: isHighlighted ? colours.accent : colours.textBright,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colours.textMuted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: colours.textMuted,
-              size: 16,
-            ),
-          ],
+        _FeatureRow(
+          icon: Icons.assignment_outlined,
+          title: 'Communication Protocols',
+          subtitle: 'Step-by-step guides',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ProtocolLibraryScreen()),
+          ),
         ),
-      ),
+        _FeatureRow(
+          icon: Icons.explore_outlined,
+          title: 'Navigate',
+          subtitle: 'Explore life areas and guidance',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NavigateScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.person_outline_rounded,
+          title: 'Tell Me About You',
+          subtitle: 'Personalise your experience',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TellMeAboutYouScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.flag_outlined,
+          title: 'Set Goals',
+          subtitle: 'Track your progress',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const GoalsScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.insights_rounded,
+          title: 'Mood Insights',
+          subtitle: 'Track patterns over time',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AssessmentScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.favorite_outline_rounded,
+          title: 'Affirmations',
+          subtitle: 'Daily encouragement',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AffirmationsScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.school_outlined,
+          title: 'Learn',
+          subtitle: 'Psychology and life skills',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const LearnScreen()),
+          ),
+        ),
+      ],
     );
   }
   
-  Widget _buildCategoryGrid(BuildContext context) {
-    final categories = [
-      ('RELATIONSHIPS', Icons.favorite_outline_rounded),
-      ('PURPOSE', Icons.explore_outlined),
-      ('PHYSICAL HEALTH', Icons.fitness_center_rounded),
-      ('EMOTIONAL HEALTH', Icons.self_improvement_rounded),
-      ('FINANCE', Icons.account_balance_wallet_outlined),
-      ('EDUCATION', Icons.school_outlined),
-      ('PSYCHOLOGY', Icons.psychology_outlined),
-      ('BRAIN FUNCTIONS', Icons.memory_rounded),
-    ];
-    
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 2.5,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final (title, icon) = categories[index];
-        return _buildCategoryButton(context, title, icon);
-      },
-    );
-  }
-  
-  Widget _buildCategoryButton(BuildContext context, String title, IconData icon) {
+  Widget _buildMoreSection(BuildContext context) {
     final colours = context.colours;
     
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const LearnScreen()),
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: colours.card,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: colours.border),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: colours.textLight),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                title,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: colours.textBright,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Prominent help card
+        GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ContactHelpScreen()),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colours.accent.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.support_agent_rounded,
+                  color: colours.accent,
+                  size: 22,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Need support? Contact for help',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: colours.accent,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: colours.accent,
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        // About and Privacy links
+        Row(
+          children: [
+            _TextLink(
+              label: 'About',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutScreen()),
+              ),
+            ),
+            const SizedBox(width: 24),
+            _TextLink(
+              label: 'Privacy',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
               ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
   
-  void _showQuickActionsSheet(BuildContext context) {
+  void _showSettingsSheet(BuildContext context) {
     final colours = context.colours;
     
     showModalBottomSheet(
@@ -374,90 +320,43 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Quick Actions',
+              'Settings',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildQuickActionTile(
-                    context,
-                    '🧘',
-                    'Breathe',
-                    () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const BreathingScreen()),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildQuickActionTile(
-                    context,
-                    '🎵',
-                    'Music',
-                    () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const MusicScreen()),
-                      );
-                    },
-                  ),
-                ),
-              ],
+            _SettingsTile(
+              icon: Icons.person_outline_rounded,
+              title: 'User Profile',
+              subtitle: 'Change your type & age',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const UserSettingsScreen()),
+                );
+              },
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildQuickActionTile(
-                    context,
-                    '💬',
-                    'Quotes',
-                    () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const QuotesScreen()),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildQuickActionTile(
-                    context,
-                    '💝',
-                    'Affirmations',
-                    () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const AffirmationsScreen()),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
           ],
         ),
       ),
     );
   }
+}
+
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
   
-  Widget _buildQuickActionTile(
-    BuildContext context,
-    String emoji,
-    String label,
-    VoidCallback onTap,
-  ) {
+  const _QuickActionCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final colours = context.colours;
     
     return GestureDetector(
@@ -465,18 +364,22 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          color: colours.accent,
+          color: colours.cardLight,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 32)),
-            const SizedBox(height: 8),
+            Icon(
+              icon,
+              color: colours.accent,
+              size: 28,
+            ),
+            const SizedBox(height: 10),
             Text(
               label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: colours.background,
-                fontWeight: FontWeight.w600,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: colours.textBright,
               ),
             ),
           ],
@@ -484,4 +387,329 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _FeatureRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  
+  const _FeatureRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = context.colours;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: colours.accent,
+              size: 22,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colours.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: colours.textMuted,
+              size: 22,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TextLink extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  
+  const _TextLink({
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = context.colours;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: colours.textMuted,
+          decoration: TextDecoration.underline,
+          decorationColor: colours.textMuted.withOpacity(0.5),
+        ),
+      ),
+    );
+  }
+}
+
+
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  
+  const _SettingsTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = context.colours;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colours.cardLight,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: colours.accent, size: 24),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: colours.textMuted,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Full logo with waves icon + readable text below (for headers/branding)
+class _OceanInsightFullLogo extends StatelessWidget {
+  final double size;
+  
+  const _OceanInsightFullLogo({
+    this.size = 60,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = context.colours;
+    
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Wave icon in bordered box
+        _OceanInsightIcon(size: size),
+        const SizedBox(height: 12),
+        // Text below - clear and readable
+        Text(
+          'OCEAN INSIGHT',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: colours.textBright,
+            letterSpacing: 3,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Minimal wave icon in bordered box (for app icon / small uses)
+class _OceanInsightIcon extends StatelessWidget {
+  final double size;
+  
+  const _OceanInsightIcon({
+    this.size = 60,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = context.colours;
+    
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(size * 0.18),
+        border: Border.all(
+          color: colours.accent.withOpacity(0.7),
+          width: 1.5,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size * 0.18 - 1),
+        child: CustomPaint(
+          painter: _WaveLogoPainter(
+            waveColour: colours.accent,
+          ),
+          size: Size(size, size),
+        ),
+      ),
+    );
+  }
+}
+
+/// Custom painter for overlapping wave lines like the reference
+class _WaveLogoPainter extends CustomPainter {
+  final Color waveColour;
+  
+  _WaveLogoPainter({required this.waveColour});
+  
+  @override
+  void paint(Canvas canvas, Size size) {
+    final centerY = size.height * 0.5; // Centre of the box
+    
+    // Multiple overlapping waves - clean and visible
+    final waveConfigs = [
+      // Top wave - gentle curve
+      _LogoWaveConfig(
+        yOffset: -size.height * 0.18,
+        amplitude: size.height * 0.1,
+        frequency: 0.8,
+        phaseOffset: 0.3,
+        strokeWidth: 1.2,
+        opacity: 0.6,
+      ),
+      // Upper mid wave
+      _LogoWaveConfig(
+        yOffset: -size.height * 0.05,
+        amplitude: size.height * 0.16,
+        frequency: 1.1,
+        phaseOffset: 0.0,
+        strokeWidth: 1.4,
+        opacity: 0.8,
+      ),
+      // Centre wave - main wave (boldest)
+      _LogoWaveConfig(
+        yOffset: size.height * 0.05,
+        amplitude: size.height * 0.14,
+        frequency: 1.0,
+        phaseOffset: 0.5,
+        strokeWidth: 1.6,
+        opacity: 1.0,
+      ),
+      // Lower wave
+      _LogoWaveConfig(
+        yOffset: size.height * 0.18,
+        amplitude: size.height * 0.1,
+        frequency: 1.3,
+        phaseOffset: 0.7,
+        strokeWidth: 1.2,
+        opacity: 0.6,
+      ),
+    ];
+    
+    for (final config in waveConfigs) {
+      _drawWave(canvas, size, centerY, config);
+    }
+  }
+  
+  void _drawWave(
+    Canvas canvas, 
+    Size size, 
+    double centerY, 
+    _LogoWaveConfig config,
+  ) {
+    final paint = Paint()
+      ..color = waveColour.withOpacity(config.opacity)
+      ..strokeWidth = config.strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    
+    final path = Path();
+    final phase = config.phaseOffset * 2 * math.pi;
+    
+    path.moveTo(
+      0,
+      centerY + config.yOffset + config.amplitude * math.sin(phase),
+    );
+    
+    for (double x = 0; x <= size.width; x += 1) {
+      final normalizedX = x / size.width;
+      final y = centerY + 
+          config.yOffset + 
+          config.amplitude * math.sin(normalizedX * config.frequency * 2 * math.pi + phase);
+      path.lineTo(x, y);
+    }
+    
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _WaveLogoPainter oldDelegate) => 
+      oldDelegate.waveColour != waveColour;
+}
+
+/// Configuration for wave in logo
+class _LogoWaveConfig {
+  final double yOffset;
+  final double amplitude;
+  final double frequency;
+  final double phaseOffset;
+  final double strokeWidth;
+  final double opacity;
+  
+  const _LogoWaveConfig({
+    required this.yOffset,
+    required this.amplitude,
+    required this.frequency,
+    this.phaseOffset = 0.0,
+    required this.strokeWidth,
+    required this.opacity,
+  });
 }

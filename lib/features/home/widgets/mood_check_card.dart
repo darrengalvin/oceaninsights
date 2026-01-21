@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/mood_provider.dart';
+import 'mood_response_dialog.dart';
 
 class MoodCheckCard extends StatelessWidget {
   const MoodCheckCard({super.key});
@@ -29,22 +30,22 @@ class MoodCheckCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colours.card,
+        color: colours.cardLight,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colours.border),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(14),
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: entry.mood.color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: entry.mood.color.withOpacity(0.3)),
+              color: colours.accent.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(
-              entry.mood.emoji,
-              style: const TextStyle(fontSize: 30),
+            child: Icon(
+              _getMoodIcon(entry.mood),
+              color: colours.accent,
+              size: 24,
             ),
           ),
           const SizedBox(width: 16),
@@ -54,69 +55,83 @@ class MoodCheckCard extends StatelessWidget {
               children: [
                 Text(
                   'Feeling ${entry.mood.label.toLowerCase()}',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   streak > 1 
-                      ? '$streak day streak! Keep it up.' 
-                      : 'Great job checking in today.',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                      ? '$streak day streak' 
+                      : 'Checked in today',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colours.textMuted,
+                  ),
                 ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: colours.success.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.check_rounded,
-              color: colours.success,
-              size: 24,
-            ),
+          Icon(
+            Icons.check_circle_rounded,
+            color: colours.success,
+            size: 22,
           ),
         ],
       ),
     );
   }
   
+  IconData _getMoodIcon(MoodLevel mood) {
+    switch (mood) {
+      case MoodLevel.excellent:
+        return Icons.sentiment_very_satisfied_rounded;
+      case MoodLevel.good:
+        return Icons.sentiment_satisfied_rounded;
+      case MoodLevel.okay:
+        return Icons.sentiment_neutral_rounded;
+      case MoodLevel.low:
+        return Icons.sentiment_dissatisfied_rounded;
+      case MoodLevel.struggling:
+        return Icons.sentiment_very_dissatisfied_rounded;
+    }
+  }
+  
   Widget _buildMoodSelector(BuildContext context, MoodProvider moodProvider) {
     final colours = context.colours;
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colours.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colours.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'How are you feeling right now?',
-            style: Theme.of(context).textTheme.titleLarge,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'How are you feeling?',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Tap to log your mood for today',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: MoodLevel.values.map((mood) {
-              return _MoodButton(
-                mood: mood,
-                onTap: () => moodProvider.addMoodEntry(mood),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: MoodLevel.values.map((mood) {
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  right: mood != MoodLevel.struggling ? 8 : 0,
+                ),
+                child: _MoodButton(
+                  mood: mood,
+                  onTap: () {
+                    // Show response dialog, then add mood entry
+                    MoodResponseDialog.show(
+                      context: context,
+                      mood: mood,
+                      onComplete: () => moodProvider.addMoodEntry(mood),
+                    );
+                  },
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }
@@ -132,33 +147,50 @@ class _MoodButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colours = context.colours;
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: mood.color.withOpacity(0.1),
+          color: colours.cardLight,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: mood.color.withOpacity(0.3)),
         ),
         child: Column(
           children: [
-            Text(
-              mood.emoji,
-              style: const TextStyle(fontSize: 28),
+            Icon(
+              _getIcon(),
+              color: colours.accent,
+              size: 24,
             ),
             const SizedBox(height: 6),
             Text(
               mood.label,
               style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: mood.color,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: colours.textLight,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+  
+  IconData _getIcon() {
+    switch (mood) {
+      case MoodLevel.excellent:
+        return Icons.sentiment_very_satisfied_rounded;
+      case MoodLevel.good:
+        return Icons.sentiment_satisfied_rounded;
+      case MoodLevel.okay:
+        return Icons.sentiment_neutral_rounded;
+      case MoodLevel.low:
+        return Icons.sentiment_dissatisfied_rounded;
+      case MoodLevel.struggling:
+        return Icons.sentiment_very_dissatisfied_rounded;
+    }
   }
 }
