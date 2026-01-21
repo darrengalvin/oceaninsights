@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
@@ -511,103 +512,109 @@ class _ScenarioCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: colours.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colours.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                // Context tag
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: colours.accent.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    scenario.context.displayName,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: colours.accent,
+    return Material(
+      color: colours.card,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colours.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  // Context tag
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colours.accent.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      scenario.context.displayName,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: colours.accent,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
+                  const SizedBox(width: 8),
 
-                // Difficulty indicator
-                ...List.generate(3, (index) {
-                  return Icon(
-                    index < scenario.difficulty
-                        ? Icons.circle
-                        : Icons.circle_outlined,
-                    size: 8,
-                    color: _getDifficultyColour(scenario.difficulty),
-                  );
-                }),
+                  // Difficulty indicator
+                  ...List.generate(3, (index) {
+                    return Icon(
+                      index < scenario.difficulty
+                          ? Icons.circle
+                          : Icons.circle_outlined,
+                      size: 8,
+                      color: _getDifficultyColour(scenario.difficulty),
+                    );
+                  }),
 
-                const Spacer(),
+                  const Spacer(),
 
-                // Completed indicator
-                if (isCompleted)
+                  // Completed indicator
+                  if (isCompleted)
+                    Icon(
+                      Icons.check_circle_rounded,
+                      size: 20,
+                      color: Colors.green,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Title
+              Text(
+                scenario.title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(height: 8),
+
+              // Situation preview
+              Text(
+                scenario.situation,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colours.textMuted,
+                      height: 1.4,
+                    ),
+              ),
+              const SizedBox(height: 12),
+
+              // Options count
+              Row(
+                children: [
                   Icon(
-                    Icons.check_circle_rounded,
-                    size: 20,
-                    color: Colors.green,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Title
-            Text(
-              scenario.title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-            const SizedBox(height: 8),
-
-            // Situation preview
-            Text(
-              scenario.situation,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colours.textMuted,
-                    height: 1.4,
-                  ),
-            ),
-            const SizedBox(height: 12),
-
-            // Options count
-            Row(
-              children: [
-                Icon(
-                  Icons.list_alt_rounded,
-                  size: 16,
-                  color: colours.textMuted,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  '${scenario.options.length} response options',
-                  style: TextStyle(
-                    fontSize: 13,
+                    Icons.list_alt_rounded,
+                    size: 16,
                     color: colours.textMuted,
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: 6),
+                  Text(
+                    '${scenario.options.length} response options',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colours.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

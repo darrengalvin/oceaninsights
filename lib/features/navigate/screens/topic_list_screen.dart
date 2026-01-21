@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
@@ -192,57 +193,61 @@ class _TopicCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colours = context.colours;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => GuidanceScreen(contentItem: topic),
+    return Material(
+      color: colours.card,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => GuidanceScreen(contentItem: topic),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colours.border),
           ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colours.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colours.border),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    topic.label,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: colours.textBright,
-                    ),
-                  ),
-                  if (topic.microcopy != null) ...[
-                    const SizedBox(height: 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      topic.microcopy!,
+                      topic.label,
                       style: TextStyle(
-                        fontSize: 13,
-                        color: colours.textMuted,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: colours.textBright,
                       ),
                     ),
+                    if (topic.microcopy != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        topic.microcopy!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colours.textMuted,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 14,
-              color: colours.textMuted,
-            ),
-          ],
+              const SizedBox(width: 12),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: colours.textMuted,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
@@ -271,85 +272,91 @@ class _ProtocolCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: colours.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colours.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Category tag
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: _getCategoryColour(protocol.category).withOpacity(0.15),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                protocol.category.displayName,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: _getCategoryColour(protocol.category),
+    return Material(
+      color: colours.card,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colours.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Category tag
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: _getCategoryColour(protocol.category).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  protocol.category.displayName,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: _getCategoryColour(protocol.category),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            // Title
-            Text(
-              protocol.title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-
-            // Description
-            if (protocol.description != null) ...[
-              const SizedBox(height: 8),
+              // Title
               Text(
-                protocol.description!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colours.textMuted,
-                      height: 1.4,
+                protocol.title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
               ),
-            ],
-            const SizedBox(height: 12),
 
-            // Step count
-            Row(
-              children: [
-                Icon(
-                  Icons.list_rounded,
-                  size: 16,
-                  color: colours.textMuted,
-                ),
-                const SizedBox(width: 6),
+              // Description
+              if (protocol.description != null) ...[
+                const SizedBox(height: 8),
                 Text(
-                  '${protocol.stepCount} steps',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colours.textMuted,
-                  ),
-                ),
-                const Spacer(),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 18,
-                  color: colours.textMuted,
+                  protocol.description!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colours.textMuted,
+                        height: 1.4,
+                      ),
                 ),
               ],
-            ),
-          ],
+              const SizedBox(height: 12),
+
+              // Step count
+              Row(
+                children: [
+                  Icon(
+                    Icons.list_rounded,
+                    size: 16,
+                    color: colours.textMuted,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${protocol.stepCount} steps',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colours.textMuted,
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 18,
+                    color: colours.textMuted,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

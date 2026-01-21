@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
@@ -185,92 +186,96 @@ class _DomainCard extends StatelessWidget {
     final topics = contentService.getContentForDomain(domain.slug);
     final hasContent = topics.isNotEmpty;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: hasContent
-          ? () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => TopicListScreen(
-                    domainSlug: domain.slug,
-                    title: domain.name,
-                  ),
-                ),
-              );
-            }
-          : null,
-      child: Opacity(
-        opacity: hasContent ? 1.0 : 0.5,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colours.card,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colours.border),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colours.accent.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  _getIcon(domain.icon),
-                  color: colours.accent,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      domain.name,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: colours.textBright,
+    return Opacity(
+      opacity: hasContent ? 1.0 : 0.5,
+      child: Material(
+        color: colours.card,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: hasContent
+              ? () {
+                  HapticFeedback.lightImpact();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TopicListScreen(
+                        domainSlug: domain.slug,
+                        title: domain.name,
                       ),
                     ),
-                    if (domain.description != null) ...[
-                      const SizedBox(height: 2),
+                  );
+                }
+              : null,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: colours.border),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colours.accent.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    _getIcon(domain.icon),
+                    color: colours.accent,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        domain.description!,
+                        domain.name,
                         style: TextStyle(
-                          fontSize: 13,
-                          color: colours.textMuted,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: colours.textBright,
                         ),
                       ),
+                      if (domain.description != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          domain.description!,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: colours.textMuted,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-              ),
-              if (hasContent)
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 16,
-                  color: colours.textMuted,
-                )
-              else
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: colours.cardLight,
-                    borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Text(
-                    'Coming Soon',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: colours.textMuted,
+                ),
+                if (hasContent)
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: colours.textMuted,
+                  )
+                else
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colours.cardLight,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'Coming Soon',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: colours.textMuted,
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
