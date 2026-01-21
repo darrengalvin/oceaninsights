@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Sparkles, CheckCircle, AlertCircle, RefreshCw, X } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
-
 export default function ProtocolsPage() {
   const [protocols, setProtocols] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
