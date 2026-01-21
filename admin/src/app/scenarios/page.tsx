@@ -12,6 +12,7 @@ export default function ScenariosPage() {
   const [generateCount, setGenerateCount] = useState(3)
   const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
   const [filter, setFilter] = useState<'all' | 'new' | 'published' | 'draft'>('all')
+  const [bulkPublishing, setBulkPublishing] = useState(false)
 
   useEffect(() => {
     fetchScenarios()
@@ -67,6 +68,58 @@ export default function ScenariosPage() {
     }
   }
 
+  const handleBulkPublish = async () => {
+    const draftScenarios = scenarios.filter(s => !s.published)
+    if (draftScenarios.length === 0) {
+      alert('No draft scenarios to publish!')
+      return
+    }
+
+    if (!confirm(`Publish all ${draftScenarios.length} draft scenarios?`)) {
+      return
+    }
+
+    setBulkPublishing(true)
+
+    try {
+      // Publish all drafts in parallel
+      await Promise.all(
+        draftScenarios.map(scenario =>
+          fetch(`/api/scenarios/${scenario.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ published: true })
+          })
+        )
+      )
+
+      alert(`✅ Published ${draftScenarios.length} scenarios!`)
+      fetchScenarios()
+    } catch (error) {
+      console.error('Bulk publish error:', error)
+      alert('❌ Failed to publish some scenarios')
+    } finally {
+      setBulkPublishing(false)
+    }
+  }
+
+  const togglePublished = async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetch(`/api/scenarios/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ published: !currentStatus })
+      })
+
+      if (!res.ok) throw new Error('Failed to update')
+
+      fetchScenarios()
+    } catch (error) {
+      console.error('Toggle publish error:', error)
+      alert('Failed to update scenario')
+    }
+  }
+
   const contextBadgeColor = (context: string) => {
     const colors: Record<string, string> = {
       hierarchy: 'bg-purple-100 text-purple-700',
@@ -118,6 +171,25 @@ export default function ScenariosPage() {
           <p className="text-gray-600 mt-1">Manage workplace scenario training content</p>
         </div>
         <div className="flex gap-3">
+          {scenarios.filter(s => !s.published).length > 0 && (
+            <button
+              onClick={handleBulkPublish}
+              disabled={bulkPublishing}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            >
+              {bulkPublishing ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  Publish All Drafts ({scenarios.filter(s => !s.published).length})
+                </>
+              )}
+            </button>
+          )}
           <button
             onClick={() => setShowGenerateDialog(true)}
             disabled={generating}
@@ -362,15 +434,27 @@ export default function ScenariosPage() {
                     {scenario.options?.length || 0} options
                   </td>
                   <td className="px-6 py-4">
-                    {scenario.published ? (
-                      <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
-                        Published
-                      </span>
-                    ) : (
-                      <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700">
-                        Draft
-                      </span>
-                    )}
+                    <button
+                      onClick={() => togglePublished(scenario.id, scenario.published)}
+                      className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full transition-colors ${
+                        scenario.published
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                      }`}
+                      title={`Click to ${scenario.published ? 'unpublish' : 'publish'}`}
+                    >
+                      {scenario.published ? (
+                        <>
+                          <CheckCircle className="w-3 h-3" />
+                          Published
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="w-3 h-3" />
+                          Draft
+                        </>
+                      )}
+                    </button>
                   </td>
                   <td className="px-6 py-4 text-right text-sm font-medium">
                     <Link
@@ -420,15 +504,26 @@ export default function ScenariosPage() {
                 <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
                   {scenario.options?.length || 0} options
                 </span>
-                {scenario.published ? (
-                  <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
-                    Published
-                  </span>
-                ) : (
-                  <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700">
-                    Draft
-                  </span>
-                )}
+                <button
+                  onClick={() => togglePublished(scenario.id, scenario.published)}
+                  className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full transition-colors ${
+                    scenario.published
+                      ? 'bg-green-100 text-green-700 active:bg-green-200'
+                      : 'bg-yellow-100 text-yellow-700 active:bg-yellow-200'
+                  }`}
+                >
+                  {scenario.published ? (
+                    <>
+                      <CheckCircle className="w-3 h-3" />
+                      Published
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="w-3 h-3" />
+                      Draft
+                    </>
+                  )}
+                </button>
               </div>
 
               <div className="flex gap-2 pt-3 border-t border-gray-100">
