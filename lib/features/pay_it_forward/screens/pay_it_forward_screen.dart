@@ -13,6 +13,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
   final IAPService _iapService = IAPService();
   bool _isLoading = true;
   List<PurchaseOption> _subscriptionOptions = [];
+  String? _selectedProductId;
 
   @override
   void initState() {
@@ -30,12 +31,24 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
   }
 
   Future<void> _handlePurchase(PurchaseOption option) async {
+    // Show selection
+    setState(() => _selectedProductId = option.productId);
+    
+    // Small delay to show selection feedback
+    await Future.delayed(const Duration(milliseconds: 150));
+    
     final success = await _iapService.purchase(
       option.productId,
       isSubscription: option.isSubscription,
     );
-    if (success && mounted) {
-      _showThankYouDialog(option.isSubscription);
+    
+    // Clear selection
+    if (mounted) {
+      setState(() => _selectedProductId = null);
+      
+      if (success) {
+        _showThankYouDialog(option.isSubscription);
+      }
     }
   }
 
@@ -363,6 +376,8 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
   }
 
   Widget _buildPurchaseCard(PurchaseOption option) {
+    final bool isSelected = _selectedProductId == option.productId;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Material(
@@ -370,16 +385,21 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
         child: InkWell(
           onTap: () => _handlePurchase(option),
           borderRadius: BorderRadius.circular(16),
-          child: Container(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A2332),
+              color: isSelected 
+                  ? const Color(0xFF4A9B8E).withOpacity(0.2)
+                  : const Color(0xFF1A2332),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: option.isRecommended
+                color: isSelected
                     ? const Color(0xFF4A9B8E)
-                    : Colors.white.withOpacity(0.1),
-                width: option.isRecommended ? 2 : 1,
+                    : (option.isRecommended
+                        ? const Color(0xFF4A9B8E)
+                        : Colors.white.withOpacity(0.1)),
+                width: isSelected || option.isRecommended ? 2 : 1,
               ),
             ),
             child: Column(
@@ -434,15 +454,20 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
                         ],
                       ),
                     ),
-                    Container(
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4A9B8E).withOpacity(0.2),
+                        color: isSelected
+                            ? const Color(0xFF4A9B8E)
+                            : const Color(0xFF4A9B8E).withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
-                        Icons.arrow_forward,
-                        color: Color(0xFF4A9B8E),
+                      child: Icon(
+                        isSelected ? Icons.check : Icons.arrow_forward,
+                        color: isSelected 
+                            ? Colors.white 
+                            : const Color(0xFF4A9B8E),
                         size: 24,
                       ),
                     ),
