@@ -1,9 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/user_provider.dart';
+import '../../../core/services/ui_sound_service.dart';
 import '../../breathing/screens/breathing_screen.dart';
 import '../../affirmations/screens/affirmations_screen.dart';
 import '../../assessment/screens/assessment_screen.dart';
@@ -87,7 +89,12 @@ class HomeScreen extends StatelessWidget {
             ),
             // Settings button - minimal
             GestureDetector(
-              onTap: () => _showSettingsSheet(context),
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                UISoundService().playClick();
+                _showSettingsSheet(context);
+              },
               child: Padding(
                 padding: const EdgeInsets.all(4),
                 child: Icon(
@@ -233,10 +240,14 @@ class HomeScreen extends StatelessWidget {
         // Pay It Forward card
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PayItForwardScreen()),
-          ),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            UISoundService().playClick();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PayItForwardScreen()),
+            );
+          },
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -276,10 +287,15 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(height: 12),
         // Prominent help card
         GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ContactHelpScreen()),
-          ),
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            UISoundService().playClick();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ContactHelpScreen()),
+            );
+          },
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -400,8 +416,15 @@ class _QuickActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colours = context.colours;
     
-    return GestureDetector(
-      onTap: onTap,
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        UISoundService().playClick();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(14),
+      splashColor: colours.accent.withOpacity(0.2),
+      highlightColor: colours.accent.withOpacity(0.1),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
@@ -447,8 +470,14 @@ class _FeatureRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colours = context.colours;
     
-    return GestureDetector(
-      onTap: onTap,
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        UISoundService().playClick();
+        onTap();
+      },
+      splashColor: colours.accent.withOpacity(0.2),
+      highlightColor: colours.accent.withOpacity(0.1),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(
@@ -504,7 +533,12 @@ class _TextLink extends StatelessWidget {
     final colours = context.colours;
     
     return GestureDetector(
-      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        UISoundService().playClick();
+        onTap();
+      },
       child: Text(
         label,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -537,7 +571,11 @@ class _SettingsTile extends StatelessWidget {
     
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        UISoundService().playClick();
+        onTap();
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(16),
