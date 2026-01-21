@@ -1,27 +1,64 @@
-import { supabase } from '@/lib/supabase'
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { Sparkles, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+export default function ScenariosPage() {
+  const [scenarios, setScenarios] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [generating, setGenerating] = useState(false)
+  const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
 
-export default async function ScenariosPage() {
-  // Fetch scenarios with their content pack
-  const { data: scenarios, error } = await supabase
-    .from('scenarios')
-    .select(`
-      *,
-      content_pack:content_packs(id, name),
-      options:scenario_options(id)
-    `)
-    .order('created_at', { ascending: false })
+  useEffect(() => {
+    fetchScenarios()
+  }, [])
 
-  if (error) {
-    return (
-      <div className="p-6">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          Error loading scenarios: {error.message}
-        </div>
-      </div>
-    )
+  const fetchScenarios = async () => {
+    try {
+      const res = await fetch('/api/scenarios')
+      const data = await res.json()
+      setScenarios(data)
+    } catch (error) {
+      console.error('Failed to fetch scenarios:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const generateWithGPT = async () => {
+    setGenerating(true)
+    setGenerationResult(null)
+
+    try {
+      const res = await fetch('/api/scenarios/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ count: 3 })
+      })
+
+      if (!res.ok) throw new Error('Generation failed')
+
+      const data = await res.json()
+      setGenerationResult({
+        success: true,
+        message: `✅ Generated ${data.scenarios?.length || 0} scenarios! Review and publish them below.`
+      })
+      
+      // Refresh the list
+      setTimeout(() => {
+        fetchScenarios()
+        setGenerationResult(null)
+      }, 3000)
+    } catch (error) {
+      console.error('Generation error:', error)
+      setGenerationResult({
+        success: false,
+        message: '❌ Failed to generate scenarios. Check API key and try again.'
+      })
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const contextBadgeColor = (context: string) => {
@@ -31,12 +68,24 @@ export default async function ScenariosPage() {
       'high-pressure': 'bg-orange-100 text-orange-700',
       'close-quarters': 'bg-teal-100 text-teal-700',
       leadership: 'bg-indigo-100 text-indigo-700',
+      military_workplace: 'bg-purple-100 text-purple-700',
+      civilian_workplace: 'bg-blue-100 text-blue-700',
+      family: 'bg-green-100 text-green-700',
+      social: 'bg-pink-100 text-pink-700',
     }
     return colors[context] || 'bg-gray-100 text-gray-700'
   }
 
   const difficultyStars = (difficulty: number) => {
     return '★'.repeat(difficulty) + '☆'.repeat(3 - difficulty)
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <p className="text-gray-500">Loading scenarios...</p>
+      </div>
+    )
   }
 
   return (
@@ -46,13 +95,47 @@ export default async function ScenariosPage() {
           <h1 className="text-3xl font-bold text-gray-900">Decision Training Scenarios</h1>
           <p className="text-gray-600 mt-1">Manage workplace scenario training content</p>
         </div>
-        <Link
-          href="/scenarios/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-        >
-          + New Scenario
-        </Link>
+        <div className="flex gap-3">
+          <button
+            onClick={generateWithGPT}
+            disabled={generating}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {generating ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Generate with GPT
+              </>
+            )}
+          </button>
+          <Link
+            href="/scenarios/new"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            + New Scenario
+          </Link>
+        </div>
       </div>
+
+      {generationResult && (
+        <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
+          generationResult.success 
+            ? 'bg-green-50 border border-green-200 text-green-800' 
+            : 'bg-red-50 border border-red-200 text-red-800'
+        }`}>
+          {generationResult.success ? (
+            <CheckCircle className="w-5 h-5" />
+          ) : (
+            <AlertCircle className="w-5 h-5" />
+          )}
+          <span>{generationResult.message}</span>
+        </div>
+      )}
 
       {scenarios && scenarios.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
@@ -62,13 +145,23 @@ export default async function ScenariosPage() {
             </svg>
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No scenarios yet</h3>
-          <p className="text-gray-500 mb-6">Get started by creating your first decision training scenario.</p>
-          <Link
-            href="/scenarios/new"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-          >
-            Create First Scenario
-          </Link>
+          <p className="text-gray-500 mb-6">Get started by creating your first scenario or generate some with GPT.</p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={generateWithGPT}
+              disabled={generating}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+            >
+              <Sparkles className="w-4 h-4" />
+              Generate with GPT
+            </button>
+            <Link
+              href="/scenarios/new"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+            >
+              Create Manually
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -109,7 +202,7 @@ export default async function ScenariosPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${contextBadgeColor(scenario.context)}`}>
-                      {scenario.context.replace('-', ' ')}
+                      {scenario.context.replace(/_/g, ' ').replace('-', ' ')}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -162,4 +255,3 @@ export default async function ScenariosPage() {
     </div>
   )
 }
-

@@ -1,22 +1,64 @@
-import { supabase } from '@/lib/supabase'
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { Sparkles, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+export default function ProtocolsPage() {
+  const [protocols, setProtocols] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [generating, setGenerating] = useState(false)
+  const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
 
-export default async function ProtocolsPage() {
-  const { data: protocols, error } = await supabase
-    .from('protocols')
-    .select('*')
-    .order('created_at', { ascending: false })
+  useEffect(() => {
+    fetchProtocols()
+  }, [])
 
-  if (error) {
-    return (
-      <div className="p-6">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          Error loading protocols: {error.message}
-        </div>
-      </div>
-    )
+  const fetchProtocols = async () => {
+    try {
+      const res = await fetch('/api/protocols')
+      const data = await res.json()
+      setProtocols(data)
+    } catch (error) {
+      console.error('Failed to fetch protocols:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const generateWithGPT = async () => {
+    setGenerating(true)
+    setGenerationResult(null)
+
+    try {
+      const res = await fetch('/api/protocols/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ count: 3 })
+      })
+
+      if (!res.ok) throw new Error('Generation failed')
+
+      const data = await res.json()
+      setGenerationResult({
+        success: true,
+        message: `✅ Generated ${data.protocols?.length || 0} protocols! Review and publish them below.`
+      })
+      
+      // Refresh the list
+      setTimeout(() => {
+        fetchProtocols()
+        setGenerationResult(null)
+      }, 3000)
+    } catch (error) {
+      console.error('Generation error:', error)
+      setGenerationResult({
+        success: false,
+        message: '❌ Failed to generate protocols. Check API key and try again.'
+      })
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const categoryBadgeColor = (category: string) => {
@@ -26,8 +68,20 @@ export default async function ProtocolsPage() {
       'self-regulation': 'bg-green-100 text-green-700',
       trust: 'bg-purple-100 text-purple-700',
       recovery: 'bg-teal-100 text-teal-700',
+      feedback: 'bg-indigo-100 text-indigo-700',
+      boundary: 'bg-pink-100 text-pink-700',
+      clarification: 'bg-cyan-100 text-cyan-700',
+      difficult_conversation: 'bg-red-100 text-red-700',
     }
     return colors[category] || 'bg-gray-100 text-gray-700'
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <p className="text-gray-500">Loading protocols...</p>
+      </div>
+    )
   }
 
   return (
@@ -37,13 +91,47 @@ export default async function ProtocolsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Communication Protocols</h1>
           <p className="text-gray-600 mt-1">Manage step-by-step communication guides</p>
         </div>
-        <Link
-          href="/protocols/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-        >
-          + New Protocol
-        </Link>
+        <div className="flex gap-3">
+          <button
+            onClick={generateWithGPT}
+            disabled={generating}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {generating ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Generate with GPT
+              </>
+            )}
+          </button>
+          <Link
+            href="/protocols/new"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            + New Protocol
+          </Link>
+        </div>
       </div>
+
+      {generationResult && (
+        <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
+          generationResult.success 
+            ? 'bg-green-50 border border-green-200 text-green-800' 
+            : 'bg-red-50 border border-red-200 text-red-800'
+        }`}>
+          {generationResult.success ? (
+            <CheckCircle className="w-5 h-5" />
+          ) : (
+            <AlertCircle className="w-5 h-5" />
+          )}
+          <span>{generationResult.message}</span>
+        </div>
+      )}
 
       {protocols && protocols.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
@@ -53,13 +141,23 @@ export default async function ProtocolsPage() {
             </svg>
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No protocols yet</h3>
-          <p className="text-gray-500 mb-6">Create your first communication protocol.</p>
-          <Link
-            href="/protocols/new"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-          >
-            Create First Protocol
-          </Link>
+          <p className="text-gray-500 mb-6">Create your first protocol or generate some with GPT.</p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={generateWithGPT}
+              disabled={generating}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+            >
+              <Sparkles className="w-4 h-4" />
+              Generate with GPT
+            </button>
+            <Link
+              href="/protocols/new"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+            >
+              Create Manually
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -70,7 +168,7 @@ export default async function ProtocolsPage() {
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900">{protocol.title}</h3>
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${categoryBadgeColor(protocol.category)}`}>
-                      {protocol.category.replace('-', ' ')}
+                      {protocol.category.replace(/_/g, ' ').replace('-', ' ')}
                     </span>
                     {protocol.published ? (
                       <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
@@ -119,4 +217,3 @@ export default async function ProtocolsPage() {
     </div>
   )
 }
-
