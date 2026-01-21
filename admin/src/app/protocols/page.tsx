@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Sparkles, CheckCircle, AlertCircle, RefreshCw, X } from 'lucide-react'
 
+// Communication Protocols Management Page
 export default function ProtocolsPage() {
   const [protocols, setProtocols] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
