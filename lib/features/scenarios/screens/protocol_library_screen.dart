@@ -36,6 +36,13 @@ class _ProtocolLibraryScreenState extends State<ProtocolLibraryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Communication Protocols'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.sync_rounded),
+            onPressed: () => _showSyncOptions(context, scenarioService),
+            tooltip: 'Sync',
+          ),
+        ],
       ),
       body: protocols.isEmpty
           ? _buildEmptyState(context, colours, scenarioService)
@@ -77,9 +84,9 @@ class _ProtocolLibraryScreenState extends State<ProtocolLibraryScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () => _syncProtocols(scenarioService),
+              onPressed: () => _syncProtocols(scenarioService, force: true),
               icon: const Icon(Icons.sync_rounded),
-              label: const Text('Sync Now'),
+              label: const Text('Download Protocols'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colours.accent,
                 foregroundColor: Colors.white,
@@ -236,14 +243,83 @@ class _ProtocolLibraryScreenState extends State<ProtocolLibraryScreen> {
     );
   }
 
-  Future<void> _syncProtocols(ScenarioService scenarioService) async {
+  void _showSyncOptions(BuildContext context, ScenarioService scenarioService) {
+    final colours = context.colours;
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colours.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Sync Protocols',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Download the latest protocols from the server.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colours.textMuted,
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _syncProtocols(scenarioService, force: false);
+                },
+                icon: const Icon(Icons.sync_rounded),
+                label: const Text('Smart Sync (Check Version)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colours.accent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _syncProtocols(scenarioService, force: true);
+                },
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Force Sync (Re-download All)'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colours.accent,
+                  side: BorderSide(color: colours.accent),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _syncProtocols(ScenarioService scenarioService, {bool force = false}) async {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    final success = await scenarioService.syncScenarios();
+    final success = await scenarioService.syncScenarios(force: force);
 
     if (mounted) {
       Navigator.pop(context);
@@ -253,6 +329,13 @@ class _ProtocolLibraryScreenState extends State<ProtocolLibraryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to sync. Check your connection.'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(force ? 'Re-downloaded all protocols' : 'Synced successfully'),
+            backgroundColor: Colors.green,
           ),
         );
       }

@@ -77,7 +77,7 @@ class ScenarioService extends ChangeNotifier {
   }
 
   /// Sync scenarios from Supabase (when online)
-  Future<bool> syncScenarios() async {
+  Future<bool> syncScenarios({bool force = false}) async {
     try {
       debugPrint('🔄 Syncing scenarios from Supabase...');
 
@@ -85,9 +85,15 @@ class ScenarioService extends ChangeNotifier {
       final localVersion = _getLocalSyncVersion();
       final remoteVersion = await _getRemoteSyncVersion();
 
-      if (localVersion >= remoteVersion) {
+      debugPrint('📊 Sync versions: local=$localVersion, remote=$remoteVersion');
+
+      if (!force && localVersion >= remoteVersion) {
         debugPrint('✅ Scenarios already up to date (v$localVersion)');
         return true;
+      }
+      
+      if (force) {
+        debugPrint('🔄 Force sync requested, bypassing version check');
       }
 
       // Fetch content packs

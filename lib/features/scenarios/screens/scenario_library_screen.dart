@@ -42,6 +42,11 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
         title: const Text('Scenario Training'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.sync_rounded),
+            onPressed: () => _showSyncOptions(context, scenarioService),
+            tooltip: 'Sync',
+          ),
+          IconButton(
             icon: const Icon(Icons.filter_list_rounded),
             onPressed: () => _showFilterSheet(context, colours),
             tooltip: 'Filter',
@@ -88,9 +93,9 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () => _syncScenarios(scenarioService),
+              onPressed: () => _syncScenarios(scenarioService, force: true),
               icon: const Icon(Icons.sync_rounded),
-              label: const Text('Sync Now'),
+              label: const Text('Download Scenarios'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colours.accent,
                 foregroundColor: Colors.white,
@@ -444,14 +449,83 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
     }
   }
 
-  Future<void> _syncScenarios(ScenarioService scenarioService) async {
+  void _showSyncOptions(BuildContext context, ScenarioService scenarioService) {
+    final colours = context.colours;
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colours.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Sync Scenarios',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Download the latest scenarios and protocols from the server.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colours.textMuted,
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _syncScenarios(scenarioService, force: false);
+                },
+                icon: const Icon(Icons.sync_rounded),
+                label: const Text('Smart Sync (Check Version)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colours.accent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _syncScenarios(scenarioService, force: true);
+                },
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Force Sync (Re-download All)'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colours.accent,
+                  side: BorderSide(color: colours.accent),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _syncScenarios(ScenarioService scenarioService, {bool force = false}) async {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    final success = await scenarioService.syncScenarios();
+    final success = await scenarioService.syncScenarios(force: force);
     
     if (mounted) {
       Navigator.pop(context);
@@ -461,6 +535,13 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to sync. Check your connection.'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(force ? 'Re-downloaded all scenarios' : 'Synced successfully'),
+            backgroundColor: Colors.green,
           ),
         );
       }
