@@ -7,6 +7,7 @@ import 'core/providers/user_provider.dart';
 import 'core/providers/mood_provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/services/content_service.dart';
+import 'core/services/ui_sound_service.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/home/screens/home_screen.dart';
@@ -31,6 +32,9 @@ void main() async {
   
   // Initialise scenario service
   await ScenarioService.instance.initialize();
+  
+  // Initialise UI sound service
+  await UISoundService().initialize();
   
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([

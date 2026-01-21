@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
+import '../../../core/services/ui_sound_service.dart';
 import '../models/protocol.dart';
 import '../services/scenario_service.dart';
 import 'protocol_detail_screen.dart';
@@ -278,6 +279,7 @@ class _ProtocolCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           HapticFeedback.lightImpact();
+          UISoundService().playClick();
           onTap();
         },
         borderRadius: BorderRadius.circular(12),

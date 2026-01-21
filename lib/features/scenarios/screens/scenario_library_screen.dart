@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
+import '../../../core/services/ui_sound_service.dart';
 import '../models/scenario.dart';
 import '../models/user_response_profile.dart';
 import '../services/scenario_service.dart';
@@ -518,6 +519,7 @@ class _ScenarioCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           HapticFeedback.lightImpact();
+          UISoundService().playClick();
           onTap();
         },
         borderRadius: BorderRadius.circular(12),

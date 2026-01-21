@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/services/content_service.dart';
+import '../../../core/services/ui_sound_service.dart';
 import 'guidance_screen.dart';
 
 class TopicListScreen extends StatelessWidget {
@@ -199,6 +200,7 @@ class _TopicCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           HapticFeedback.lightImpact();
+          UISoundService().playClick();
           Navigator.push(
             context,
             MaterialPageRoute(

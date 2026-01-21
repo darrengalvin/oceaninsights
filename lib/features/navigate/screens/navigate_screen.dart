@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/services/content_service.dart';
+import '../../../core/services/ui_sound_service.dart';
 import '../data/navigate_content.dart';
 import 'topic_list_screen.dart';
 
@@ -195,6 +196,7 @@ class _DomainCard extends StatelessWidget {
           onTap: hasContent
               ? () {
                   HapticFeedback.lightImpact();
+                  UISoundService().playClick();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
