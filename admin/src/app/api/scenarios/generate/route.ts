@@ -216,16 +216,36 @@ export async function POST(request: NextRequest) {
 
         // Insert options
         if (options && options.length > 0 && insertedScenario) {
-          const optionsToInsert = options.map((opt: any) => ({
-            ...opt,
-            scenario_id: insertedScenario.id
-          }))
+          for (const opt of options) {
+            const { perspective_shifts, ...optionData } = opt
+            
+            // Insert option
+            const { data: insertedOption, error: optionError } = await supabaseAdmin
+              .from('scenario_options')
+              .insert({
+                ...optionData,
+                scenario_id: insertedScenario.id
+              })
+              .select()
+              .single()
 
-          const { error: optionsError } = await supabaseAdmin
-            .from('scenario_options')
-            .insert(optionsToInsert)
+            if (optionError) throw optionError
 
-          if (optionsError) throw optionsError
+            // Insert perspective shifts for this option
+            if (perspective_shifts && perspective_shifts.length > 0 && insertedOption) {
+              const shiftsToInsert = perspective_shifts.map((shift: any) => ({
+                option_id: insertedOption.id,
+                viewpoint: shift.perspective, // Map 'perspective' to 'viewpoint'
+                interpretation: shift.interpretation
+              }))
+
+              const { error: shiftsError } = await supabaseAdmin
+                .from('perspective_shifts')
+                .insert(shiftsToInsert)
+
+              if (shiftsError) throw shiftsError
+            }
+          }
         }
       }
     }
