@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../models/scenario.dart';
+import '../models/user_response_profile.dart';
 import '../services/scenario_service.dart';
 import 'scenario_training_screen.dart';
 
@@ -105,7 +106,7 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
     AppColours colours,
     ScenarioService scenarioService,
     List<ContentPack> contentPacks,
-    dynamic profile,
+    UserResponseProfile profile,
   ) {
     // Get scenarios
     final scenarios = _selectedPackId != null
@@ -277,7 +278,7 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
     String label,
     String? packId,
     String? icon,
-    dynamic profile,
+    UserResponseProfile profile,
   ) {
     final isSelected = _selectedPackId == packId;
 
