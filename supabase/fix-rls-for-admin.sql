@@ -11,7 +11,9 @@ ALTER TABLE perspective_shifts DISABLE ROW LEVEL SECURITY;
 ALTER TABLE journeys DISABLE ROW LEVEL SECURITY;
 ALTER TABLE domains DISABLE ROW LEVEL SECURITY;
 ALTER TABLE content_items DISABLE ROW LEVEL SECURITY;
-ALTER TABLE navigate_content DISABLE ROW LEVEL SECURITY;
+ALTER TABLE content_details DISABLE ROW LEVEL SECURITY;
+ALTER TABLE learn_articles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE learn_article_content DISABLE ROW LEVEL SECURITY;
 
 -- Alternatively, if you want to keep RLS enabled but allow service role:
 -- (Uncomment these if you prefer to keep RLS on)
@@ -26,7 +28,9 @@ ALTER TABLE perspective_shifts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE journeys ENABLE ROW LEVEL SECURITY;
 ALTER TABLE domains ENABLE ROW LEVEL SECURITY;
 ALTER TABLE content_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE navigate_content ENABLE ROW LEVEL SECURITY;
+ALTER TABLE content_details ENABLE ROW LEVEL SECURITY;
+ALTER TABLE learn_articles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE learn_article_content ENABLE ROW LEVEL SECURITY;
 
 -- Create policies that allow all operations (since these are admin-only tables)
 CREATE POLICY "Allow all on scenarios" ON scenarios FOR ALL USING (true) WITH CHECK (true);
@@ -37,6 +41,8 @@ CREATE POLICY "Allow all on perspective_shifts" ON perspective_shifts FOR ALL US
 CREATE POLICY "Allow all on journeys" ON journeys FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on domains" ON domains FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on content_items" ON content_items FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all on navigate_content" ON navigate_content FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all on content_details" ON content_details FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all on learn_articles" ON learn_articles FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all on learn_article_content" ON learn_article_content FOR ALL USING (true) WITH CHECK (true);
 */
 
