@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Sparkles, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
+import { Sparkles, CheckCircle, AlertCircle, RefreshCw, X } from 'lucide-react'
 
 export default function ScenariosPage() {
   const [scenarios, setScenarios] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [showGenerateDialog, setShowGenerateDialog] = useState(false)
+  const [generateCount, setGenerateCount] = useState(3)
   const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
 
   useEffect(() => {
@@ -26,18 +28,22 @@ export default function ScenariosPage() {
     }
   }
 
-  const generateWithGPT = async () => {
+  const handleGenerate = async () => {
     setGenerating(true)
     setGenerationResult(null)
+    setShowGenerateDialog(false)
 
     try {
       const res = await fetch('/api/scenarios/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ count: 3 })
+        body: JSON.stringify({ count: generateCount })
       })
 
-      if (!res.ok) throw new Error('Generation failed')
+      if (!res.ok) {
+        const error = await res.json()
+        throw new Error(error.error || 'Generation failed')
+      }
 
       const data = await res.json()
       setGenerationResult({
@@ -45,16 +51,15 @@ export default function ScenariosPage() {
         message: `✅ Generated ${data.scenarios?.length || 0} scenarios! Review and publish them below.`
       })
       
-      // Refresh the list
       setTimeout(() => {
         fetchScenarios()
         setGenerationResult(null)
       }, 3000)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Generation error:', error)
       setGenerationResult({
         success: false,
-        message: '❌ Failed to generate scenarios. Check API key and try again.'
+        message: error.message || '❌ Failed to generate scenarios. Check API key in Vercel settings.'
       })
     } finally {
       setGenerating(false)
@@ -97,9 +102,9 @@ export default function ScenariosPage() {
         </div>
         <div className="flex gap-3">
           <button
-            onClick={generateWithGPT}
+            onClick={() => setShowGenerateDialog(true)}
             disabled={generating}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-ocean-600 hover:bg-ocean-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             {generating ? (
               <>
@@ -109,18 +114,77 @@ export default function ScenariosPage() {
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Generate with GPT
+                Generate with AI
               </>
             )}
           </button>
           <Link
             href="/scenarios/new"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
           >
             + New Scenario
           </Link>
         </div>
       </div>
+
+      {/* Generation Dialog */}
+      {showGenerateDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Generate Scenarios</h2>
+              <button
+                onClick={() => setShowGenerateDialog(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <p className="text-gray-600 mb-4">
+              AI will generate realistic workplace decision-training scenarios with multiple response options and outcomes.
+            </p>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                How many scenarios to generate?
+              </label>
+              <select
+                value={generateCount}
+                onChange={(e) => setGenerateCount(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
+              >
+                <option value={1}>1 scenario</option>
+                <option value={2}>2 scenarios</option>
+                <option value={3}>3 scenarios</option>
+                <option value={5}>5 scenarios</option>
+              </select>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+              <p className="text-sm text-blue-800">
+                <strong>Note:</strong> Generated scenarios will be saved as drafts. Review and publish when ready.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowGenerateDialog(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleGenerate}
+                className="flex-1 px-4 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 flex items-center justify-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {generationResult && (
         <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
@@ -145,19 +209,19 @@ export default function ScenariosPage() {
             </svg>
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No scenarios yet</h3>
-          <p className="text-gray-500 mb-6">Get started by creating your first scenario or generate some with GPT.</p>
+          <p className="text-gray-500 mb-6">Get started by creating your first scenario or generate some with AI.</p>
           <div className="flex gap-3 justify-center">
             <button
-              onClick={generateWithGPT}
+              onClick={() => setShowGenerateDialog(true)}
               disabled={generating}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-ocean-600 hover:bg-ocean-700 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-sm"
             >
               <Sparkles className="w-4 h-4" />
-              Generate with GPT
+              Generate with AI
             </button>
             <Link
               href="/scenarios/new"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-sm"
             >
               Create Manually
             </Link>

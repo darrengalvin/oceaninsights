@@ -42,7 +42,19 @@ export default function EditProtocolPage() {
     try {
       const res = await fetch(`/api/protocols/${id}`)
       const data = await res.json()
-      setProtocol(data)
+      
+      // Ensure all fields have default values
+      setProtocol({
+        ...data,
+        title: data.title || '',
+        category: data.category || 'communication',
+        description: data.description || '',
+        when_to_use: data.when_to_use || '',
+        when_not_to_use: data.when_not_to_use || '',
+        common_failures: data.common_failures || [],
+        steps: Array.isArray(data.steps) ? data.steps : [],
+        published: data.published || false
+      })
     } catch (error) {
       console.error('Failed to fetch protocol:', error)
     } finally {
@@ -268,7 +280,7 @@ export default function EditProtocolPage() {
           </div>
 
           <div className="space-y-4">
-            {protocol.steps.map((step, index) => (
+            {protocol.steps && protocol.steps.length > 0 ? protocol.steps.map((step, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-medium text-gray-900">Step {step.step_number}</h3>
@@ -342,7 +354,11 @@ export default function EditProtocolPage() {
                   </div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>No steps yet. Click "Add Step" to begin.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
