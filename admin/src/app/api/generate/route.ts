@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
 
 const SYSTEM_PROMPT = `You are a content architect for a growth-focused "wellness library" designed for military personnel, veterans, and partner/family members.

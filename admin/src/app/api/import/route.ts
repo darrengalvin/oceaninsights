@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 // POST bulk import content (for GPT-generated content)
 export async function POST(request: NextRequest) {
   try {

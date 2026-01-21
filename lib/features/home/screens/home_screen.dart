@@ -35,11 +35,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Minimal logo
-              Center(
-                child: _OceanInsightIcon(size: 44),
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               _buildHeader(context),
               const SizedBox(height: 32),
               const MoodCheckCard(),
@@ -495,6 +491,7 @@ class _SettingsTile extends StatelessWidget {
     final colours = context.colours;
     
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
