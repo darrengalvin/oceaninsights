@@ -209,6 +209,8 @@ class _TopicCard extends StatelessWidget {
           );
         },
         borderRadius: BorderRadius.circular(12),
+        splashColor: colours.accent.withOpacity(0.2),
+        highlightColor: colours.accent.withOpacity(0.1),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
