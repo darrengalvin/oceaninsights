@@ -200,7 +200,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
                     
                     // Tab Content
                     SizedBox(
-                      height: 420,
+                      height: 400,
                       child: TabBarView(
                         controller: _tabController,
                         children: [
@@ -388,7 +388,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
   }
 
   Widget _buildOneTimeOptions() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,7 +417,7 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> with SingleTick
   }
 
   Widget _buildSubscriptionOptions() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
