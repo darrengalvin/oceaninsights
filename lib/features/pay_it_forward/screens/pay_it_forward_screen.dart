@@ -396,10 +396,12 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
               border: Border.all(
                 color: isSelected
                     ? const Color(0xFF4A9B8E)
-                    : (option.isRecommended
-                        ? const Color(0xFF4A9B8E)
-                        : Colors.white.withOpacity(0.1)),
-                width: isSelected || option.isRecommended ? 2 : 1,
+                    : (_selectedProductId != null
+                        ? Colors.white.withOpacity(0.1)
+                        : (option.isRecommended
+                            ? const Color(0xFF4A9B8E)
+                            : Colors.white.withOpacity(0.1))),
+                width: isSelected ? 2 : (option.isRecommended && _selectedProductId == null ? 2 : 1),
               ),
             ),
             child: Column(
