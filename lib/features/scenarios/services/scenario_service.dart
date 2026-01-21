@@ -77,23 +77,30 @@ class ScenarioService extends ChangeNotifier {
   }
 
   /// Sync scenarios from Supabase (when online)
-  Future<bool> syncScenarios({bool force = false}) async {
+  Future<bool> syncScenarios() async {
     try {
       debugPrint('🔄 Syncing scenarios from Supabase...');
 
-      // Check if we need to sync
-      final localVersion = _getLocalSyncVersion();
-      final remoteVersion = await _getRemoteSyncVersion();
+      // Check when we last synced
+      final lastSyncTime = _getLastSyncTime();
+      final now = DateTime.now();
+      final timeSinceSync = now.difference(lastSyncTime);
 
-      debugPrint('📊 Sync versions: local=$localVersion, remote=$remoteVersion');
+      // Get remote scenario count to detect changes
+      final remoteCount = await _getRemoteScenarioCount();
+      final localCount = getAllScenarios().length;
 
-      if (!force && localVersion >= remoteVersion) {
-        debugPrint('✅ Scenarios already up to date (v$localVersion)');
+      debugPrint('📊 Scenarios: local=$localCount, remote=$remoteCount, last sync=${timeSinceSync.inMinutes}m ago');
+
+      // Sync if:
+      // 1. More content on server
+      // 2. First time (no local content)
+      // 3. Been more than 6 hours since last sync
+      if (remoteCount > localCount || localCount == 0 || timeSinceSync.inHours >= 6) {
+        debugPrint('🔄 Syncing: ${remoteCount - localCount} new items or scheduled refresh');
+      } else {
+        debugPrint('✅ Content up to date ($localCount scenarios)');
         return true;
-      }
-      
-      if (force) {
-        debugPrint('🔄 Force sync requested, bypassing version check');
       }
 
       // Fetch content packs
@@ -147,10 +154,11 @@ class ScenarioService extends ChangeNotifier {
       await _saveScenariosLocally(scenarios);
       await _saveProtocolsLocally(protocols);
 
-      // Update sync version
-      _setLocalSyncVersion(remoteVersion);
+      // Update last sync time
+      _setLastSyncTime(DateTime.now());
 
       debugPrint('✅ Synced ${scenarios.length} scenarios, ${protocols.length} protocols');
+      notifyListeners(); // Notify UI to refresh
       return true;
     } catch (e) {
       debugPrint('❌ Error syncing scenarios: $e');
@@ -327,25 +335,29 @@ class ScenarioService extends ChangeNotifier {
     }
   }
 
-  int _getLocalSyncVersion() {
+  DateTime _getLastSyncTime() {
     final box = Hive.box(_scenariosBox);
-    return box.get(_syncMetaKey, defaultValue: 0) as int;
+    final timestamp = box.get(_syncMetaKey) as String?;
+    if (timestamp == null) {
+      return DateTime(2000); // Very old date = needs sync
+    }
+    return DateTime.parse(timestamp);
   }
 
-  void _setLocalSyncVersion(int version) {
+  void _setLastSyncTime(DateTime time) {
     final box = Hive.box(_scenariosBox);
-    box.put(_syncMetaKey, version);
+    box.put(_syncMetaKey, time.toIso8601String());
   }
 
-  Future<int> _getRemoteSyncVersion() async {
+  Future<int> _getRemoteScenarioCount() async {
     try {
       final response = await _supabase
-          .from('scenario_sync_metadata')
-          .select('version')
-          .single();
-      return response['version'] as int;
+          .from('scenarios')
+          .select('id', const FetchOptions(count: CountOption.exact))
+          .eq('published', true);
+      return response.count ?? 0;
     } catch (e) {
-      debugPrint('Error getting remote sync version: $e');
+      debugPrint('⚠️ Error getting remote count: $e');
       return 0;
     }
   }
