@@ -13,6 +13,7 @@ export default function ScenariosPage() {
   const [generationResult, setGenerationResult] = useState<{ success: boolean; message: string } | null>(null)
   const [filter, setFilter] = useState<'all' | 'new' | 'published' | 'draft'>('all')
   const [bulkPublishing, setBulkPublishing] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetchScenarios()
@@ -94,12 +95,66 @@ export default function ScenariosPage() {
       )
 
       alert(`✅ Published ${draftScenarios.length} scenarios!`)
+      setSelectedIds(new Set())
       fetchScenarios()
     } catch (error) {
       console.error('Bulk publish error:', error)
       alert('❌ Failed to publish some scenarios')
     } finally {
       setBulkPublishing(false)
+    }
+  }
+
+  const handlePublishSelected = async () => {
+    if (selectedIds.size === 0) {
+      alert('No scenarios selected!')
+      return
+    }
+
+    if (!confirm(`Publish ${selectedIds.size} selected scenario(s)?`)) {
+      return
+    }
+
+    setBulkPublishing(true)
+
+    try {
+      await Promise.all(
+        Array.from(selectedIds).map(id =>
+          fetch(`/api/scenarios/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ published: true })
+          })
+        )
+      )
+
+      alert(`✅ Published ${selectedIds.size} scenarios!`)
+      setSelectedIds(new Set())
+      fetchScenarios()
+    } catch (error) {
+      console.error('Publish selected error:', error)
+      alert('❌ Failed to publish some scenarios')
+    } finally {
+      setBulkPublishing(false)
+    }
+  }
+
+  const toggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds)
+    if (newSelected.has(id)) {
+      newSelected.delete(id)
+    } else {
+      newSelected.add(id)
+    }
+    setSelectedIds(newSelected)
+  }
+
+  const toggleSelectAll = () => {
+    const draftScenarios = filteredScenarios.filter((s: any) => !s.published)
+    if (selectedIds.size === draftScenarios.length && draftScenarios.length > 0) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(draftScenarios.map((s: any) => s.id)))
     }
   }
 
@@ -170,7 +225,26 @@ export default function ScenariosPage() {
           <h1 className="text-3xl font-bold text-gray-900">Decision Training Scenarios</h1>
           <p className="text-gray-600 mt-1">Manage workplace scenario training content</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
+          {selectedIds.size > 0 && (
+            <button
+              onClick={handlePublishSelected}
+              disabled={bulkPublishing}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            >
+              {bulkPublishing ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  Publish Selected ({selectedIds.size})
+                </>
+              )}
+            </button>
+          )}
           {scenarios.filter(s => !s.published).length > 0 && (
             <button
               onClick={handleBulkPublish}
@@ -382,6 +456,17 @@ export default function ScenariosPage() {
             <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-6 py-3 text-left">
+                  <input
+                    type="checkbox"
+                    checked={
+                      filteredScenarios.filter((s: any) => !s.published).length > 0 &&
+                      selectedIds.size === filteredScenarios.filter((s: any) => !s.published).length
+                    }
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 text-ocean-600 bg-gray-100 border-gray-300 rounded focus:ring-ocean-500"
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Scenario
                 </th>
@@ -405,6 +490,16 @@ export default function ScenariosPage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredScenarios?.map((scenario: any) => (
                 <tr key={scenario.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    {!scenario.published && (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(scenario.id)}
+                        onChange={() => toggleSelect(scenario.id)}
+                        className="w-4 h-4 text-ocean-600 bg-gray-100 border-gray-300 rounded focus:ring-ocean-500"
+                      />
+                    )}
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div className="text-sm font-medium text-gray-900">{scenario.title}</div>
@@ -480,7 +575,15 @@ export default function ScenariosPage() {
         <div className="md:hidden space-y-4">
           {filteredScenarios?.map((scenario: any) => (
             <div key={scenario.id} className="bg-white rounded-lg shadow p-4">
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start gap-3 mb-3">
+                {!scenario.published && (
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(scenario.id)}
+                    onChange={() => toggleSelect(scenario.id)}
+                    className="w-5 h-5 mt-1 text-ocean-600 bg-gray-100 border-gray-300 rounded focus:ring-ocean-500"
+                  />
+                )}
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="font-semibold text-gray-900">{scenario.title}</h3>
