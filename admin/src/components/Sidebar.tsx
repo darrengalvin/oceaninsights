@@ -12,6 +12,7 @@ import {
   FileText,
   Menu,
   X,
+  Sparkles,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -78,6 +79,13 @@ export default function Sidebar() {
         <Link href="/protocols" className={linkClass('/protocols')} onClick={closeMobileMenu}>
           <FileText className="w-5 h-5" />
           Protocols
+        </Link>
+        
+        <div className="my-2 border-t border-gray-200" />
+        
+        <Link href="/rituals" className={linkClass('/rituals')} onClick={closeMobileMenu}>
+          <Sparkles className="w-5 h-5" />
+          Ritual Topics
         </Link>
         
         <div className="my-2 border-t border-gray-200" />
