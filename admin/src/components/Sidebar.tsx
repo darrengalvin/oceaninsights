@@ -13,6 +13,11 @@ import {
   Menu,
   X,
   Sparkles,
+  BarChart3,
+  CreditCard,
+  Home,
+  Target,
+  Settings2,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -20,8 +25,8 @@ export default function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   const isActive = (path: string) => {
-    if (path === '/') {
-      return pathname === '/'
+    if (path === '/admin') {
+      return pathname === '/admin'
     }
     return pathname.startsWith(path)
   }
@@ -37,62 +42,93 @@ export default function Sidebar() {
   const SidebarContent = () => (
     <>
       <div className="mb-8">
-        <Link href="/" onClick={closeMobileMenu}>
+        <Link href="/admin" onClick={closeMobileMenu}>
           <h1 className="text-xl font-bold text-ocean-700 cursor-pointer">Ocean Insight</h1>
           <p className="text-sm text-gray-500">Admin Panel</p>
         </Link>
       </div>
       
       <nav className="space-y-1">
-        <Link href="/" className={linkClass('/')} onClick={closeMobileMenu}>
+        <Link href="/" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg" onClick={closeMobileMenu}>
+          <Home className="w-5 h-5" />
+          Landing Page
+        </Link>
+        
+        <div className="my-2 border-t border-gray-200" />
+        
+        <Link href="/admin" className={linkClass('/admin')} onClick={closeMobileMenu}>
           <LayoutDashboard className="w-5 h-5" />
           Dashboard
         </Link>
         
-        <Link href="/content" className={linkClass('/content')} onClick={closeMobileMenu}>
+        <Link href="/admin/content" className={linkClass('/admin/content')} onClick={closeMobileMenu}>
           <BookOpen className="w-5 h-5" />
           Navigate Content
         </Link>
         
-        <Link href="/learn" className={linkClass('/learn')} onClick={closeMobileMenu}>
+        <Link href="/admin/learn" className={linkClass('/admin/learn')} onClick={closeMobileMenu}>
           <FileText className="w-5 h-5" />
           Learn Articles
         </Link>
         
-        <Link href="/domains" className={linkClass('/domains')} onClick={closeMobileMenu}>
+        <Link href="/admin/domains" className={linkClass('/admin/domains')} onClick={closeMobileMenu}>
           <Folders className="w-5 h-5" />
           Domains
         </Link>
         
-        <Link href="/journeys" className={linkClass('/journeys')} onClick={closeMobileMenu}>
+        <Link href="/admin/journeys" className={linkClass('/admin/journeys')} onClick={closeMobileMenu}>
           <Route className="w-5 h-5" />
           Journeys
         </Link>
         
         <div className="my-2 border-t border-gray-200" />
         
-        <Link href="/scenarios" className={linkClass('/scenarios')} onClick={closeMobileMenu}>
+        <Link href="/admin/scenarios" className={linkClass('/admin/scenarios')} onClick={closeMobileMenu}>
           <BookOpen className="w-5 h-5" />
           Scenarios
         </Link>
         
-        <Link href="/protocols" className={linkClass('/protocols')} onClick={closeMobileMenu}>
+        <Link href="/admin/protocols" className={linkClass('/admin/protocols')} onClick={closeMobileMenu}>
           <FileText className="w-5 h-5" />
           Protocols
         </Link>
         
         <div className="my-2 border-t border-gray-200" />
         
-        <Link href="/rituals" className={linkClass('/rituals')} onClick={closeMobileMenu}>
+        <Link href="/admin/rituals" className={linkClass('/admin/rituals')} onClick={closeMobileMenu}>
           <Sparkles className="w-5 h-5" />
           Ritual Topics
         </Link>
         
         <div className="my-2 border-t border-gray-200" />
         
-        <Link href="/import" className={linkClass('/import')} onClick={closeMobileMenu}>
+        <Link href="/admin/content-manager" className={linkClass('/admin/content-manager')} onClick={closeMobileMenu}>
+          <Settings2 className="w-5 h-5" />
+          Content Manager
+        </Link>
+        
+        <Link href="/admin/objectives" className={linkClass('/admin/objectives')} onClick={closeMobileMenu}>
+          <Target className="w-5 h-5" />
+          Mission Objectives
+        </Link>
+        
+        <div className="my-2 border-t border-gray-200" />
+        
+        <Link href="/admin/import" className={linkClass('/admin/import')} onClick={closeMobileMenu}>
           <Plus className="w-5 h-5" />
           Import from GPT
+        </Link>
+        
+        <div className="my-2 border-t border-gray-200" />
+        
+        <Link href="/admin/analytics" className={linkClass('/admin/analytics')} onClick={closeMobileMenu}>
+          <BarChart3 className="w-5 h-5" />
+          Analytics
+        </Link>
+        
+        <Link href="/admin/subscriptions" className={linkClass('/admin/subscriptions')} onClick={closeMobileMenu}>
+          <CreditCard className="w-5 h-5" />
+          Subscriptions
         </Link>
       </nav>
     </>
@@ -102,7 +138,7 @@ export default function Sidebar() {
     <>
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <Link href="/">
+        <Link href="/admin">
           <h1 className="text-lg font-bold text-ocean-700">Ocean Insight</h1>
         </Link>
         <button
