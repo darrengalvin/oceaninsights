@@ -18,20 +18,20 @@ export default function ContentManagerPage() {
   const [loading, setLoading] = useState(true);
 
   const contentTypes: Omit<ContentStats, 'count'>[] = [
-    { table: 'mission_objectives', label: 'Mission Objectives', icon: '🎯', href: '/admin/objectives', color: 'bg-green-50 border-green-200' },
-    { table: 'mood_reasons', label: 'Mood Reasons', icon: '😊', href: '/admin/content-manager/mood', color: 'bg-blue-50 border-blue-200' },
-    { table: 'daily_brief_objectives', label: 'Daily Brief Options', icon: '📋', href: '/admin/content-manager/daily-brief', color: 'bg-yellow-50 border-yellow-200' },
-    { table: 'aar_went_well_options', label: 'After Action Review', icon: '📝', href: '/admin/content-manager/aar', color: 'bg-purple-50 border-purple-200' },
-    { table: 'military_roles', label: 'Skills Translator', icon: '🎖️', href: '/admin/content-manager/skills', color: 'bg-red-50 border-red-200' },
-    { table: 'feelings', label: 'Big Feelings Toolkit', icon: '💭', href: '/admin/content-manager/feelings', color: 'bg-pink-50 border-pink-200' },
-    { table: 'quizzes', label: 'Quizzes', icon: '❓', href: '/admin/content-manager/quizzes', color: 'bg-indigo-50 border-indigo-200' },
-    { table: 'career_paths', label: 'Career Paths', icon: '🚀', href: '/admin/content-manager/careers', color: 'bg-orange-50 border-orange-200' },
-    { table: 'tip_categories', label: 'Tip Cards', icon: '💡', href: '/admin/content-manager/tips', color: 'bg-cyan-50 border-cyan-200' },
-    { table: 'checklist_templates', label: 'Checklists', icon: '✅', href: '/admin/content-manager/checklists', color: 'bg-emerald-50 border-emerald-200' },
-    { table: 'resource_categories', label: 'Resources', icon: '📚', href: '/admin/content-manager/resources', color: 'bg-violet-50 border-violet-200' },
-    { table: 'learning_styles', label: 'Learning & Study', icon: '📖', href: '/admin/content-manager/learning', color: 'bg-amber-50 border-amber-200' },
-    { table: 'affirmations', label: 'Affirmations', icon: '✨', href: '/admin/content-manager/affirmations', color: 'bg-rose-50 border-rose-200' },
-    { table: 'interest_categories', label: 'Interest Explorer', icon: '🎨', href: '/admin/content-manager/interests', color: 'bg-teal-50 border-teal-200' },
+    { table: 'mission_objectives', label: 'Mission Objectives', icon: '🎯', href: '/admin/objectives', color: 'bg-white border-gray-200' },
+    { table: 'mood_reasons', label: 'Mood Reasons', icon: '😊', href: '/admin/content-manager/mood', color: 'bg-white border-gray-200' },
+    { table: 'daily_brief_objectives', label: 'Daily Brief Options', icon: '📋', href: '/admin/content-manager/daily-brief', color: 'bg-white border-gray-200' },
+    { table: 'aar_went_well_options', label: 'After Action Review', icon: '📝', href: '/admin/content-manager/aar', color: 'bg-white border-gray-200' },
+    { table: 'military_roles', label: 'Skills Translator', icon: '🎖️', href: '/admin/content-manager/skills', color: 'bg-white border-gray-200' },
+    { table: 'feelings', label: 'Big Feelings Toolkit', icon: '💭', href: '/admin/content-manager/feelings', color: 'bg-white border-gray-200' },
+    { table: 'quizzes', label: 'Quizzes', icon: '❓', href: '/admin/content-manager/quizzes', color: 'bg-white border-gray-200' },
+    { table: 'career_paths', label: 'Career Paths', icon: '🚀', href: '/admin/content-manager/careers', color: 'bg-white border-gray-200' },
+    { table: 'tip_categories', label: 'Tip Cards', icon: '💡', href: '/admin/content-manager/tips', color: 'bg-white border-gray-200' },
+    { table: 'checklist_templates', label: 'Checklists', icon: '✅', href: '/admin/content-manager/checklists', color: 'bg-white border-gray-200' },
+    { table: 'resource_categories', label: 'Resources', icon: '📚', href: '/admin/content-manager/resources', color: 'bg-white border-gray-200' },
+    { table: 'learning_styles', label: 'Learning & Study', icon: '📖', href: '/admin/content-manager/learning', color: 'bg-white border-gray-200' },
+    { table: 'affirmations', label: 'Affirmations', icon: '✨', href: '/admin/content-manager/affirmations', color: 'bg-white border-gray-200' },
+    { table: 'interest_categories', label: 'Interest Explorer', icon: '🎨', href: '/admin/content-manager/interests', color: 'bg-white border-gray-200' },
   ];
 
   useEffect(() => {
@@ -85,25 +85,25 @@ export default function ContentManagerPage() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl p-4 text-white">
-          <div className="text-3xl font-bold">{totalItems}</div>
-          <div className="text-cyan-100 text-sm">Total Content Items</div>
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="text-2xl font-bold text-gray-900">{totalItems}</div>
+          <div className="text-gray-500 text-sm">Total Items</div>
         </div>
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white">
-          <div className="text-3xl font-bold">{stats.length}</div>
-          <div className="text-green-100 text-sm">Content Types</div>
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="text-2xl font-bold text-gray-900">{stats.length}</div>
+          <div className="text-gray-500 text-sm">Content Types</div>
         </div>
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-4 text-white">
-          <div className="text-3xl font-bold">
-            {stats.filter(s => s.label.includes('Military') || s.label.includes('Veteran')).reduce((sum, s) => sum + s.count, 0)}
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="text-2xl font-bold text-gray-900">
+            {stats.filter(s => s.label.includes('Skills') || s.label.includes('Mission') || s.label.includes('Action')).reduce((sum, s) => sum + s.count, 0)}
           </div>
-          <div className="text-purple-100 text-sm">Military/Veteran Items</div>
+          <div className="text-gray-500 text-sm">Military/Veteran</div>
         </div>
-        <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl p-4 text-white">
-          <div className="text-3xl font-bold">
-            {stats.filter(s => s.label.includes('Youth') || s.label.includes('Learning') || s.label.includes('Interest')).reduce((sum, s) => sum + s.count, 0)}
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="text-2xl font-bold text-gray-900">
+            {stats.filter(s => s.label.includes('Feelings') || s.label.includes('Learning') || s.label.includes('Interest') || s.label.includes('Career')).reduce((sum, s) => sum + s.count, 0)}
           </div>
-          <div className="text-pink-100 text-sm">Youth Items</div>
+          <div className="text-gray-500 text-sm">Youth</div>
         </div>
       </div>
 
@@ -153,76 +153,6 @@ export default function ContentManagerPage() {
         </p>
       </div>
 
-      {/* Content Categories Breakdown */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Content by Category</h2>
-        
-        <div className="space-y-6">
-          {/* User Experience */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <span className="w-3 h-3 bg-cyan-500 rounded-full"></span>
-              Core User Experience
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {stats.filter(s => ['Mission Objectives', 'Mood Reasons', 'Daily Brief Options', 'After Action Review'].includes(s.label)).map(s => (
-                <div key={s.table} className="text-sm">
-                  <span className="text-gray-900 font-medium">{s.label}</span>
-                  <span className="text-gray-500 ml-2">({s.count})</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Military/Veteran */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-              Military & Veteran
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {stats.filter(s => ['Skills Translator'].includes(s.label)).map(s => (
-                <div key={s.table} className="text-sm">
-                  <span className="text-gray-900 font-medium">{s.label}</span>
-                  <span className="text-gray-500 ml-2">({s.count})</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Youth */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <span className="w-3 h-3 bg-pink-500 rounded-full"></span>
-              Youth & Learning
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {stats.filter(s => ['Big Feelings Toolkit', 'Quizzes', 'Career Paths', 'Learning & Study', 'Interest Explorer'].includes(s.label)).map(s => (
-                <div key={s.table} className="text-sm">
-                  <span className="text-gray-900 font-medium">{s.label}</span>
-                  <span className="text-gray-500 ml-2">({s.count})</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* General Content */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
-              General Content
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {stats.filter(s => ['Tip Cards', 'Checklists', 'Resources', 'Affirmations'].includes(s.label)).map(s => (
-                <div key={s.table} className="text-sm">
-                  <span className="text-gray-900 font-medium">{s.label}</span>
-                  <span className="text-gray-500 ml-2">({s.count})</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
