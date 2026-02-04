@@ -73,7 +73,7 @@ class VeteranScreen extends StatelessWidget {
                         TipCard(title: 'Why Try New Things?', content: 'Military life often limited time for hobbies. Now you have the freedom to explore. Finding passions brings purpose and joy.', keyPoints: ['No more waiting', 'Low stakes - just try', 'It\'s about exploration']),
                         TipCard(title: 'Physical Activities', content: 'Many veterans thrive with physical challenges. Consider hiking, martial arts, CrossFit, or team sports.', keyPoints: ['Maintains fitness', 'Community aspect', 'Healthy competition']),
                         TipCard(title: 'Creative Pursuits', content: 'Art, music, writing, and woodworking can be therapeutic and fulfilling. Many veteran programs offer free classes.', keyPoints: ['Expression outlet', 'Often veteran-specific groups', 'No experience needed']),
-                        TipCard(title: 'Learning & Growth', content: 'Take classes in anything that interests you. Languages, cooking, technology, finance - GI Bill may cover some.', keyPoints: ['Community colleges', 'Online courses', 'Veteran discounts common']),
+                        TipCard(title: 'Learning & Growth', content: 'Take classes in anything that interests you. Languages, cooking, technology, finance - education benefits may cover some.', keyPoints: ['Community colleges', 'Online courses', 'Veteran discounts common']),
                       ],
                     )),
                   ),
@@ -142,7 +142,7 @@ class VeteranScreen extends StatelessWidget {
                       icon: Icons.fitness_center_outlined,
                       tips: const [
                         TipCard(title: 'Adjusting Your Fitness', content: 'Military PT is intense. You may need to adjust to a sustainable civilian routine. Focus on consistency over intensity.', keyPoints: ['Find what you enjoy', 'Recovery is important', 'Set realistic goals']),
-                        TipCard(title: 'Dealing with Injuries', content: 'Many veterans have service-related injuries. Work with VA or civilian providers to adapt workouts safely.', keyPoints: ['Don\'t push through pain', 'Consider physical therapy', 'Modify, don\'t quit']),
+                        TipCard(title: 'Dealing with Injuries', content: 'Many veterans have service-related injuries. Work with veteran healthcare or civilian providers to adapt workouts safely.', keyPoints: ['Don\'t push through pain', 'Consider physical therapy', 'Modify, don\'t quit']),
                         TipCard(title: 'Nutrition Basics', content: 'Without DFAC meals, you control your nutrition. Focus on whole foods, adequate protein, and hydration.', keyPoints: ['Protein with every meal', 'More vegetables', 'Limit processed foods']),
                         TipCard(title: 'Veteran Fitness Programs', content: 'Many programs offer discounts or free access to veterans. Check gym, CrossFit, and community programs.', keyPoints: ['YMCA veteran programs', 'Team Red White & Blue', 'Local veteran fitness groups']),
                       ],
@@ -192,8 +192,8 @@ class VeteranScreen extends StatelessWidget {
                       tips: const [
                         TipCard(title: 'What is Whole Health?', content: 'VA\'s Whole Health approach looks at your complete wellbeing - body, mind, and spirit - not just treating symptoms.', keyPoints: ['Patient-centered care', 'You set the goals', 'More than medications']),
                         TipCard(title: 'The 8 Areas', content: 'Whole Health covers 8 areas: sleep, nutrition, movement, relationships, spirit, environment, personal development, and mind-body.', keyPoints: ['All areas connected', 'Work on what matters to you', 'Small changes add up']),
-                        TipCard(title: 'Getting Started', content: 'Ask your VA primary care team about Whole Health. Take the Personal Health Inventory to identify your priorities.', keyPoints: ['Talk to your care team', 'Online resources available', 'Wellness coaching offered']),
-                        TipCard(title: 'Available Programs', content: 'VA offers yoga, tai chi, meditation, nutrition counseling, health coaching, and more - often at no cost.', keyPoints: ['Free to veterans', 'In-person and virtual', 'Community classes too']),
+                        TipCard(title: 'Getting Started', content: 'Ask your veteran healthcare team about holistic health approaches. Take a personal health inventory to identify your priorities.', keyPoints: ['Talk to your care team', 'Online resources available', 'Wellness coaching offered']),
+                        TipCard(title: 'Available Programs', content: 'Many veteran services offer yoga, tai chi, meditation, nutrition counseling, health coaching, and more - often at no cost.', keyPoints: ['Free to veterans', 'In-person and virtual', 'Community classes too']),
                       ],
                     )),
                   ),
@@ -217,7 +217,7 @@ class VeteranScreen extends StatelessWidget {
                       subtitle: 'Maximize your veteran benefits and income',
                       icon: Icons.attach_money_outlined,
                       tips: const [
-                        TipCard(title: 'Know Your Benefits', content: 'Many veterans don\'t use all their earned benefits. Review disability compensation, education, healthcare, and loan benefits.', keyPoints: ['Check your disability rating', 'GI Bill doesn\'t expire', 'VA healthcare is earned']),
+                        TipCard(title: 'Know Your Benefits', content: 'Many veterans don\'t use all their earned benefits. Review disability compensation, education, healthcare, and loan benefits available in your country.', keyPoints: ['Check your entitlements', 'Education benefits often available', 'Veteran healthcare is earned']),
                         TipCard(title: 'TSP Management', content: 'Your TSP is portable. You can leave it, roll it to IRA, or combine with new employer 401k. Consider long-term strategy.', keyPoints: ['Don\'t cash out - penalties!', 'Review allocation', 'Consider Roth conversion']),
                         TipCard(title: 'Tax Benefits', content: 'Veterans have specific tax advantages. Disability compensation is tax-free. Some states exempt military retirement from taxes.', keyPoints: ['Disability = tax-free', 'Check state benefits', 'Property tax exemptions possible']),
                         TipCard(title: 'Credit Building', content: 'Good credit opens doors. Check your credit report annually, dispute errors, and build positive history.', keyPoints: ['Free credit reports', 'SCRA protections may apply', 'Many veteran credit programs']),
@@ -226,7 +226,7 @@ class VeteranScreen extends StatelessWidget {
                   ),
                 ),
                 _VeteranItem(
-                  title: 'VA & DoD Benefits',
+                  title: 'Veteran Benefits',
                   subtitle: 'Tools to stay current and maximize your benefits',
                   onTap: () => Navigator.push(
                     context,
@@ -236,15 +236,15 @@ class VeteranScreen extends StatelessWidget {
                       icon: Icons.card_membership_outlined,
                       categories: const [
                         ResourceCategory(title: 'Healthcare', icon: Icons.local_hospital, resources: [
-                          ResourceItem(title: 'VA Healthcare', subtitle: 'Medical coverage', icon: Icons.health_and_safety, description: 'Comprehensive healthcare for enrolled veterans. Apply at va.gov.'),
-                          ResourceItem(title: 'Dental & Vision', subtitle: 'Additional coverage', icon: Icons.visibility, description: 'Dental through VA insurance program. Vision care for service-connected conditions.'),
+                          ResourceItem(title: 'Veteran Healthcare', subtitle: 'Medical coverage', icon: Icons.health_and_safety, description: 'Comprehensive healthcare for enrolled veterans. Check your government veteran services portal.'),
+                          ResourceItem(title: 'Dental & Vision', subtitle: 'Additional coverage', icon: Icons.visibility, description: 'Check what dental and vision coverage is available through your veteran services.'),
                         ]),
                         ResourceCategory(title: 'Education', icon: Icons.school, resources: [
-                          ResourceItem(title: 'GI Bill', subtitle: 'Education benefits', icon: Icons.school, description: 'Up to 36 months of education benefits. Use for college, trade school, or apprenticeships.'),
+                          ResourceItem(title: 'Education Benefits', subtitle: 'Learning support', icon: Icons.school, description: 'Many countries offer education benefits for veterans. Use for college, trade school, or apprenticeships.'),
                           ResourceItem(title: 'Voc Rehab', subtitle: 'Career training', icon: Icons.work, description: 'VR&E (Chapter 31) for service-connected veterans seeking employment.'),
                         ]),
                         ResourceCategory(title: 'Financial', icon: Icons.attach_money, resources: [
-                          ResourceItem(title: 'VA Home Loans', subtitle: 'No down payment', icon: Icons.home, description: 'VA-backed loans with no down payment requirement and competitive rates.'),
+                          ResourceItem(title: 'Home Loan Benefits', subtitle: 'Housing support', icon: Icons.home, description: 'Many countries offer veteran home loan programs with favorable terms. Check your local veteran services.'),
                           ResourceItem(title: 'Disability Compensation', subtitle: 'Monthly payments', icon: Icons.payments, description: 'Tax-free monthly payments for service-connected conditions.'),
                         ]),
                       ],
@@ -263,7 +263,7 @@ class VeteranScreen extends StatelessWidget {
                       tips: const [
                         TipCard(title: 'Military Pension', content: 'If you served 20+ years, your pension is guaranteed income for life. Understand your options for survivor benefits.', keyPoints: ['Survivor Benefit Plan options', 'COLA adjustments', 'Taxable in most states']),
                         TipCard(title: 'TSP Options', content: 'Your TSP can stay where it is, roll to IRA, or combine with new employer plan. Consider fees and investment options.', keyPoints: ['TSP has very low fees', 'IRAs offer more flexibility', 'Don\'t cash out early']),
-                        TipCard(title: 'VA Pension', content: 'Low-income wartime veterans may qualify for VA Pension. Separate from disability compensation.', keyPoints: ['Income-based', 'Wartime service required', 'Aid & Attendance add-on']),
+                        TipCard(title: 'Veteran Pension', content: 'Low-income wartime veterans may qualify for pension benefits. Separate from disability compensation.', keyPoints: ['Income-based', 'Wartime service often required', 'Additional support may be available']),
                         TipCard(title: 'Estate Planning', content: 'Ensure your wishes are documented. Create or update will, designate beneficiaries, and consider trust options.', keyPoints: ['Update beneficiaries', 'Power of attorney', 'Healthcare directives']),
                       ],
                     )),
@@ -385,7 +385,7 @@ class VeteranScreen extends StatelessWidget {
                             icon: Icons.supervisor_account_outlined,
                             categories: const [
                               ResourceCategory(title: 'Programs', icon: Icons.people, resources: [
-                                ResourceItem(title: 'American Corporate Partners', subtitle: 'Career mentoring', icon: Icons.work, description: 'Connect with corporate mentors for career guidance.'),
+                                ResourceItem(title: 'Corporate Mentoring', subtitle: 'Career mentoring', icon: Icons.work, description: 'Connect with corporate mentors for career guidance. Many organizations match veterans with industry professionals.'),
                                 ResourceItem(title: 'Veterati', subtitle: 'Veteran-to-veteran', icon: Icons.phone, description: 'Phone-based mentoring connecting veterans across the country.'),
                               ]),
                             ],
@@ -404,7 +404,7 @@ class VeteranScreen extends StatelessWidget {
                             tips: const [
                               TipCard(title: 'Recognize the Signs', content: 'Isolation, substance use, hopelessness, anger, and neglecting responsibilities can indicate a veteran is struggling.', keyPoints: ['Trust your instincts', 'Don\'t ignore warning signs', 'Better to reach out than not']),
                               TipCard(title: 'How to Approach', content: 'Be direct but caring. Express concern without judgment. Offer to help, not to fix.', keyPoints: ['Check in regularly', 'Listen more than talk', 'Be patient']),
-                              TipCard(title: 'Resources to Share', content: 'Veterans Crisis Line (988, Press 1), local Vet Centers, and peer support programs are good starting points.', keyPoints: ['Know the crisis line', 'Offer to make the call together', 'Follow up']),
+                              TipCard(title: 'Resources to Share', content: 'Your local veteran crisis line, veteran centres, and peer support programs are good starting points.', keyPoints: ['Know the crisis line', 'Offer to make the call together', 'Follow up']),
                             ],
                           )),
                         ),
@@ -428,8 +428,8 @@ class VeteranScreen extends StatelessWidget {
                             subtitle: 'Build skills in high-demand tech fields',
                             icon: Icons.computer_outlined,
                             categories: const [
-                              ResourceCategory(title: 'VA Programs', icon: Icons.school, resources: [
-                                ResourceItem(title: 'VET TEC', subtitle: 'Tuition-free tech training', icon: Icons.code, description: 'VA pays tuition for coding bootcamps and tech training. Get housing allowance too.', details: ['No GI Bill deduction', 'Housing allowance included', '150+ approved providers']),
+                              ResourceCategory(title: 'Veteran Programs', icon: Icons.school, resources: [
+                                ResourceItem(title: 'Tech Training Programs', subtitle: 'Tuition-free tech training', icon: Icons.code, description: 'Many veteran services offer funded tech bootcamps and training programs.', details: ['Check local veteran services', 'Living support often included', 'Many approved providers']),
                               ]),
                               ResourceCategory(title: 'Bootcamps', icon: Icons.laptop, resources: [
                                 ResourceItem(title: 'Coding Bootcamps', subtitle: 'Learn to code', icon: Icons.developer_mode, description: 'Intensive programs teaching web development, data science, and cybersecurity.'),
@@ -450,7 +450,7 @@ class VeteranScreen extends StatelessWidget {
                             icon: Icons.work_outline,
                             categories: const [
                               ResourceCategory(title: 'Job Boards', icon: Icons.search, resources: [
-                                ResourceItem(title: 'Hire Heroes USA', subtitle: 'Free job placement', icon: Icons.work, description: 'Free career coaching and job placement for veterans and spouses.'),
+                                ResourceItem(title: 'Veteran Job Placement', subtitle: 'Free job placement', icon: Icons.work, description: 'Free career coaching and job placement services for veterans and spouses available in many countries.'),
                                 ResourceItem(title: 'Military.com', subtitle: 'Job listings', icon: Icons.list, description: 'Large job board with veteran-friendly employer listings.'),
                               ]),
                             ],
@@ -534,7 +534,7 @@ class VeteranScreen extends StatelessWidget {
                               ChecklistCategory(title: 'Military-Specific', icon: Icons.military_tech, color: Colors.green, items: [
                                 ChecklistItem(title: 'SBP election reviewed'),
                                 ChecklistItem(title: 'DD-214 stored safely'),
-                                ChecklistItem(title: 'VA benefits documented'),
+                                ChecklistItem(title: 'Veteran benefits documented'),
                               ]),
                             ],
                           )),
@@ -550,8 +550,8 @@ class VeteranScreen extends StatelessWidget {
                             subtitle: 'Honoring service and sacrifice',
                             icon: Icons.flag_outlined,
                             tips: const [
-                              TipCard(title: 'National Cemeteries', content: 'Veterans are eligible for burial in VA national cemeteries at no cost. Includes headstone, opening/closing, and perpetual care.', keyPoints: ['Free to eligible veterans', 'Over 150 locations', 'Spouses eligible too']),
-                              TipCard(title: 'Memorial Benefits', content: 'Even if not buried in national cemetery, veterans may be eligible for headstone, marker, or medallion.', keyPoints: ['Apply at va.gov', 'No deadline', 'Shipping included']),
+                              TipCard(title: 'Military Cemeteries', content: 'Many countries offer veterans burial in military cemeteries at no cost. Often includes headstone, opening/closing, and perpetual care.', keyPoints: ['Free to eligible veterans', 'Multiple locations available', 'Family may be eligible too']),
+                              TipCard(title: 'Memorial Benefits', content: 'Even if not buried in military cemetery, veterans may be eligible for headstone, marker, or medallion through veteran services.', keyPoints: ['Apply through veteran services', 'No deadline typically', 'Shipping often included']),
                             ],
                           )),
                         ),
@@ -594,8 +594,8 @@ class VeteranScreen extends StatelessWidget {
                   ),
                 ),
                 _VeteranItem(
-                  title: 'Veterans Crisis Line',
-                  subtitle: 'Immediate support: 988 Press 1',
+                  title: 'Crisis Support Line',
+                  subtitle: 'Immediate support available 24/7',
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ContactHelpScreen()),

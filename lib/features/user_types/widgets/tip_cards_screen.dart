@@ -3,23 +3,47 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/content_sync_service.dart';
 
 /// Reusable swipeable tip cards screen (no typing)
+/// Can load tips from database using slug, or use provided tips
 class TipCardsScreen extends StatefulWidget {
   final String title;
   final String subtitle;
   final IconData icon;
   final Color? accentColor;
-  final List<TipCard> tips;
+  final List<TipCard>? tips;
+  final String? slug; // If provided, loads tips from database
   
   const TipCardsScreen({
     super.key,
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.tips,
+    this.tips,
     this.accentColor,
-  });
+    this.slug,
+  }) : assert(tips != null || slug != null, 'Either tips or slug must be provided');
+
+  /// Create from a category slug - loads tips from synced database
+  factory TipCardsScreen.fromSlug({
+    Key? key,
+    required String slug,
+    String? fallbackTitle,
+    String? fallbackSubtitle,
+    IconData fallbackIcon = Icons.lightbulb_outline,
+    Color? accentColor,
+  }) {
+    final category = ContentSyncService().getTipCategoryBySlug(slug);
+    return TipCardsScreen(
+      key: key,
+      title: category?.title ?? fallbackTitle ?? 'Tips',
+      subtitle: category?.subtitle ?? fallbackSubtitle ?? '',
+      icon: fallbackIcon,
+      slug: slug,
+      accentColor: accentColor,
+    );
+  }
 
   @override
   State<TipCardsScreen> createState() => _TipCardsScreenState();
@@ -29,6 +53,40 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
   final Set<int> _savedTips = {};
+  late List<TipCard> _tips;
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadTips();
+  }
+  
+  void _loadTips() {
+    if (widget.tips != null) {
+      _tips = widget.tips!;
+    } else if (widget.slug != null) {
+      // Load from database
+      final dbTips = ContentSyncService().getTipsBySlug(widget.slug!);
+      _tips = dbTips.map((t) => TipCard(
+        title: t.title,
+        content: t.content,
+        keyPoints: t.keyPoints,
+      )).toList();
+      
+      // If no database tips, show placeholder
+      if (_tips.isEmpty) {
+        _tips = [
+          const TipCard(
+            title: 'Content Coming Soon',
+            content: 'This content is being prepared and will be available shortly. Check back soon!',
+            keyPoints: ['Updates happen automatically', 'No app update needed', 'New content added regularly'],
+          ),
+        ];
+      }
+    } else {
+      _tips = [];
+    }
+  }
   
   @override
   void dispose() {
@@ -61,7 +119,7 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
             padding: const EdgeInsets.only(right: 16),
             child: Center(
               child: Text(
-                '${_currentIndex + 1}/${widget.tips.length}',
+                '${_currentIndex + 1}/${_tips.length}',
                 style: TextStyle(
                   color: colours.textMuted,
                   fontWeight: FontWeight.w500,
@@ -78,7 +136,7 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: LinearProgressIndicator(
-                value: (_currentIndex + 1) / widget.tips.length,
+                value: (_currentIndex + 1) / _tips.length,
                 backgroundColor: colours.border,
                 valueColor: AlwaysStoppedAnimation<Color>(accent),
                 borderRadius: BorderRadius.circular(4),
@@ -104,13 +162,13 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: widget.tips.length,
+                itemCount: _tips.length,
                 onPageChanged: (index) {
                   HapticFeedback.selectionClick();
                   setState(() => _currentIndex = index);
                 },
                 itemBuilder: (context, index) {
-                  final tip = widget.tips[index];
+                  final tip = _tips[index];
                   final isSaved = _savedTips.contains(index);
                   
                   return Padding(
@@ -288,7 +346,7 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
                   // Dots indicator
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: List.generate(widget.tips.length, (index) {
+                    children: List.generate(_tips.length, (index) {
                       final isActive = index == _currentIndex;
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 3),
@@ -308,7 +366,7 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.lightImpact();
-                      if (_currentIndex < widget.tips.length - 1) {
+                      if (_currentIndex < _tips.length - 1) {
                         _pageController.nextPage(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeOut,
@@ -320,12 +378,12 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                       decoration: BoxDecoration(
-                        color: _currentIndex == widget.tips.length - 1
+                        color: _currentIndex == _tips.length - 1
                             ? accent
                             : colours.cardLight,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: _currentIndex == widget.tips.length - 1
+                          color: _currentIndex == _tips.length - 1
                               ? accent
                               : colours.border,
                         ),
@@ -334,9 +392,9 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            _currentIndex == widget.tips.length - 1 ? 'Done' : 'Next',
+                            _currentIndex == _tips.length - 1 ? 'Done' : 'Next',
                             style: TextStyle(
-                              color: _currentIndex == widget.tips.length - 1
+                              color: _currentIndex == _tips.length - 1
                                   ? Colors.white
                                   : colours.textBright,
                               fontWeight: FontWeight.w600,
@@ -344,10 +402,10 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
                           ),
                           const SizedBox(width: 6),
                           Icon(
-                            _currentIndex == widget.tips.length - 1
+                            _currentIndex == _tips.length - 1
                                 ? Icons.check_rounded
                                 : Icons.arrow_forward_rounded,
-                            color: _currentIndex == widget.tips.length - 1
+                            color: _currentIndex == _tips.length - 1
                                 ? Colors.white
                                 : colours.textMuted,
                             size: 18,

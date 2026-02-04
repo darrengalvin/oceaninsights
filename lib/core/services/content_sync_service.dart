@@ -844,6 +844,23 @@ class ContentSyncService {
     }
   }
 
+  /// Get a tip category by its slug
+  TipCategory? getTipCategoryBySlug(String slug) {
+    final categories = getTipCategories();
+    try {
+      return categories.firstWhere((c) => c.slug == slug);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Get tips for a category slug
+  List<Tip> getTipsBySlug(String slug) {
+    final category = getTipCategoryBySlug(slug);
+    if (category == null) return [];
+    return getTips(categoryId: category.id);
+  }
+
   // ============================================================
   // QUIZZES
   // ============================================================

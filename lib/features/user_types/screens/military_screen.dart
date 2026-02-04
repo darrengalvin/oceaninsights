@@ -430,10 +430,10 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   subtitle: 'Managing dual roles as a Reservist',
                   icon: Icons.balance_outlined,
                   tips: const [
-                    TipCard(title: 'Communicate Early', content: 'Let your civilian employer know about drill schedules well in advance. Most are supportive when given proper notice.', keyPoints: ['Share annual drill calendar', 'Document in writing', 'Know your USERRA rights']),
+                    TipCard(title: 'Communicate Early', content: 'Let your civilian employer know about drill schedules well in advance. Most are supportive when given proper notice.', keyPoints: ['Share annual drill calendar', 'Document in writing', 'Know your legal protections']),
                     TipCard(title: 'Family Planning', content: 'Keep family in the loop. Share drill dates, discuss what happens during mobilization, and involve them in planning.', keyPoints: ['Mark all military dates on family calendar', 'Have backup childcare plans', 'Discuss financial implications']),
                     TipCard(title: 'Protect Your Time', content: 'Use drill weekends efficiently. When you\'re in civilian mode, be fully present there too.', keyPoints: ['Don\'t blur the lines', 'Set boundaries', 'Quality over quantity']),
-                    TipCard(title: 'When Things Conflict', content: 'Conflicts will happen. Prioritize based on what can\'t be moved, communicate honestly, and don\'t overcommit.', keyPoints: ['Military orders come first legally', 'But be flexible when possible', 'Build goodwill on both sides']),
+                    TipCard(title: 'When Things Conflict', content: 'Conflicts will happen. Prioritize based on what can\'t be moved, communicate honestly, and don\'t overcommit.', keyPoints: ['Military orders typically take priority', 'But be flexible when possible', 'Build goodwill on both sides']),
                   ],
                 )),
               ),
@@ -651,7 +651,7 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                     ChecklistCategory(title: 'Before You Leave', icon: Icons.schedule, color: Colors.blue, items: [
                       ChecklistItem(title: 'Research destination cost of living'),
                       ChecklistItem(title: 'Start apartment/house search'),
-                      ChecklistItem(title: 'Check VA home loan eligibility'),
+                      ChecklistItem(title: 'Check veteran home loan eligibility'),
                       ChecklistItem(title: 'Budget for deposits and moving costs'),
                     ]),
                     ChecklistCategory(title: 'Moving Process', icon: Icons.local_shipping, color: Colors.green, items: [
@@ -681,11 +681,11 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   icon: Icons.card_giftcard_outlined,
                   categories: const [
                     ResourceCategory(title: 'Healthcare', icon: Icons.local_hospital, resources: [
-                      ResourceItem(title: 'VA Healthcare', subtitle: 'Enrollment & eligibility', icon: Icons.health_and_safety, description: 'VA healthcare provides comprehensive services. Enroll at va.gov or your local VA.', details: ['Apply within 1 year of discharge', 'Bring DD-214', 'Priority based on service connection']),
-                      ResourceItem(title: 'TRICARE Transition', subtitle: 'Continued coverage options', icon: Icons.medical_services, description: 'TRICARE Continued Health Care Benefit Program covers you for 18-36 months after separation.'),
+                      ResourceItem(title: 'Veteran Healthcare', subtitle: 'Enrollment & eligibility', icon: Icons.health_and_safety, description: 'Veteran healthcare provides comprehensive services. Check your government veteran services for enrollment.', details: ['Apply soon after discharge', 'Bring service documents', 'Priority based on service connection']),
+                      ResourceItem(title: 'Transition Healthcare', subtitle: 'Continued coverage options', icon: Icons.medical_services, description: 'Many countries offer continued healthcare coverage for 12-36 months after separation.'),
                     ]),
                     ResourceCategory(title: 'Education', icon: Icons.school, resources: [
-                      ResourceItem(title: 'GI Bill', subtitle: 'Education benefits', icon: Icons.school, description: 'Post-9/11 GI Bill covers tuition, housing, and books. Apply at va.gov.', details: ['36 months of benefits', 'Housing allowance while enrolled', 'Can transfer to dependents']),
+                      ResourceItem(title: 'Education Benefits', subtitle: 'Learning support', icon: Icons.school, description: 'Many countries offer education benefits covering tuition, housing, and books. Check your veteran services.', details: ['Months of benefits vary', 'Housing allowance often included', 'May transfer to dependents']),
                       ResourceItem(title: 'VR&E', subtitle: 'Vocational Rehabilitation', icon: Icons.work, description: 'Vocational Rehabilitation helps service-connected veterans prepare for, find, and keep jobs.'),
                     ]),
                     ResourceCategory(title: 'Financial', icon: Icons.attach_money, resources: [
@@ -822,22 +822,17 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
               subtitle: 'Veteran-focused job hunting tips',
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => TipCardsScreen(
-                  title: 'Job Search',
-                  subtitle: 'Find the right civilian career',
-                  icon: Icons.search_outlined,
-                  tips: const [
-                    TipCard(title: 'Target Veteran-Friendly Companies', content: 'Many companies actively recruit veterans. Look for those with veteran hiring programs or veteran leadership.', keyPoints: ['Check "military friendly" lists', 'Look for veteran ERGs', 'Research company culture']),
-                    TipCard(title: 'Use Veteran Resources', content: 'Take advantage of veteran-specific job boards, career fairs, and placement services.', keyPoints: ['Hire Heroes USA', 'American Corporate Partners', 'VA employment services']),
-                    TipCard(title: 'Network Actively', content: 'Many jobs come through connections. Reach out to fellow veterans, attend events, and use LinkedIn.', keyPoints: ['Veterans hire veterans', 'Attend networking events', 'Be active on LinkedIn']),
-                    TipCard(title: 'Be Patient but Persistent', content: 'Finding the right fit takes time. Keep applying, keep networking, and don\'t settle for the first offer if it\'s not right.', keyPoints: ['Quality over speed', 'Learn from rejections', 'Keep improving']),
-                  ],
+                MaterialPageRoute(builder: (_) => TipCardsScreen.fromSlug(
+                  slug: 'job-search',
+                  fallbackTitle: 'Job Search',
+                  fallbackSubtitle: 'Find the right civilian career',
+                  fallbackIcon: Icons.search_outlined,
                 )),
               ),
             ),
             _MilitaryItem(
               title: 'Education Benefits',
-              subtitle: 'GI Bill and education resources',
+              subtitle: 'Education benefits and resources',
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => ResourceListScreen(
@@ -845,13 +840,13 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   subtitle: 'Your guide to education options',
                   icon: Icons.school_outlined,
                   categories: const [
-                    ResourceCategory(title: 'GI Bill', icon: Icons.school, resources: [
-                      ResourceItem(title: 'Post-9/11 GI Bill', subtitle: 'Full education benefit', icon: Icons.school, description: 'Covers tuition, housing allowance, and books/supplies for approved programs.', details: ['36 months of benefits', 'Housing allowance while enrolled', 'Up to \$1,000/year for books']),
-                      ResourceItem(title: 'Montgomery GI Bill', subtitle: 'Alternative option', icon: Icons.payments, description: 'Monthly benefit paid directly to you. Amount depends on contribution and service.'),
+                    ResourceCategory(title: 'Education Benefits', icon: Icons.school, resources: [
+                      ResourceItem(title: 'Full Education Benefit', subtitle: 'Comprehensive coverage', icon: Icons.school, description: 'Covers tuition, housing allowance, and books/supplies for approved programs.', details: ['Months of benefits vary by country', 'Housing allowance often included', 'Book allowance typically available']),
+                      ResourceItem(title: 'Alternative Options', subtitle: 'Other programs', icon: Icons.payments, description: 'Monthly benefit paid directly to you. Amount depends on contribution and service.'),
                     ]),
-                    ResourceCategory(title: 'Programs', icon: Icons.library_books, resources: [
-                      ResourceItem(title: 'VET TEC', subtitle: 'Tech training', icon: Icons.computer, description: 'Tuition-free training in high-demand tech fields like coding, data science, and IT.', details: ['No GI Bill deduction for tuition', 'Housing allowance included', 'Short-term programs']),
-                      ResourceItem(title: 'Apprenticeships', subtitle: 'Earn while you learn', icon: Icons.work, description: 'Use GI Bill housing allowance while doing paid apprenticeships.'),
+                    ResourceCategory(title: 'Training Programs', icon: Icons.library_books, resources: [
+                      ResourceItem(title: 'Tech Training', subtitle: 'Tech bootcamps', icon: Icons.computer, description: 'Tuition-free training in high-demand tech fields like coding, data science, and IT.', details: ['Often separate from education benefits', 'Housing allowance may be included', 'Short-term programs']),
+                      ResourceItem(title: 'Apprenticeships', subtitle: 'Earn while you learn', icon: Icons.work, description: 'Use veteran benefits while doing paid apprenticeships.'),
                     ]),
                   ],
                 )),
@@ -883,22 +878,22 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
           title: 'Wellbeing & Health',
           items: [
             _MilitaryItem(
-              title: 'VA Healthcare Navigation',
+              title: 'Veteran Healthcare Navigation',
               subtitle: 'Understanding your health benefits',
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => ResourceListScreen(
-                  title: 'VA Healthcare',
+                  title: 'Veteran Healthcare',
                   subtitle: 'Navigate your healthcare benefits',
                   icon: Icons.local_hospital_outlined,
                   categories: const [
                     ResourceCategory(title: 'Getting Started', icon: Icons.play_arrow, resources: [
-                      ResourceItem(title: 'Enrollment', subtitle: 'How to enroll in VA healthcare', icon: Icons.app_registration, description: 'Apply online at va.gov, by phone, or in person at your local VA.', details: ['Bring DD-214', 'Apply within 1 year for easiest enrollment', 'Priority groups determine eligibility']),
+                      ResourceItem(title: 'Enrollment', subtitle: 'How to enroll in veteran healthcare', icon: Icons.app_registration, description: 'Apply online, by phone, or in person at your local veteran services office.', details: ['Bring service documents', 'Apply soon after discharge for easiest enrollment', 'Priority groups may determine eligibility']),
                       ResourceItem(title: 'Your First Appointment', subtitle: 'What to expect', icon: Icons.calendar_today, description: 'Your first appointment will establish care and assess your health needs.', details: ['Bring medications list', 'Bring medical records', 'Be honest about symptoms']),
                     ]),
                     ResourceCategory(title: 'Services', icon: Icons.medical_services, resources: [
                       ResourceItem(title: 'Primary Care', subtitle: 'Regular health needs', icon: Icons.person, description: 'Your primary care team handles routine care, referrals, and ongoing health management.'),
-                      ResourceItem(title: 'Mental Health', subtitle: 'Counseling and support', icon: Icons.psychology, description: 'VA offers counseling, therapy, and medication management. Ask about Vet Centers for community-based care.'),
+                      ResourceItem(title: 'Mental Health', subtitle: 'Counseling and support', icon: Icons.psychology, description: 'Veteran services offer counseling, therapy, and medication management. Ask about community-based care options.'),
                       ResourceItem(title: 'Specialty Care', subtitle: 'Specialized treatment', icon: Icons.local_hospital, description: 'Access specialists for specific conditions through referrals from your primary care team.'),
                     ]),
                   ],
@@ -915,13 +910,13 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   subtitle: 'Support for your wellbeing',
                   icon: Icons.psychology_outlined,
                   categories: const [
-                    ResourceCategory(title: 'VA Services', icon: Icons.local_hospital, resources: [
-                      ResourceItem(title: 'VA Mental Health', subtitle: 'Comprehensive care', icon: Icons.psychology, description: 'VA provides therapy, counseling, and medication management. Covered under your VA healthcare.'),
+                    ResourceCategory(title: 'Veteran Services', icon: Icons.local_hospital, resources: [
+                      ResourceItem(title: 'Veteran Mental Health', subtitle: 'Comprehensive care', icon: Icons.psychology, description: 'Veteran services provide therapy, counseling, and medication management. Covered under your veteran healthcare.'),
                       ResourceItem(title: 'Vet Centers', subtitle: 'Community-based', icon: Icons.location_city, description: 'Vet Centers offer counseling in community settings. No enrollment required for combat veterans.', details: ['More informal setting', 'Peer counselors available', 'Family counseling too']),
                     ]),
                     ResourceCategory(title: 'Crisis Resources', icon: Icons.warning, resources: [
-                      ResourceItem(title: 'Veterans Crisis Line', subtitle: '988, Press 1', icon: Icons.phone, description: 'Free, confidential support 24/7. Call 988 and press 1, or text 838255.', details: ['Available 24/7', 'Trained counselors', 'Also chat at VeteransCrisisLine.net']),
-                      ResourceItem(title: 'Same Day Mental Health', subtitle: 'Urgent care option', icon: Icons.schedule, description: 'VA medical centers offer same-day mental health services for urgent needs.'),
+                      ResourceItem(title: 'Crisis Support', subtitle: 'Emergency help', icon: Icons.phone, description: 'Free, confidential support 24/7. Contact your local veteran crisis line or emergency services.', details: ['Available 24/7', 'Trained counselors', 'Chat and text options often available']),
+                      ResourceItem(title: 'Same Day Mental Health', subtitle: 'Urgent care option', icon: Icons.schedule, description: 'Many veteran medical centers offer same-day mental health services for urgent needs.'),
                     ]),
                   ],
                 )),
@@ -943,7 +938,7 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
               ),
             ),
             _MilitaryItem(
-              title: 'Veteran Crisis Line',
+              title: 'Crisis Support',
               subtitle: 'Immediate support when you need it',
               onTap: () => Navigator.push(
                 context,
