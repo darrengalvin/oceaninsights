@@ -28,7 +28,7 @@ class UIPreferencesService extends ChangeNotifier {
     _soundsEnabled = enabled;
     await _box?.put(_soundsEnabledKey, enabled);
     notifyListeners();
-    debugPrint('🔊 UI Sounds ${enabled ? 'enabled' : 'disabled'}');
+    debugPrint('🔊 All Sounds & Games ${enabled ? 'enabled' : 'disabled'}');
   }
 
   Future<void> toggleSounds() async {

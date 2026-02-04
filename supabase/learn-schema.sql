@@ -100,3 +100,5 @@ CREATE TRIGGER update_learn_article_content_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_learn_updated_at();
 
+
+

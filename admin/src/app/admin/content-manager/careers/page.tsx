@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface CareerPath {
@@ -50,7 +50,7 @@ export default function CareersContentPage() {
 
     const maxOrder = careers.reduce((max, c) => Math.max(max, c.sort_order), 0);
 
-    const { error } = await supabase.from('career_paths').insert({
+    const { error } = await supabaseAdmin.from('career_paths').insert({
       title: newCareer.title,
       emoji: newCareer.emoji || '💼',
       tagline: newCareer.tagline,
@@ -70,12 +70,12 @@ export default function CareersContentPage() {
 
   async function deleteCareer(id: string) {
     if (!confirm('Delete this career path?')) return;
-    await supabase.from('career_paths').delete().eq('id', id);
+    await supabaseAdmin.from('career_paths').delete().eq('id', id);
     fetchCareers();
   }
 
   async function toggleActive(id: string, current: boolean) {
-    await supabase.from('career_paths').update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from('career_paths').update({ is_active: !current }).eq('id', id);
     fetchCareers();
   }
 
@@ -108,7 +108,7 @@ export default function CareersContentPage() {
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
+          className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -118,10 +118,10 @@ export default function CareersContentPage() {
       </div>
 
       {/* Stats */}
-      <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl p-6 mb-6 text-white">
-        <div className="text-4xl font-bold">{careers.length}</div>
-        <div className="text-orange-100">Career paths available</div>
-        <div className="text-sm text-orange-200 mt-2">
+      <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        <div className="text-4xl font-bold text-gray-900">{careers.length}</div>
+        <div className="text-gray-500">Career paths available</div>
+        <div className="text-sm text-gray-400 mt-2">
           {careers.filter(c => c.is_active).length} active • {careers.filter(c => !c.is_active).length} inactive
         </div>
       </div>
@@ -197,7 +197,7 @@ export default function CareersContentPage() {
             <button
               onClick={addCareer}
               disabled={!newCareer.title.trim()}
-              className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-50"
+              className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 disabled:opacity-50"
             >
               Add Career
             </button>

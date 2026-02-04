@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 
 interface Objective {
   id: string;
@@ -43,8 +43,8 @@ export default function ObjectivesPage() {
     setLoading(true);
     try {
       const [objRes, catRes] = await Promise.all([
-        supabase.from('mission_objectives').select('*').order('objective_type').order('sort_order'),
-        supabase.from('objective_categories').select('*').order('sort_order'),
+        supabaseAdmin.from('mission_objectives').select('*').order('objective_type').order('sort_order'),
+        supabaseAdmin.from('objective_categories').select('*').order('sort_order'),
       ]);
 
       if (objRes.data) setObjectives(objRes.data);
@@ -62,7 +62,7 @@ export default function ObjectivesPage() {
       .filter(o => o.objective_type === newObjective.objective_type)
       .reduce((max, o) => Math.max(max, o.sort_order), 0);
 
-    const { error } = await supabase.from('mission_objectives').insert({
+    const { error } = await supabaseAdmin.from('mission_objectives').insert({
       ...newObjective,
       sort_order: maxOrder + 1,
       is_active: true,

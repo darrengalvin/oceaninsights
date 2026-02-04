@@ -19,11 +19,27 @@ import '../../profile/screens/tell_me_about_you_screen.dart';
 import '../../settings/screens/about_screen.dart';
 import '../../settings/screens/privacy_policy_screen.dart';
 import '../../settings/screens/contact_help_screen.dart';
+import '../../settings/screens/terms_of_service_screen.dart';
+import '../../settings/screens/support_screen.dart';
+import '../../settings/screens/data_management_screen.dart';
+import '../../settings/screens/notification_settings_screen.dart';
 import '../../navigate/screens/navigate_screen.dart';
 import '../widgets/mood_check_card.dart';
+import '../widgets/wavy_divider.dart';
+import '../widgets/daily_affirmation_card.dart';
+import '../../rituals/widgets/todays_rituals_card.dart';
 import '../../scenarios/screens/scenario_library_screen.dart';
 import '../../scenarios/screens/protocol_library_screen.dart';
 import '../../pay_it_forward/screens/pay_it_forward_screen.dart';
+import '../../games/zen_garden/screens/zen_garden_screen.dart';
+import '../../games/block_stacking/screens/block_stacking_screen.dart';
+import '../../games/memory_match/screens/memory_match_screen.dart';
+import '../../games/connect_four/screens/connect_four_screen.dart';
+import '../../games/tic_tac_toe/screens/tic_tac_toe_screen.dart';
+import '../../rituals/screens/topic_browser_screen.dart';
+import '../../user_types/screens/military_screen.dart';
+import '../../user_types/screens/veteran_screen.dart';
+import '../../user_types/screens/young_person_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -34,27 +50,46 @@ class HomeScreen extends StatelessWidget {
     
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              _buildHeader(context),
-              const SizedBox(height: 32),
-              const MoodCheckCard(),
-              const SizedBox(height: 32),
-              _buildQuickActions(context),
-              const SizedBox(height: 8),
-              // Divider
-              Divider(color: colours.border.withOpacity(0.5), height: 48),
-              _buildExploreSection(context),
-              const SizedBox(height: 8),
-              Divider(color: colours.border.withOpacity(0.5), height: 48),
-              _buildMoreSection(context),
-              const SizedBox(height: 32),
-            ],
-          ),
+        child: Column(
+          children: [
+            // Scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  const SizedBox(height: 16),
+                  _buildHeader(context),
+                  const SizedBox(height: 32),
+                  const MoodCheckCard(),
+                  const SizedBox(height: 16),
+                  const DailyAffirmationCard(),
+                  const SizedBox(height: 16),
+                  const TodaysRitualsCard(),
+                  const SizedBox(height: 32),
+                  _buildQuickActions(context),
+                    const SizedBox(height: 8),
+                    // Wavy Divider
+                    WavyDivider(color: colours.border),
+                    _buildGamesSection(context),
+                    const SizedBox(height: 8),
+                    WavyDivider(color: colours.border),
+                    _buildUserTypesSection(context),
+                    const SizedBox(height: 8),
+                    WavyDivider(color: colours.border),
+                    _buildExploreSection(context),
+                    const SizedBox(height: 8),
+                    WavyDivider(color: colours.border),
+                    _buildMoreSection(context),
+                    const SizedBox(height: 100), // Extra space for fixed bottom card
+                  ],
+                ),
+              ),
+            ),
+            // Fixed help card at bottom
+            _buildFixedHelpCard(context),
+          ],
         ),
       ),
     );
@@ -69,23 +104,11 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    userProvider.getGreeting(),
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'How are you feeling today?',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colours.textMuted,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'Hello, what brings you here today?',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             // Settings button - minimal
@@ -152,10 +175,130 @@ class HomeScreen extends StatelessWidget {
     );
   }
   
+  Widget _buildGamesSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            'Mindful Games',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.landscape_rounded,
+          title: 'Zen Garden',
+          subtitle: 'Draw patterns in the sand',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ZenGardenScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.view_in_ar_rounded,
+          title: 'Block Stacking',
+          subtitle: 'Stack blocks as high as you can',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BlockStackingScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.grid_on_rounded,
+          title: 'Memory Match',
+          subtitle: 'Find matching pairs to train your memory',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MemoryMatchScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.circle_outlined,
+          title: 'Connect Four',
+          subtitle: 'Drop discs to connect four in a row',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ConnectFourScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.tag_rounded,
+          title: 'Tic Tac Toe',
+          subtitle: 'Classic X and O strategy game',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TicTacToeScreen()),
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildUserTypesSection(BuildContext context) {
+    final colours = context.colours;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Military and Veteran side by side
+        Row(
+          children: [
+            Expanded(
+              child: _UserTypeCard(
+                icon: Icons.military_tech_rounded,
+                title: 'Military',
+                subtitle: 'Resources, guidance, and tools for active service members',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MilitaryScreen()),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _UserTypeCard(
+                icon: Icons.workspace_premium_rounded,
+                title: 'Veteran',
+                subtitle: 'Support, transition help, and wellbeing for veterans',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const VeteranScreen()),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Young Person
+        _FeatureRow(
+          icon: Icons.school_rounded,
+          title: 'Young Person',
+          subtitle: 'Life skills, guidance, and support for younger users',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const YoungPersonScreen()),
+          ),
+        ),
+      ],
+    );
+  }
+  
   Widget _buildExploreSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _FeatureRow(
+          icon: Icons.self_improvement_rounded,
+          title: 'Missions',
+          subtitle: 'Choose your daily focus areas',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TopicBrowserScreen()),
+          ),
+        ),
         _FeatureRow(
           icon: Icons.psychology_outlined,
           title: 'Decision Training',
@@ -233,8 +376,6 @@ class HomeScreen extends StatelessWidget {
   }
   
   Widget _buildMoreSection(BuildContext context) {
-    final colours = context.colours;
-    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -285,53 +426,11 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12),
-        // Prominent help card
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            HapticFeedback.lightImpact();
-            UISoundService().playClick();
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ContactHelpScreen()),
-            );
-          },
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colours.accent.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.support_agent_rounded,
-                  color: colours.accent,
-                  size: 22,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Need support? Contact for help',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: colours.accent,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: colours.accent,
-                  size: 16,
-                ),
-              ],
-            ),
-          ),
-        ),
         const SizedBox(height: 16),
-        // About and Privacy links
-        Row(
+        // Legal and Support links
+        Wrap(
+          spacing: 16,
+          runSpacing: 8,
           children: [
             _TextLink(
               label: 'About',
@@ -340,7 +439,6 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const AboutScreen()),
               ),
             ),
-            const SizedBox(width: 24),
             _TextLink(
               label: 'Privacy',
               onTap: () => Navigator.push(
@@ -348,9 +446,97 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
               ),
             ),
+            _TextLink(
+              label: 'Terms',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const TermsOfServiceScreen()),
+              ),
+            ),
+            _TextLink(
+              label: 'Support',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SupportScreen()),
+              ),
+            ),
+            _TextLink(
+              label: 'Your Data',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const DataManagementScreen()),
+              ),
+            ),
+            _TextLink(
+              label: 'Notifications',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NotificationSettingsScreen()),
+              ),
+            ),
           ],
         ),
       ],
+    );
+  }
+  
+  Widget _buildFixedHelpCard(BuildContext context) {
+    final colours = context.colours;
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: colours.background,
+        boxShadow: [
+          BoxShadow(
+            color: colours.border.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          UISoundService().playClick();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ContactHelpScreen()),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colours.accent.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.support_agent_rounded,
+                color: colours.accent,
+                size: 22,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Need support? Contact for help',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: colours.accent,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: colours.accent,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
   
@@ -398,8 +584,10 @@ class HomeScreen extends StatelessWidget {
             Consumer<UIPreferencesService>(
               builder: (context, prefs, _) => _SettingsSwitchTile(
                 icon: Icons.volume_up_rounded,
-                title: 'Navigation Sounds',
-                subtitle: prefs.soundsEnabled ? 'Click sounds enabled' : 'Click sounds disabled',
+                title: 'Sounds & Games',
+                subtitle: prefs.soundsEnabled 
+                    ? 'Navigation, games, and effects enabled' 
+                    : 'All sounds disabled',
                 value: prefs.soundsEnabled,
                 onChanged: (value) async {
                   await prefs.setSoundsEnabled(value);
@@ -458,6 +646,92 @@ class _QuickActionCard extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: colours.textBright,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _UserTypeCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  
+  const _UserTypeCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = context.colours;
+    
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        UISoundService().playClick();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(14),
+      splashColor: colours.accent.withOpacity(0.2),
+      highlightColor: colours.accent.withOpacity(0.1),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colours.cardLight,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: colours.border.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: colours.accent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: colours.accent,
+                size: 22,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: colours.textMuted,
+                height: 1.3,
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  color: colours.accent,
+                  size: 18,
+                ),
+              ],
             ),
           ],
         ),

@@ -11,3 +11,5 @@ COMMENT ON COLUMN content_details.understand_examples IS 'Real-world examples to
 COMMENT ON COLUMN content_details.grow_obstacles IS 'Common obstacles people might face when applying the grow steps';
 COMMENT ON COLUMN content_details.when_to_seek_help IS 'Guidance on when professional help is needed (for sensitive items)';
 
+
+

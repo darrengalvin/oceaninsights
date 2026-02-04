@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface ChecklistTemplate {
@@ -50,9 +50,9 @@ export default function ChecklistsContentPage() {
   async function fetchData() {
     setLoading(true);
     const [tempRes, secRes, itemRes] = await Promise.all([
-      supabase.from('checklist_templates').select('*').order('sort_order'),
-      supabase.from('checklist_sections').select('*').order('sort_order'),
-      supabase.from('checklist_items').select('*').order('sort_order'),
+      supabaseAdmin.from('checklist_templates').select('*').order('sort_order'),
+      supabaseAdmin.from('checklist_sections').select('*').order('sort_order'),
+      supabaseAdmin.from('checklist_items').select('*').order('sort_order'),
     ]);
 
     if (tempRes.data) setTemplates(tempRes.data);
@@ -65,7 +65,7 @@ export default function ChecklistsContentPage() {
     if (!newTemplate.title.trim()) return;
     const maxOrder = templates.reduce((max, t) => Math.max(max, t.sort_order), 0);
     
-    await supabase.from('checklist_templates').insert({
+    await supabaseAdmin.from('checklist_templates').insert({
       ...newTemplate,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -78,12 +78,12 @@ export default function ChecklistsContentPage() {
 
   async function deleteTemplate(id: string) {
     if (!confirm('Delete this checklist template and all its sections/items?')) return;
-    await supabase.from('checklist_templates').delete().eq('id', id);
+    await supabaseAdmin.from('checklist_templates').delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(id: string, current: boolean) {
-    await supabase.from('checklist_templates').update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from('checklist_templates').update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -110,7 +110,7 @@ export default function ChecklistsContentPage() {
           <h1 className="text-3xl font-bold text-gray-900">Checklists</h1>
           <p className="text-gray-600 mt-1">Interactive checklist templates</p>
         </div>
-        <button onClick={() => setShowAddTemplate(true)} className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">
+        <button onClick={() => setShowAddTemplate(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
           + Add Checklist
         </button>
       </div>
@@ -148,7 +148,7 @@ export default function ChecklistsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddTemplate(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addTemplate} className="px-4 py-2 bg-cyan-600 text-white rounded-lg">Add Template</button>
+            <button onClick={addTemplate} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Template</button>
           </div>
         </div>
       )}

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
+import '../../../core/theme/theme_options.dart';
+import '../../../core/services/ui_sound_service.dart';
 import '../services/iap_service.dart';
 
 class PayItForwardScreen extends StatefulWidget {
@@ -31,10 +33,11 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
   }
 
   Future<void> _handlePurchase(PurchaseOption option) async {
-    // Show selection
+    HapticFeedback.mediumImpact();
+    UISoundService().playClick();
+    
     setState(() => _selectedProductId = option.productId);
     
-    // Small delay to show selection feedback
     await Future.delayed(const Duration(milliseconds: 150));
     
     final success = await _iapService.purchase(
@@ -42,123 +45,122 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
       isSubscription: option.isSubscription,
     );
     
-    // Clear selection
     if (mounted) {
       setState(() => _selectedProductId = null);
       
       if (success) {
-        _showThankYouDialog(option.isSubscription);
+        UISoundService().playPerfect();
+        _showThankYouDialog();
       }
     }
   }
 
-  void _showThankYouDialog(bool isSubscription) {
+  void _showThankYouDialog() {
+    final colours = context.colours;
+    
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
-        backgroundColor: const Color(0xFF1A2332),
+        backgroundColor: colours.card,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Success Animation Icon
+              // Chain link icon
               Container(
-                width: 100,
-                height: 100,
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF4A9B8E).withOpacity(0.3),
-                      const Color(0xFF4A9B8E).withOpacity(0.1),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: colours.accent.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.verified,
-                  color: Color(0xFF4A9B8E),
-                  size: 60,
+                child: Icon(
+                  Icons.link_rounded,
+                  color: colours.accent,
+                  size: 40,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
+              
               Text(
-                'You\'re Now Covering Others',
-                style: GoogleFonts.inter(
-                  fontSize: 26,
+                'The Chain Continues',
+                style: TextStyle(
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: colours.textBright,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              
               Text(
-                'Every month, someone who needs this tool will get it - because of you.',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  color: Colors.white70,
+                'Because of you, someone who needs this will get it. A teenager on a tight budget. A veteran rebuilding. A family member in need.',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: colours.textLight,
                   height: 1.6,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
-              // Mission Value Statement
+              const SizedBox(height: 24),
+              
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4A9B8E).withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(16),
+                  color: colours.accent.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: const Color(0xFF4A9B8E).withOpacity(0.3),
-                    width: 1.5,
+                    color: colours.accent.withOpacity(0.3),
                   ),
                 ),
-                child: Column(
+                child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.groups_rounded,
-                      color: Color(0xFF4A9B8E),
-                      size: 32,
+                      color: colours.accent,
+                      size: 24,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '"No one gets left behind"',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF4A9B8E),
-                        fontStyle: FontStyle.italic,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'No one gets left behind.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colours.accent,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
+              
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4A9B8E),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
+                child: TextButton(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.of(context).pop();
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: colours.accent.withOpacity(0.1),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 0,
                   ),
                   child: Text(
                     'Continue',
-                    style: GoogleFonts.inter(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
+                      color: colours.accent,
                     ),
                   ),
                 ),
@@ -172,39 +174,35 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colours = context.colours;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1628),
+      backgroundColor: colours.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(Icons.close, color: colours.textBright),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.of(context).pop();
+          },
         ),
       ),
       body: SafeArea(
         child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF4A9B8E),
-                ),
+            ? Center(
+                child: CircularProgressIndicator(color: colours.accent),
               )
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    // Hero Section
-                    _buildHeroSection(),
+                    _buildHeroSection(colours),
                     const SizedBox(height: 32),
-                    
-                    // Monthly Support Options
-                    _buildSubscriptionOptions(),
-                    
-                    const SizedBox(height: 32),
-                    
-                    // Can't Pay Section
-                    _buildCantPaySection(),
-                    
+                    _buildSubscriptionOptions(colours),
+                    const SizedBox(height: 24),
+                    _buildCantPaySection(colours),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -213,95 +211,97 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
     );
   }
 
-  Widget _buildHeroSection() {
+  Widget _buildHeroSection(AppColours colours) {
     return Column(
       children: [
-        // Icon
+        // Chain icon
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                const Color(0xFF4A9B8E).withOpacity(0.2),
-                const Color(0xFF4A9B8E).withOpacity(0.05),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: colours.accent.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.volunteer_activism_rounded,
+          child: Icon(
+            Icons.link_rounded,
             size: 48,
-            color: Color(0xFF4A9B8E),
+            color: colours.accent,
           ),
         ),
         const SizedBox(height: 24),
         
-        // Title
+        // Title - The key message
         Text(
-          'Your Access is Free',
-          style: GoogleFonts.inter(
-            fontSize: 34,
+          'Someone Covered You',
+          style: TextStyle(
+            fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: colours.textBright,
             height: 1.2,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
         
-        // Subtitle
         Text(
-          'Someone before you covered your access.\nBut we can\'t keep running without you.',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            color: Colors.white70,
+          'Your access was paid forward by someone before you. Now the question is simple:',
+          style: TextStyle(
+            fontSize: 16,
+            color: colours.textLight,
             height: 1.6,
           ),
           textAlign: TextAlign.center,
         ),
+        const SizedBox(height: 20),
+        
+        // The Question
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+          decoration: BoxDecoration(
+            color: colours.accent.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: colours.accent.withOpacity(0.3),
+            ),
+          ),
+          child: Text(
+            'Will you keep the chain going?',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: colours.accent,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
         const SizedBox(height: 24),
         
-        // Reality Check Box
+        // The Why
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A2332),
+            color: colours.card,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFFFC857).withOpacity(0.4),
-              width: 1.5,
-            ),
+            border: Border.all(color: colours.border),
           ),
           child: Column(
             children: [
-              Text(
-                'The Reality:',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFFFFC857),
-                ),
+              Icon(
+                Icons.info_outline_rounded,
+                color: colours.textMuted,
+                size: 24,
               ),
               const SizedBox(height: 12),
               Text(
-                'This app costs money to run - servers, updates, content creation. If users don\'t contribute, it shuts down.',
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  color: Colors.white70,
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Monthly support covers someone\'s access - every month.',
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF4A9B8E),
-                  fontStyle: FontStyle.italic,
+                'This isn\'t a free app with optional donations.\n\n'
+                'It\'s an honesty system. Some people genuinely can\'t pay - '
+                'teenagers, those between jobs, families stretched thin. '
+                'They still deserve support.\n\n'
+                'Your contribution covers them.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: colours.textLight,
+                  height: 1.6,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -310,317 +310,276 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
         ),
         const SizedBox(height: 24),
         
-        // Visual Chain Indicator
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildChainLink('Them', const Color(0xFF4A9B8E)),
-            const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward, color: Colors.white38, size: 20),
-            const SizedBox(width: 8),
-            _buildChainLink('You', const Color(0xFFFFC857)),
-            const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward, color: Colors.white38, size: 20),
-            const SizedBox(width: 8),
-            _buildChainLink('Next', Colors.white38),
-          ],
+        // Visual Chain
+        _buildChainVisualization(colours),
+      ],
+    );
+  }
+
+  Widget _buildChainVisualization(AppColours colours) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildChainPerson(
+          colours, 
+          'Someone', 
+          Icons.person_rounded, 
+          colours.accent,
+          'paid for you',
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Icon(
+            Icons.arrow_forward_rounded,
+            color: colours.textMuted,
+            size: 20,
+          ),
+        ),
+        _buildChainPerson(
+          colours, 
+          'You', 
+          Icons.person_rounded, 
+          Colors.amber,
+          'pay for next',
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Icon(
+            Icons.arrow_forward_rounded,
+            color: colours.textMuted,
+            size: 20,
+          ),
+        ),
+        _buildChainPerson(
+          colours, 
+          'Next', 
+          Icons.person_outline_rounded, 
+          colours.textMuted,
+          'pays for...',
         ),
       ],
     );
   }
 
-  Widget _buildChainLink(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5), width: 1.5),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.inter(
-          color: color,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+  Widget _buildChainPerson(AppColours colours, String label, IconData icon, Color color, String subtitle) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            shape: BoxShape.circle,
+            border: Border.all(color: color.withOpacity(0.4)),
+          ),
+          child: Icon(icon, color: color, size: 20),
         ),
-      ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+        Text(
+          subtitle,
+          style: TextStyle(
+            fontSize: 10,
+            color: colours.textMuted,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildSubscriptionOptions() {
+  Widget _buildSubscriptionOptions(AppColours colours) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Choose Your Support',
-          style: GoogleFonts.inter(
-            fontSize: 24,
+          'Cover Someone',
+          style: TextStyle(
+            fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: colours.textBright,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         Text(
-          'Monthly support keeps the servers running and covers others automatically.',
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            color: Colors.white70,
-            height: 1.5,
+          'Monthly support covers someone new every month.',
+          style: TextStyle(
+            fontSize: 14,
+            color: colours.textMuted,
           ),
         ),
-        const SizedBox(height: 24),
-        ..._subscriptionOptions.map((option) => _buildPurchaseCard(option)),
+        const SizedBox(height: 20),
+        ..._subscriptionOptions.map((option) => _buildPurchaseCard(option, colours)),
       ],
     );
   }
 
-  Widget _buildPurchaseCard(PurchaseOption option) {
+  Widget _buildPurchaseCard(PurchaseOption option, AppColours colours) {
     final bool isSelected = _selectedProductId == option.productId;
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _handlePurchase(option),
+    return GestureDetector(
+      onTap: () => _handlePurchase(option),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: isSelected 
+              ? colours.accent.withOpacity(0.1)
+              : colours.card,
           borderRadius: BorderRadius.circular(16),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: isSelected 
-                  ? const Color(0xFF4A9B8E).withOpacity(0.2)
-                  : const Color(0xFF1A2332),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isSelected
-                    ? const Color(0xFF4A9B8E)
-                    : (_selectedProductId != null
-                        ? Colors.white.withOpacity(0.1)
-                        : (option.isRecommended
-                            ? const Color(0xFF4A9B8E)
-                            : Colors.white.withOpacity(0.1))),
-                width: isSelected ? 2 : (option.isRecommended && _selectedProductId == null ? 2 : 1),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (option.isRecommended)
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4A9B8E),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                option.isSubscription ? 'MOST IMPACT' : 'RECOMMENDED',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          Text(
-                            option.price,
-                            style: GoogleFonts.inter(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              height: 1,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            option.description,
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              color: Colors.white70,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      padding: const EdgeInsets.all(12),
+          border: Border.all(
+            color: isSelected
+                ? colours.accent
+                : option.isRecommended
+                    ? colours.accent.withOpacity(0.5)
+                    : colours.border,
+            width: isSelected || option.isRecommended ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (option.isRecommended)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFF4A9B8E)
-                            : const Color(0xFF4A9B8E).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
+                        color: colours.accent.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Icon(
-                        isSelected ? Icons.check : Icons.arrow_forward,
-                        color: isSelected 
-                            ? Colors.white 
-                            : const Color(0xFF4A9B8E),
-                        size: 24,
+                      child: Text(
+                        'MOST CHOSEN',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: colours.accent,
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-                if (option.isSubscription) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF4A9B8E).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                  Text(
+                    option.price,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: colours.textBright,
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.info_outline,
-                          color: Color(0xFF4A9B8E),
-                          size: 16,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Cancel anytime. No hidden fees.',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: Colors.white70,
-                            ),
-                          ),
-                        ),
-                      ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    option.description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: colours.textMuted,
                     ),
                   ),
                 ],
-              ],
+              ),
             ),
-          ),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? colours.accent
+                    : colours.accent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                isSelected ? Icons.check_rounded : Icons.arrow_forward_rounded,
+                color: isSelected ? colours.background : colours.accent,
+                size: 20,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCantPaySection() {
+  Widget _buildCantPaySection(AppColours colours) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF1A2332).withOpacity(0.8),
-            const Color(0xFF1A2332).withOpacity(0.4),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFFFFC857).withOpacity(0.3),
-          width: 1.5,
-        ),
+        color: colours.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colours.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFC857).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.handshake_rounded,
-                  color: Color(0xFFFFC857),
-                  size: 24,
-                ),
+              Icon(
+                Icons.volunteer_activism_rounded,
+                color: Colors.amber,
+                size: 24,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  'Can\'t Pay?',
-                  style: GoogleFonts.inter(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+              const SizedBox(width: 12),
+              Text(
+                'Can\'t Contribute Right Now?',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: colours.textBright,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
+          
           Text(
-            'No guilt. No drama.',
-            style: GoogleFonts.inter(
-              fontSize: 18,
-              color: const Color(0xFFFFC857),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'If you\'re between postings, transitioning, or just can\'t spare it - you\'re already in. Your access stays free.',
-            style: GoogleFonts.inter(
-              fontSize: 15,
-              color: Colors.white70,
+            'That\'s exactly why this system exists.\n\n'
+            'You\'re covered. Use the app. Get the support you need. '
+            'When you\'re in a better position, come back.',
+            style: TextStyle(
+              fontSize: 14,
+              color: colours.textLight,
               height: 1.6,
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'But here\'s the truth: if enough people can\'t pay, this stops working for everyone.',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: Colors.white60,
-              height: 1.5,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(height: 20),
+          
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF4A9B8E).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: colours.accent.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'What you can do instead:',
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF4A9B8E),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _buildHelpBullet('Tell someone who can contribute'),
-                _buildHelpBullet('Share it with units or crews'),
-                _buildHelpBullet('Leave a review to build trust'),
-                const SizedBox(height: 12),
-                Text(
-                  'Growth keeps this sustainable.',
-                  style: GoogleFonts.inter(
+                  'Other ways to help the chain:',
+                  style: TextStyle(
                     fontSize: 13,
-                    color: Colors.white60,
-                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w600,
+                    color: colours.accent,
                   ),
                 ),
+                const SizedBox(height: 10),
+                _buildHelpItem(colours, 'Tell someone who can contribute'),
+                _buildHelpItem(colours, 'Share with your unit or crew'),
+                _buildHelpItem(colours, 'Leave a review (builds trust)'),
               ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          Text(
+            'The chain only breaks if everyone takes and nobody gives.',
+            style: TextStyle(
+              fontSize: 13,
+              color: colours.textMuted,
+              fontStyle: FontStyle.italic,
             ),
           ),
         ],
@@ -628,26 +587,21 @@ class _PayItForwardScreenState extends State<PayItForwardScreen> {
     );
   }
 
-  Widget _buildHelpBullet(String text) {
+  Widget _buildHelpItem(AppColours colours, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.check_circle,
-            color: Color(0xFF4A9B8E),
-            size: 18,
+          Icon(Icons.check_circle_outline_rounded, 
+            color: colours.accent, 
+            size: 16,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: Colors.white70,
-                height: 1.4,
-              ),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 13,
+              color: colours.textLight,
             ),
           ),
         ],

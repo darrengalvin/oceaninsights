@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface MoodReason {
@@ -31,7 +31,7 @@ export default function MoodContentPage() {
 
   async function fetchReasons() {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('mood_reasons')
       .select('*')
       .order('mood_type')
@@ -48,7 +48,7 @@ export default function MoodContentPage() {
       .filter(r => r.mood_type === newReason.mood_type)
       .reduce((max, r) => Math.max(max, r.sort_order), 0);
 
-    const { error } = await supabase.from('mood_reasons').insert({
+    const { error } = await supabaseAdmin.from('mood_reasons').insert({
       ...newReason,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -62,7 +62,7 @@ export default function MoodContentPage() {
   }
 
   async function updateReason(id: string, updates: Partial<MoodReason>) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('mood_reasons')
       .update(updates)
       .eq('id', id);
@@ -75,7 +75,7 @@ export default function MoodContentPage() {
 
   async function deleteReason(id: string) {
     if (!confirm('Delete this mood reason?')) return;
-    await supabase.from('mood_reasons').delete().eq('id', id);
+    await supabaseAdmin.from('mood_reasons').delete().eq('id', id);
     fetchReasons();
   }
 
@@ -121,7 +121,7 @@ export default function MoodContentPage() {
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
+          className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -163,7 +163,7 @@ export default function MoodContentPage() {
             <button
               onClick={addReason}
               disabled={!newReason.text.trim()}
-              className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-50"
+              className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 disabled:opacity-50"
             >
               Add Reason
             </button>
@@ -205,7 +205,7 @@ export default function MoodContentPage() {
             onClick={() => setFilter(type)}
             className={`px-4 py-2 rounded-lg font-medium transition ${
               filter === type
-                ? 'bg-cyan-600 text-white'
+                ? 'bg-cyan-600'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -223,7 +223,7 @@ export default function MoodContentPage() {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className={`${moodColors[reason.mood_type].badge} text-white text-xs px-2 py-1 rounded-full`}>
+                <span className={`${moodColors[reason.mood_type].badge} text-xs px-2 py-1 rounded-full`}>
                   {reason.mood_type}
                 </span>
                 {editingId === reason.id ? (

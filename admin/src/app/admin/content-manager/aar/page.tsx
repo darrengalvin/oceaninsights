@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface AAROption {
@@ -20,6 +20,7 @@ export default function AARContentPage() {
   const [improve, setImprove] = useState<AAROption[]>([]);
   const [takeaway, setTakeaway] = useState<AAROption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newItem, setNewItem] = useState({ text: '', category: 'general' });
 
@@ -30,10 +31,15 @@ export default function AARContentPage() {
   async function fetchData() {
     setLoading(true);
     const [wwRes, impRes, takeRes] = await Promise.all([
-      supabase.from('aar_went_well_options').select('*').order('sort_order'),
-      supabase.from('aar_improve_options').select('*').order('sort_order'),
-      supabase.from('aar_takeaway_options').select('*').order('sort_order'),
+      supabaseAdmin.from('aar_went_well_options').select('*').order('sort_order'),
+      supabaseAdmin.from('aar_improve_options').select('*').order('sort_order'),
+      supabaseAdmin.from('aar_takeaway_options').select('*').order('sort_order'),
     ]);
+
+    // Log errors for debugging
+    if (wwRes.error) console.error('Fetch went_well error:', wwRes.error);
+    if (impRes.error) console.error('Fetch improve error:', impRes.error);
+    if (takeRes.error) console.error('Fetch takeaway error:', takeRes.error);
 
     if (wwRes.data) setWentWell(wwRes.data);
     if (impRes.data) setImprove(impRes.data);
@@ -58,19 +64,28 @@ export default function AARContentPage() {
   };
 
   async function addItem() {
-    if (!newItem.text.trim()) return;
+    if (!newItem.text.trim() || saving) return;
+    
+    // Immediately update UI
+    setSaving(true);
+    
     const table = getTable();
     const items = getItems();
     const maxOrder = items.reduce((max, i) => Math.max(max, i.sort_order), 0);
 
-    const { error } = await supabase.from(table).insert({
+    const { error } = await supabaseAdmin.from(table).insert({
       text: newItem.text,
       category: newItem.category,
       sort_order: maxOrder + 1,
       is_active: true,
     });
 
-    if (!error) {
+    setSaving(false);
+    
+    if (error) {
+      console.error('Add error:', error);
+      alert(`Error adding item: ${error.message}\n\nMake sure the database tables exist and SUPABASE_SERVICE_ROLE_KEY is set in Vercel.`);
+    } else {
       fetchData();
       setNewItem({ text: '', category: 'general' });
       setShowAddForm(false);
@@ -79,13 +94,35 @@ export default function AARContentPage() {
 
   async function deleteItem(id: string) {
     if (!confirm('Delete this item?')) return;
-    await supabase.from(getTable()).delete().eq('id', id);
-    fetchData();
+    
+    // Optimistic update - remove from UI immediately
+    const updateState = (items: AAROption[]) => items.filter(i => i.id !== id);
+    if (activeTab === 'went_well') setWentWell(updateState);
+    else if (activeTab === 'improve') setImprove(updateState);
+    else setTakeaway(updateState);
+    
+    // Then do the actual delete
+    const { error } = await supabaseAdmin.from(getTable()).delete().eq('id', id);
+    if (error) {
+      alert(`Error deleting: ${error.message}`);
+      fetchData(); // Restore on error
+    }
   }
 
   async function toggleActive(id: string, current: boolean) {
-    await supabase.from(getTable()).update({ is_active: !current }).eq('id', id);
-    fetchData();
+    // Optimistic update - toggle in UI immediately
+    const updateState = (items: AAROption[]) => 
+      items.map(i => i.id === id ? { ...i, is_active: !current } : i);
+    if (activeTab === 'went_well') setWentWell(updateState);
+    else if (activeTab === 'improve') setImprove(updateState);
+    else setTakeaway(updateState);
+    
+    // Then do the actual update
+    const { error } = await supabaseAdmin.from(getTable()).update({ is_active: !current }).eq('id', id);
+    if (error) {
+      alert(`Error updating: ${error.message}`);
+      fetchData(); // Restore on error
+    }
   }
 
   const tabs = [
@@ -116,7 +153,7 @@ export default function AARContentPage() {
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
+          className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -133,7 +170,7 @@ export default function AARContentPage() {
             onClick={() => { setActiveTab(tab.id); setShowAddForm(false); }}
             className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
               activeTab === tab.id
-                ? `bg-${tab.color}-600 text-white`
+                ? `bg-${tab.color}-600`
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
             style={activeTab === tab.id ? { backgroundColor: tab.color === 'green' ? '#16a34a' : tab.color === 'orange' ? '#ea580c' : '#2563eb' } : {}}
@@ -156,8 +193,22 @@ export default function AARContentPage() {
               placeholder="Enter option text..."
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500"
             />
-            <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addItem} disabled={!newItem.text.trim()} className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-50">Add</button>
+            <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-gray-600" disabled={saving}>Cancel</button>
+            <button 
+              onClick={addItem} 
+              disabled={!newItem.text.trim() || saving} 
+              className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 disabled:opacity-50 min-w-[80px]"
+            >
+              {saving ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Saving
+                </span>
+              ) : 'Add'}
+            </button>
           </div>
         </div>
       )}

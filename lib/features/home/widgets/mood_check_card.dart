@@ -12,88 +12,9 @@ class MoodCheckCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MoodProvider>(
       builder: (context, moodProvider, _) {
-        final todaysMood = moodProvider.getTodaysMood();
-        final streak = moodProvider.getCurrentStreak();
-        
-        if (todaysMood != null) {
-          return _buildMoodLogged(context, todaysMood, streak);
-        }
-        
         return _buildMoodSelector(context, moodProvider);
       },
     );
-  }
-  
-  Widget _buildMoodLogged(BuildContext context, MoodEntry entry, int streak) {
-    final colours = context.colours;
-    
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colours.cardLight,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: colours.accent.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              _getMoodIcon(entry.mood),
-              color: colours.accent,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Feeling ${entry.mood.label.toLowerCase()}',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  streak > 1 
-                      ? '$streak day streak' 
-                      : 'Checked in today',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colours.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.check_circle_rounded,
-            color: colours.success,
-            size: 22,
-          ),
-        ],
-      ),
-    );
-  }
-  
-  IconData _getMoodIcon(MoodLevel mood) {
-    switch (mood) {
-      case MoodLevel.excellent:
-        return Icons.sentiment_very_satisfied_rounded;
-      case MoodLevel.good:
-        return Icons.sentiment_satisfied_rounded;
-      case MoodLevel.okay:
-        return Icons.sentiment_neutral_rounded;
-      case MoodLevel.low:
-        return Icons.sentiment_dissatisfied_rounded;
-      case MoodLevel.struggling:
-        return Icons.sentiment_very_dissatisfied_rounded;
-    }
   }
   
   Widget _buildMoodSelector(BuildContext context, MoodProvider moodProvider) {
@@ -102,11 +23,29 @@ class MoodCheckCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'How are you feeling?',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'How are you feeling?',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Tap to get personalized support',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colours.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         Row(
@@ -119,11 +58,14 @@ class MoodCheckCard extends StatelessWidget {
                 child: _MoodButton(
                   mood: mood,
                   onTap: () {
-                    // Show response dialog, then add mood entry
+                    // Show response dialog with personalized actions
                     MoodResponseDialog.show(
                       context: context,
                       mood: mood,
-                      onComplete: () => moodProvider.addMoodEntry(mood),
+                      onComplete: () {
+                        // Log the mood entry for tracking purposes
+                        moodProvider.addMoodEntry(mood);
+                      },
                     );
                   },
                 ),
@@ -157,6 +99,10 @@ class _MoodButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: colours.cardLight,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: colours.border.withOpacity(0.3),
+            width: 1,
+          ),
         ),
         child: Column(
           children: [

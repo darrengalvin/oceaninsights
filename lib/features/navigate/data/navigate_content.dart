@@ -725,3 +725,5 @@ class NavigateContent {
   static List<LifeArea> get allAreas => LifeArea.values;
 }
 
+
+

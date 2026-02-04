@@ -282,3 +282,5 @@ COMMENT ON TABLE content_items IS 'Main content items - the tappable options use
 COMMENT ON TABLE content_details IS 'Deep content for each item - the actual guidance';
 COMMENT ON TABLE journeys IS 'Curated pathways through related content';
 
+
+

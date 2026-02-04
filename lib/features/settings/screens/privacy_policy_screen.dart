@@ -65,10 +65,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
               '• No personal data collection (name, email, phone)\n'
               '• No GPS or location tracking\n'
               '• No camera or microphone access\n'
-              '• No internet connection required\n'
               '• No advertisements\n'
-              '• No subscriptions or in-app purchases\n'
-              '• No data sharing with third parties',
+              '• No data sharing with third parties\n'
+              '• Optional Pay It Forward contributions (processed by Apple/Google)\n'
+              '• Internet used only for content sync (no personal data sent)',
             ),
             
             _buildSection(
@@ -80,9 +80,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              'One-Time Purchase',
-              'Ocean Insight is a one-time purchase of £24.99. '
-              'A portion of this goes to supporting mental health charities for serving personnel and veterans.',
+              'Pay It Forward Model',
+              'Ocean Insight uses a community "Pay It Forward" model. '
+              'Your access was covered by someone before you. Contributions help cover access for others who cannot afford it, '
+              'such as teenagers or those facing financial hardship.',
             ),
             
             _buildSection(
@@ -133,4 +134,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
     );
   }
 }
+
+
 

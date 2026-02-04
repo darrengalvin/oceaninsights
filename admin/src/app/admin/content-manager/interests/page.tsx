@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface InterestCategory {
@@ -41,8 +41,8 @@ export default function InterestsContentPage() {
   async function fetchData() {
     setLoading(true);
     const [catRes, actRes] = await Promise.all([
-      supabase.from('interest_categories').select('*').order('sort_order'),
-      supabase.from('interest_activities').select('*').order('sort_order'),
+      supabaseAdmin.from('interest_categories').select('*').order('sort_order'),
+      supabaseAdmin.from('interest_activities').select('*').order('sort_order'),
     ]);
 
     if (catRes.data) setCategories(catRes.data);
@@ -54,7 +54,7 @@ export default function InterestsContentPage() {
     if (!newCategory.name.trim()) return;
     const maxOrder = categories.reduce((max, c) => Math.max(max, c.sort_order), 0);
     
-    await supabase.from('interest_categories').insert({
+    await supabaseAdmin.from('interest_categories').insert({
       ...newCategory,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -69,7 +69,7 @@ export default function InterestsContentPage() {
     if (!newActivity.title.trim() || !newActivity.category_id) return;
     const maxOrder = activities.filter(a => a.category_id === newActivity.category_id).reduce((max, a) => Math.max(max, a.sort_order), 0);
     
-    await supabase.from('interest_activities').insert({
+    await supabaseAdmin.from('interest_activities').insert({
       ...newActivity,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -82,12 +82,12 @@ export default function InterestsContentPage() {
 
   async function deleteItem(table: string, id: string) {
     if (!confirm('Delete this item?')) return;
-    await supabase.from(table).delete().eq('id', id);
+    await supabaseAdmin.from(table).delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(table: string, id: string, current: boolean) {
-    await supabase.from(table).update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from(table).update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -118,20 +118,20 @@ export default function InterestsContentPage() {
           <p className="text-gray-600 mt-1">Interest categories and activities for youth</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">+ Category</button>
-          <button onClick={() => setShowAddActivity(true)} className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">+ Activity</button>
+          <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-teal-600 rounded-lg hover:bg-teal-700">+ Category</button>
+          <button onClick={() => setShowAddActivity(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">+ Activity</button>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl p-5 text-white">
-          <div className="text-3xl font-bold">{categories.length}</div>
-          <div className="text-teal-100">Interest Categories</div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="text-3xl font-bold text-gray-900">{categories.length}</div>
+          <div className="text-gray-500">Interest Categories</div>
         </div>
-        <div className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl p-5 text-white">
-          <div className="text-3xl font-bold">{activities.length}</div>
-          <div className="text-cyan-100">Activities</div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="text-3xl font-bold text-gray-900">{activities.length}</div>
+          <div className="text-gray-500">Activities</div>
         </div>
       </div>
 
@@ -147,7 +147,7 @@ export default function InterestsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addCategory} className="px-4 py-2 bg-teal-600 text-white rounded-lg">Add Category</button>
+            <button onClick={addCategory} className="px-4 py-2 bg-teal-600 rounded-lg">Add Category</button>
           </div>
         </div>
       )}
@@ -172,7 +172,7 @@ export default function InterestsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddActivity(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addActivity} className="px-4 py-2 bg-cyan-600 text-white rounded-lg">Add Activity</button>
+            <button onClick={addActivity} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Activity</button>
           </div>
         </div>
       )}

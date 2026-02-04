@@ -81,8 +81,8 @@ class AboutScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              'Supporting Charity',
-              'A portion of every purchase goes to support mental health charities helping serving personnel and veterans.',
+              'Pay It Forward',
+              'Your access was covered by someone before you. When you contribute, you cover access for someone who genuinely can\'t afford it - like a teenager needing support. This keeps mental health tools available to everyone.',
             ),
             
             _buildSection(
@@ -133,4 +133,6 @@ class AboutScreen extends StatelessWidget {
     );
   }
 }
+
+
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface Quiz {
@@ -56,10 +56,10 @@ export default function QuizzesContentPage() {
   async function fetchData() {
     setLoading(true);
     const [qzRes, qnRes, optRes, resRes] = await Promise.all([
-      supabase.from('quizzes').select('*').order('created_at'),
-      supabase.from('quiz_questions').select('*').order('sort_order'),
-      supabase.from('quiz_options').select('*').order('sort_order'),
-      supabase.from('quiz_results').select('*'),
+      supabaseAdmin.from('quizzes').select('*').order('created_at'),
+      supabaseAdmin.from('quiz_questions').select('*').order('sort_order'),
+      supabaseAdmin.from('quiz_options').select('*').order('sort_order'),
+      supabaseAdmin.from('quiz_results').select('*'),
     ]);
 
     if (qzRes.data) setQuizzes(qzRes.data);
@@ -72,7 +72,7 @@ export default function QuizzesContentPage() {
   async function addQuiz() {
     if (!newQuiz.title.trim() || !newQuiz.slug.trim()) return;
     
-    await supabase.from('quizzes').insert({
+    await supabaseAdmin.from('quizzes').insert({
       ...newQuiz,
       is_active: true,
     });
@@ -84,12 +84,12 @@ export default function QuizzesContentPage() {
 
   async function deleteQuiz(id: string) {
     if (!confirm('Delete this quiz and all its questions?')) return;
-    await supabase.from('quizzes').delete().eq('id', id);
+    await supabaseAdmin.from('quizzes').delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(id: string, current: boolean) {
-    await supabase.from('quizzes').update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from('quizzes').update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -117,22 +117,22 @@ export default function QuizzesContentPage() {
           <h1 className="text-3xl font-bold text-gray-900">Quizzes</h1>
           <p className="text-gray-600 mt-1">Interactive quizzes like "Who Am I?"</p>
         </div>
-        <button onClick={() => setShowAddQuiz(true)} className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">
+        <button onClick={() => setShowAddQuiz(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
           + Add Quiz
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-200">
+        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
           <div className="text-2xl font-bold text-indigo-700">{quizzes.length}</div>
           <div className="text-sm text-indigo-600">Quizzes</div>
         </div>
-        <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
+        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
           <div className="text-2xl font-bold text-purple-700">{questions.length}</div>
           <div className="text-sm text-purple-600">Questions</div>
         </div>
-        <div className="bg-pink-50 rounded-xl p-4 border border-pink-200">
+        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
           <div className="text-2xl font-bold text-pink-700">{options.length}</div>
           <div className="text-sm text-pink-600">Options</div>
         </div>
@@ -159,7 +159,7 @@ export default function QuizzesContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddQuiz(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addQuiz} className="px-4 py-2 bg-cyan-600 text-white rounded-lg">Add Quiz</button>
+            <button onClick={addQuiz} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Quiz</button>
           </div>
         </div>
       )}
@@ -180,7 +180,7 @@ export default function QuizzesContentPage() {
                 <p className="text-sm text-gray-500 mt-1">{quiz.description}</p>
                 <div className="flex gap-2 mt-2">
                   <span className="text-xs bg-gray-100 px-2 py-1 rounded">{quiz.slug}</span>
-                  <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{quiz.target_audience}</span>
+                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{quiz.target_audience}</span>
                 </div>
               </div>
               <div className="flex gap-1">

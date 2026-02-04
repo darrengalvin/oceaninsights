@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../core/theme/theme_options.dart';
+import 'breathing_loader_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   final Widget nextScreen;
@@ -69,14 +70,14 @@ class _SplashScreenState extends State<SplashScreen>
     
     _fadeController.forward();
     
-    // Navigate after splash duration
+    // Navigate to breathing loader after splash duration
     Future.delayed(const Duration(milliseconds: 3500), () {
       _fadeOutAudio();
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) => 
-                widget.nextScreen,
+                BreathingLoaderScreen(nextScreen: widget.nextScreen),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
@@ -163,6 +164,7 @@ class _SplashScreenState extends State<SplashScreen>
                     opacity: _textFadeAnimation.value,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Wave icon
                         Icon(
@@ -171,25 +173,33 @@ class _SplashScreenState extends State<SplashScreen>
                           color: colours.accent.withOpacity(0.8),
                         ),
                         const SizedBox(height: 24),
-                        // Title
-                        Text(
-                          'OCEAN INSIGHT',
-                          style: GoogleFonts.outfit(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w300,
-                            color: colours.textBright,
-                            letterSpacing: 12,
+                        // Title - wrapped in SizedBox with center alignment
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            'OCEAN INSIGHT',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.outfit(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w300,
+                              color: colours.textBright,
+                              letterSpacing: 12,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 12),
                         // Subtitle
-                        Text(
-                          'Dive Deep Within',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w300,
-                            color: colours.textMuted,
-                            letterSpacing: 2,
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            'Dive Deep Within',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,
+                              color: colours.textMuted,
+                              letterSpacing: 2,
+                            ),
                           ),
                         ),
                       ],

@@ -15,3 +15,5 @@ class SupabaseConfig {
   static const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlY2NsbXprenJ3c3J0b2trY2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MjQ0MjEsImV4cCI6MjA4NDUwMDQyMX0.S0Iskt-OzYc_CCTJBAOimYmvv5Ef9J8HupX2IRZwwAk';
 }
 
+
+

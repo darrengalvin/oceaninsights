@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface Feeling {
@@ -42,8 +42,8 @@ export default function FeelingsContentPage() {
   async function fetchData() {
     setLoading(true);
     const [feelRes, toolRes] = await Promise.all([
-      supabase.from('feelings').select('*').order('sort_order'),
-      supabase.from('coping_tools').select('*').order('sort_order'),
+      supabaseAdmin.from('feelings').select('*').order('sort_order'),
+      supabaseAdmin.from('coping_tools').select('*').order('sort_order'),
     ]);
 
     if (feelRes.data) setFeelings(feelRes.data);
@@ -55,7 +55,7 @@ export default function FeelingsContentPage() {
     if (!newFeeling.name.trim()) return;
     const maxOrder = feelings.reduce((max, f) => Math.max(max, f.sort_order), 0);
     
-    await supabase.from('feelings').insert({
+    await supabaseAdmin.from('feelings').insert({
       ...newFeeling,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -70,7 +70,7 @@ export default function FeelingsContentPage() {
     if (!newTool.title.trim() || !newTool.feeling_id) return;
     const maxOrder = tools.filter(t => t.feeling_id === newTool.feeling_id).reduce((max, t) => Math.max(max, t.sort_order), 0);
     
-    await supabase.from('coping_tools').insert({
+    await supabaseAdmin.from('coping_tools').insert({
       ...newTool,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -83,12 +83,12 @@ export default function FeelingsContentPage() {
 
   async function deleteItem(table: string, id: string) {
     if (!confirm('Delete this item?')) return;
-    await supabase.from(table).delete().eq('id', id);
+    await supabaseAdmin.from(table).delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(table: string, id: string, current: boolean) {
-    await supabase.from(table).update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from(table).update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -113,10 +113,10 @@ export default function FeelingsContentPage() {
           <p className="text-gray-600 mt-1">Feelings and coping tools for youth</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowAddFeeling(true)} className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">
+          <button onClick={() => setShowAddFeeling(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
             + Add Feeling
           </button>
-          <button onClick={() => setShowAddTool(true)} className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">
+          <button onClick={() => setShowAddTool(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
             + Add Coping Tool
           </button>
         </div>
@@ -124,13 +124,13 @@ export default function FeelingsContentPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl p-5 text-white">
-          <div className="text-3xl font-bold">{feelings.length}</div>
-          <div className="text-pink-100">Feelings</div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="text-3xl font-bold text-gray-900">{feelings.length}</div>
+          <div className="text-gray-500">Feelings</div>
         </div>
-        <div className="bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl p-5 text-white">
-          <div className="text-3xl font-bold">{tools.length}</div>
-          <div className="text-cyan-100">Coping Tools</div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="text-3xl font-bold text-gray-900">{tools.length}</div>
+          <div className="text-gray-500">Coping Tools</div>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export default function FeelingsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddFeeling(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addFeeling} className="px-4 py-2 bg-pink-600 text-white rounded-lg">Add Feeling</button>
+            <button onClick={addFeeling} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Feeling</button>
           </div>
         </div>
       )}
@@ -166,7 +166,7 @@ export default function FeelingsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddTool(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addTool} className="px-4 py-2 bg-cyan-600 text-white rounded-lg">Add Tool</button>
+            <button onClick={addTool} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Tool</button>
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface TipCategory {
@@ -44,8 +44,8 @@ export default function TipsContentPage() {
   async function fetchData() {
     setLoading(true);
     const [catRes, tipRes] = await Promise.all([
-      supabase.from('tip_categories').select('*').order('sort_order'),
-      supabase.from('tips').select('*').order('sort_order'),
+      supabaseAdmin.from('tip_categories').select('*').order('sort_order'),
+      supabaseAdmin.from('tips').select('*').order('sort_order'),
     ]);
 
     if (catRes.data) setCategories(catRes.data);
@@ -57,7 +57,7 @@ export default function TipsContentPage() {
     if (!newCategory.title.trim()) return;
     const maxOrder = categories.reduce((max, c) => Math.max(max, c.sort_order), 0);
     
-    await supabase.from('tip_categories').insert({
+    await supabaseAdmin.from('tip_categories').insert({
       ...newCategory,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -72,7 +72,7 @@ export default function TipsContentPage() {
     if (!newTip.title.trim() || !newTip.category_id) return;
     const maxOrder = tips.filter(t => t.category_id === newTip.category_id).reduce((max, t) => Math.max(max, t.sort_order), 0);
     
-    await supabase.from('tips').insert({
+    await supabaseAdmin.from('tips').insert({
       category_id: newTip.category_id,
       title: newTip.title,
       content: newTip.content,
@@ -88,12 +88,12 @@ export default function TipsContentPage() {
 
   async function deleteItem(table: string, id: string) {
     if (!confirm('Delete this item?')) return;
-    await supabase.from(table).delete().eq('id', id);
+    await supabaseAdmin.from(table).delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(table: string, id: string, current: boolean) {
-    await supabase.from(table).update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from(table).update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -118,20 +118,20 @@ export default function TipsContentPage() {
           <p className="text-gray-600 mt-1">Swipeable tip cards for various topics</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">+ Category</button>
-          <button onClick={() => setShowAddTip(true)} className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">+ Tip</button>
+          <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">+ Category</button>
+          <button onClick={() => setShowAddTip(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">+ Tip</button>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl p-5 text-white">
-          <div className="text-3xl font-bold">{categories.length}</div>
-          <div className="text-purple-100">Categories</div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="text-3xl font-bold text-gray-900">{categories.length}</div>
+          <div className="text-gray-500">Categories</div>
         </div>
-        <div className="bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl p-5 text-white">
-          <div className="text-3xl font-bold">{tips.length}</div>
-          <div className="text-cyan-100">Tips</div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="text-3xl font-bold text-gray-900">{tips.length}</div>
+          <div className="text-gray-500">Tips</div>
         </div>
       </div>
 
@@ -153,7 +153,7 @@ export default function TipsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addCategory} className="px-4 py-2 bg-purple-600 text-white rounded-lg">Add Category</button>
+            <button onClick={addCategory} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">Add Category</button>
           </div>
         </div>
       )}
@@ -173,7 +173,7 @@ export default function TipsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddTip(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addTip} className="px-4 py-2 bg-cyan-600 text-white rounded-lg">Add Tip</button>
+            <button onClick={addTip} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Tip</button>
           </div>
         </div>
       )}
@@ -196,7 +196,7 @@ export default function TipsContentPage() {
             </div>
             <div className="flex gap-2 mb-3">
               <span className="text-xs bg-gray-100 px-2 py-1 rounded">{cat.slug}</span>
-              <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{cat.target_audience}</span>
+              <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{cat.target_audience}</span>
             </div>
             <div className="border-t pt-3">
               <div className="text-xs text-gray-400 mb-2">Tips ({tips.filter(t => t.category_id === cat.id).length})</div>

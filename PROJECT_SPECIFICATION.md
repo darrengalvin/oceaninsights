@@ -1472,56 +1472,51 @@ A detailed GPT prompt is provided (`gpt-content-generator.md`) to generate conte
 
 ## 18. Budget Estimation Guidelines
 
-### 18.1 Development Time Estimates
+### 18.1 Development Scope
 
 **Mobile App (Flutter):**
-- Core architecture & setup: 1-2 weeks
-- Offline data management: 2-3 weeks
-- Breathing exercises: 2 weeks
-- Mood tracking: 1 week
-- Navigate system: 3-4 weeks
-- Learn system: 1-2 weeks
-- Audio player: 1 week
-- Affirmations/Quotes/Goals: 2 weeks
-- AI personalisation: 1-2 weeks
-- Onboarding/Profile: 1 week
-- Settings & themes: 1 week
-- Testing & polish: 2-3 weeks
-
-**Estimated Total:** 18-25 weeks (1 mobile developer)
+- Core architecture & setup
+- Offline data management
+- Breathing exercises (4 types)
+- Mood tracking system
+- Navigate content system
+- Learn educational library
+- Audio player functionality
+- Affirmations/Quotes/Goals features
+- AI personalisation integration
+- Onboarding & profile management
+- Settings & theme system
+- Comprehensive testing & polish
 
 **Admin Panel (Next.js):**
-- Setup & authentication: 1 week
-- Dashboard: 1 week
-- Content CRUD: 2 weeks
-- Learn articles CRUD: 1 week
-- Bulk import: 1 week
-- Analytics: 1 week
-- Testing & polish: 1 week
-
-**Estimated Total:** 8 weeks (1 web developer)
+- Setup & authentication
+- Dashboard with analytics
+- Content CRUD operations
+- Learn articles management
+- Bulk import system
+- Domain management
+- Testing & polish
 
 **Backend & Integration:**
-- Supabase setup: 3 days
-- Schema implementation: 1 week
-- RLS policies: 2 days
-- API endpoints: 1 week
-- Content migration scripts: 3 days
-- Testing: 1 week
-
-**Estimated Total:** 4 weeks (1 backend developer)
+- Supabase setup & configuration
+- Database schema implementation
+- Row Level Security policies
+- API endpoints
+- Content migration scripts
+- Integration testing
 
 **Design:**
-- Brand identity: 1 week
-- UI design system: 2 weeks
-- Screen designs: 3-4 weeks
-- Illustrations/assets: 1-2 weeks
-- Design QA: 1 week
-
-**Estimated Total:** 8-10 weeks (1 UI/UX designer)
+- Brand identity development
+- UI design system creation
+- Screen designs for all features
+- Illustrations & asset creation
+- Design quality assurance
 
 **Project Management & QA:**
-- Throughout project: 20-25% of development time
+- Ongoing throughout project lifecycle
+- Quality assurance testing
+- Documentation
+- Deployment coordination
 
 ### 18.2 Ongoing Costs
 
@@ -1543,17 +1538,61 @@ A detailed GPT prompt is provided (`gpt-content-generator.md`) to generate conte
 
 1. **DIY with GPT:**
    - GPT-4 API costs: ~£50-100 for 1000 items
-   - Time: ~10-20 hours for review/editing
+   - Requires review and editing
 
 2. **Professional Content Writer:**
    - Rate: £50-100/hour
-   - Estimate: 100 hours for 500 items
+   - Estimate: 500 content items
    - Total: £5,000-10,000
 
 3. **Clinical Psychologist Review:**
    - Rate: £75-150/hour
-   - Estimate: 20-30 hours review
+   - Recommended for quality assurance
    - Total: £1,500-4,500
+
+### 18.4 Optional Games Module Enhancement
+
+**If games functionality were to be added to the application, the following would be required:**
+
+**Game Development Scope:**
+- Zen Garden / Sand Drawing game
+- Physics-based Block Stacking game
+- Flow / Pipe Connection puzzle game
+- Memory / Pattern game (sonar-themed)
+- Gamified breathing exercise integration
+- High score/progress tracking (local only)
+- Settings & preferences for games
+- Smooth animations and interactions
+- Offline-first data persistence
+- Testing across all features
+
+**Additional Components:**
+- Game state management (Provider pattern)
+- Local high score storage (Hive)
+- Game assets (images, sounds, animations)
+- Admin panel games analytics (optional)
+- UI/UX design for 5 games
+- Accessibility considerations for games
+- Performance optimisation for animations
+- Integration with existing theme system
+
+**Estimated Additional Investment:**
+
+**Development:**
+- Mobile game development: **Additional 25-30% of core app development cost**
+- Admin panel games management (optional): **Additional 5-10% of admin panel cost**
+- Additional design work: **Additional 20-25% of design cost**
+- Additional testing & QA: **Additional 15-20% of testing cost**
+
+**Overall Games Module Cost Estimate:**
+- **Games feature would add approximately 20-25% to the total project cost**
+
+**Notes:**
+- Games would be fully offline-capable (consistent with app design)
+- All game data stored locally only (OPSEC-compliant)
+- Designed for low cognitive load and stress relief
+- Optional feature that can be disabled in settings
+- Minimal battery impact requirement
 
 ---
 
@@ -1671,10 +1710,10 @@ A detailed GPT prompt is provided (`gpt-content-generator.md`) to generate conte
 ### 21.4 Training
 
 **Required:**
-- Admin panel training session (2 hours)
-- Content creation workflow training (1 hour)
-- Deployment process training (1 hour)
-- Support & maintenance guidance (1 hour)
+- Admin panel training session
+- Content creation workflow training
+- Deployment process training
+- Support & maintenance guidance
 
 ---
 
@@ -1710,6 +1749,7 @@ Unless specifically requested:
 - Apple Watch or Android Wear apps
 - Multi-language support
 - Video content
+- Games functionality (see Section 18.4 for optional addition)
 
 ---
 
@@ -1787,7 +1827,7 @@ Unless specifically requested:
 
 Ocean Insight represents a comprehensive, privacy-first mental health solution specifically designed for military personnel operating in offline environments. The application balances sophisticated features (AI personalisation, content management, rich media) with strict privacy requirements and operational security constraints.
 
-The three-component architecture (mobile app, admin panel, backend) provides scalability, maintainability, and content flexibility while ensuring the core user experience remains fully offline-capable.
+The three-component architecture (mobile app, admin panel, backend) provides scalability, maintainability, and content flexibility whilst ensuring the core user experience remains fully offline-capable.
 
 This specification should provide development companies with sufficient detail to:
 1. Understand the full scope of the project
@@ -1840,4 +1880,3 @@ This specification should provide development companies with sufficient detail t
 ---
 
 **END OF SPECIFICATION DOCUMENT**
-

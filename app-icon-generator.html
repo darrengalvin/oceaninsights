@@ -131,15 +131,25 @@
             <!-- Background -->
             <rect width="1024" height="1024" fill="url(#oceanGradient)"/>
             
-            <!-- Wave layers (representing ocean depth) -->
-            <path d="M 0 650 Q 256 600 512 650 T 1024 650 L 1024 1024 L 0 1024 Z" 
+            <!-- Wave layers with more natural curves (representing ocean waves) -->
+            <!-- Back wave - larger, slower curve -->
+            <path d="M 0 650 Q 170 600 340 630 Q 510 660 680 610 Q 850 560 1024 590 L 1024 1024 L 0 1024 Z" 
                   fill="url(#waveGradient1)"/>
             
-            <path d="M 0 720 Q 200 680 400 720 T 800 720 Q 900 720 1024 740 L 1024 1024 L 0 1024 Z" 
+            <!-- Middle wave - medium curve with foam-like top -->
+            <path d="M 0 720 Q 128 680 256 710 Q 384 740 512 700 Q 640 660 768 700 Q 896 740 1024 710 L 1024 1024 L 0 1024 Z" 
                   fill="url(#waveGradient2)"/>
             
-            <path d="M 0 800 Q 256 770 512 800 T 1024 800 L 1024 1024 L 0 1024 Z" 
+            <!-- Front wave - more dynamic crests -->
+            <path d="M 0 800 Q 102 770 204 790 Q 307 810 410 780 Q 512 750 614 775 Q 717 800 819 770 Q 921 740 1024 760 L 1024 1024 L 0 1024 Z" 
                   fill="url(#waveGradient3)"/>
+            
+            <!-- Wave highlights/foam effects on crests -->
+            <ellipse cx="340" cy="625" rx="40" ry="15" fill="#7EC8E3" opacity="0.3"/>
+            <ellipse cx="680" cy="605" rx="35" ry="12" fill="#7EC8E3" opacity="0.3"/>
+            <ellipse cx="256" cy="705" rx="30" ry="10" fill="#A8D5E2" opacity="0.4"/>
+            <ellipse cx="512" cy="695" rx="35" ry="12" fill="#A8D5E2" opacity="0.4"/>
+            <ellipse cx="768" cy="695" rx="30" ry="10" fill="#A8D5E2" opacity="0.4"/>
             
             <!-- Center breathing circle (represents calm/meditation) -->
             <circle cx="512" cy="400" r="180" fill="url(#circleGradient)" opacity="0.3"/>
@@ -200,4 +210,6 @@
     </script>
 </body>
 </html>
+
+
 

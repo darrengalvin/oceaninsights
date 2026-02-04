@@ -189,41 +189,32 @@ class MoodProvider extends ChangeNotifier {
     return total / recent.length;
   }
   
-  /// Get mood streak (consecutive days logged)
-  int getCurrentStreak() {
-    if (_entries.isEmpty) return 0;
-    
-    int streak = 0;
-    DateTime checkDate = DateTime.now();
-    
-    for (int i = 0; i < 365; i++) {
-      final dateToCheck = DateTime(
-        checkDate.year,
-        checkDate.month,
-        checkDate.day,
+  /// Get today's entries count
+  int getTodayCount() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return _entries.where((entry) {
+      final entryDate = DateTime(
+        entry.timestamp.year,
+        entry.timestamp.month,
+        entry.timestamp.day,
       );
-      
-      final hasEntry = _entries.any((entry) {
-        final entryDate = DateTime(
-          entry.timestamp.year,
-          entry.timestamp.month,
-          entry.timestamp.day,
-        );
-        return entryDate == dateToCheck;
-      });
-      
-      if (hasEntry) {
-        streak++;
-        checkDate = checkDate.subtract(const Duration(days: 1));
-      } else if (i == 0) {
-        // Allow today to not be logged yet
-        checkDate = checkDate.subtract(const Duration(days: 1));
-      } else {
-        break;
-      }
-    }
-    
-    return streak;
+      return entryDate == today;
+    }).length;
+  }
+  
+  /// Get all entries from today
+  List<MoodEntry> getTodaysEntries() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return _entries.where((entry) {
+      final entryDate = DateTime(
+        entry.timestamp.year,
+        entry.timestamp.month,
+        entry.timestamp.day,
+      );
+      return entryDate == today;
+    }).toList();
   }
 }
 

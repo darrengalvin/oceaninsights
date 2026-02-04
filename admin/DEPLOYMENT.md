@@ -69,3 +69,5 @@ npm run dev
 - Ensure all dependencies are in package.json
 - Try building locally first: `npm run build`
 
+
+

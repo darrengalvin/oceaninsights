@@ -167,3 +167,5 @@ This app stores all data locally on the device using Hive:
 
 No data is sent to any server. Perfect for offline use.
 
+
+

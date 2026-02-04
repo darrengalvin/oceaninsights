@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface EnergyLevel {
@@ -39,9 +39,9 @@ export default function DailyBriefContentPage() {
   async function fetchData() {
     setLoading(true);
     const [energyRes, objRes, chalRes] = await Promise.all([
-      supabase.from('daily_brief_energy_levels').select('*').order('sort_order'),
-      supabase.from('daily_brief_objectives').select('*').order('sort_order'),
-      supabase.from('daily_brief_challenges').select('*').order('sort_order'),
+      supabaseAdmin.from('daily_brief_energy_levels').select('*').order('sort_order'),
+      supabaseAdmin.from('daily_brief_objectives').select('*').order('sort_order'),
+      supabaseAdmin.from('daily_brief_challenges').select('*').order('sort_order'),
     ]);
 
     if (energyRes.data) setEnergyLevels(energyRes.data);
@@ -64,7 +64,7 @@ export default function DailyBriefContentPage() {
       ? { label: newItem.label, emoji: newItem.emoji, description: newItem.description, sort_order: maxOrder + 1 }
       : { text: newItem.text, category: newItem.category, sort_order: maxOrder + 1 };
 
-    const { error } = await supabase.from(table).insert(insertData);
+    const { error } = await supabaseAdmin.from(table).insert(insertData);
 
     if (!error) {
       fetchData();
@@ -75,12 +75,12 @@ export default function DailyBriefContentPage() {
 
   async function deleteItem(table: string, id: string) {
     if (!confirm('Delete this item?')) return;
-    await supabase.from(table).delete().eq('id', id);
+    await supabaseAdmin.from(table).delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(table: string, id: string, current: boolean) {
-    await supabase.from(table).update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from(table).update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -120,7 +120,7 @@ export default function DailyBriefContentPage() {
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
+          className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -137,7 +137,7 @@ export default function DailyBriefContentPage() {
             onClick={() => { setActiveTab(tab.id); setShowAddForm(false); }}
             className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
               activeTab === tab.id
-                ? 'bg-cyan-600 text-white'
+                ? 'bg-cyan-600'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -221,7 +221,7 @@ export default function DailyBriefContentPage() {
             <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-gray-600">Cancel</button>
             <button
               onClick={addItem}
-              className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700"
+              className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700"
             >
               Add Item
             </button>
@@ -293,7 +293,7 @@ export default function DailyBriefContentPage() {
             {challenges.map((chal) => (
               <div key={chal.id} className={`p-4 flex items-center justify-between ${!chal.is_active ? 'opacity-50' : ''}`}>
                 <div className="flex items-center gap-4">
-                  <span className="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700">{chal.category}</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">{chal.category}</span>
                   <span className="text-gray-900">{chal.text}</span>
                 </div>
                 <div className="flex items-center gap-2">

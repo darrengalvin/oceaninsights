@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface MilitaryRole {
@@ -42,8 +42,8 @@ export default function SkillsTranslatorPage() {
   async function fetchData() {
     setLoading(true);
     const [rolesRes, jobsRes] = await Promise.all([
-      supabase.from('military_roles').select('*').order('sort_order'),
-      supabase.from('civilian_jobs').select('*').order('sort_order'),
+      supabaseAdmin.from('military_roles').select('*').order('sort_order'),
+      supabaseAdmin.from('civilian_jobs').select('*').order('sort_order'),
     ]);
 
     if (rolesRes.data) setRoles(rolesRes.data);
@@ -55,7 +55,7 @@ export default function SkillsTranslatorPage() {
     if (!newRole.title.trim()) return;
     const maxOrder = roles.reduce((max, r) => Math.max(max, r.sort_order), 0);
     
-    const { error } = await supabase.from('military_roles').insert({
+    const { error } = await supabaseAdmin.from('military_roles').insert({
       ...newRole,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -72,7 +72,7 @@ export default function SkillsTranslatorPage() {
     if (!newJob.title.trim()) return;
     const maxOrder = jobs.reduce((max, j) => Math.max(max, j.sort_order), 0);
     
-    const { error } = await supabase.from('civilian_jobs').insert({
+    const { error } = await supabaseAdmin.from('civilian_jobs').insert({
       title: newJob.title,
       description: newJob.description,
       salary_range: newJob.salary_range,
@@ -91,12 +91,12 @@ export default function SkillsTranslatorPage() {
 
   async function deleteItem(table: string, id: string) {
     if (!confirm('Delete this item?')) return;
-    await supabase.from(table).delete().eq('id', id);
+    await supabaseAdmin.from(table).delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(table: string, id: string, current: boolean) {
-    await supabase.from(table).update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from(table).update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -135,7 +135,7 @@ export default function SkillsTranslatorPage() {
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
+          className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -146,21 +146,21 @@ export default function SkillsTranslatorPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-5 text-white">
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🎖️</span>
             <div>
-              <div className="text-3xl font-bold">{roles.length}</div>
-              <div className="text-green-100">Military Roles</div>
+              <div className="text-3xl font-bold text-gray-900">{roles.length}</div>
+              <div className="text-gray-500">Military Roles</div>
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-5 text-white">
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
           <div className="flex items-center gap-3">
             <span className="text-3xl">💼</span>
             <div>
-              <div className="text-3xl font-bold">{jobs.length}</div>
-              <div className="text-blue-100">Civilian Jobs</div>
+              <div className="text-3xl font-bold text-gray-900">{jobs.length}</div>
+              <div className="text-gray-500">Civilian Jobs</div>
             </div>
           </div>
         </div>
@@ -172,7 +172,7 @@ export default function SkillsTranslatorPage() {
           onClick={() => { setActiveTab('roles'); setShowAddForm(false); }}
           className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
             activeTab === 'roles'
-              ? 'bg-green-600 text-white'
+              ? 'bg-green-600'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
@@ -182,7 +182,7 @@ export default function SkillsTranslatorPage() {
           onClick={() => { setActiveTab('jobs'); setShowAddForm(false); }}
           className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
             activeTab === 'jobs'
-              ? 'bg-blue-600 text-white'
+              ? 'bg-blue-600'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
@@ -297,7 +297,7 @@ export default function SkillsTranslatorPage() {
             <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-gray-600">Cancel</button>
             <button
               onClick={activeTab === 'roles' ? addRole : addJob}
-              className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700"
+              className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700"
             >
               Add {activeTab === 'roles' ? 'Role' : 'Job'}
             </button>

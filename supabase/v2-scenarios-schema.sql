@@ -233,3 +233,5 @@ COMMENT ON TABLE protocols IS 'Step-by-step communication and conflict managemen
 COMMENT ON TABLE analytics_monthly IS 'Anonymous aggregate usage data for learning and improvement';
 
 
+
+

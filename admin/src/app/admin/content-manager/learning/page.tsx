@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface LearningStyle {
@@ -39,8 +39,8 @@ export default function LearningContentPage() {
   async function fetchData() {
     setLoading(true);
     const [styleRes, stratRes] = await Promise.all([
-      supabase.from('learning_styles').select('*').order('sort_order'),
-      supabase.from('study_strategies').select('*').order('sort_order'),
+      supabaseAdmin.from('learning_styles').select('*').order('sort_order'),
+      supabaseAdmin.from('study_strategies').select('*').order('sort_order'),
     ]);
 
     if (styleRes.data) setStyles(styleRes.data);
@@ -52,7 +52,7 @@ export default function LearningContentPage() {
     if (!newStyle.name.trim()) return;
     const maxOrder = styles.reduce((max, s) => Math.max(max, s.sort_order), 0);
     
-    await supabase.from('learning_styles').insert({
+    await supabaseAdmin.from('learning_styles').insert({
       name: newStyle.name,
       emoji: newStyle.emoji,
       description: newStyle.description,
@@ -70,7 +70,7 @@ export default function LearningContentPage() {
     if (!newStrategy.name.trim()) return;
     const maxOrder = strategies.reduce((max, s) => Math.max(max, s.sort_order), 0);
     
-    await supabase.from('study_strategies').insert({
+    await supabaseAdmin.from('study_strategies').insert({
       name: newStrategy.name,
       description: newStrategy.description,
       best_for: newStrategy.best_for.split(',').map(s => s.trim()).filter(Boolean),
@@ -85,12 +85,12 @@ export default function LearningContentPage() {
 
   async function deleteItem(table: string, id: string) {
     if (!confirm('Delete this item?')) return;
-    await supabase.from(table).delete().eq('id', id);
+    await supabaseAdmin.from(table).delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(table: string, id: string, current: boolean) {
-    await supabase.from(table).update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from(table).update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -114,20 +114,20 @@ export default function LearningContentPage() {
           <h1 className="text-3xl font-bold text-gray-900">Learning & Study</h1>
           <p className="text-gray-600 mt-1">Learning styles and study strategies</p>
         </div>
-        <button onClick={() => setShowAddForm(!showAddForm)} className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">
+        <button onClick={() => setShowAddForm(!showAddForm)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
           + Add {activeTab === 'styles' ? 'Style' : 'Strategy'}
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl p-5 text-white">
-          <div className="text-3xl font-bold">{styles.length}</div>
-          <div className="text-amber-100">Learning Styles</div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="text-3xl font-bold text-gray-900">{styles.length}</div>
+          <div className="text-gray-500">Learning Styles</div>
         </div>
-        <div className="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl p-5 text-white">
-          <div className="text-3xl font-bold">{strategies.length}</div>
-          <div className="text-blue-100">Study Strategies</div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="text-3xl font-bold text-gray-900">{strategies.length}</div>
+          <div className="text-gray-500">Study Strategies</div>
         </div>
       </div>
 
@@ -135,13 +135,13 @@ export default function LearningContentPage() {
       <div className="flex gap-2 mb-6">
         <button
           onClick={() => { setActiveTab('styles'); setShowAddForm(false); }}
-          className={`px-4 py-2 rounded-lg font-medium transition ${activeTab === 'styles' ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+          className={`px-4 py-2 rounded-lg font-medium transition ${activeTab === 'styles' ? 'bg-amber-600' : 'bg-gray-100 text-gray-600'}`}
         >
           📚 Learning Styles ({styles.length})
         </button>
         <button
           onClick={() => { setActiveTab('strategies'); setShowAddForm(false); }}
-          className={`px-4 py-2 rounded-lg font-medium transition ${activeTab === 'strategies' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+          className={`px-4 py-2 rounded-lg font-medium transition ${activeTab === 'strategies' ? 'bg-blue-600' : 'bg-gray-100 text-gray-600'}`}
         >
           🎯 Study Strategies ({strategies.length})
         </button>
@@ -169,7 +169,7 @@ export default function LearningContentPage() {
           
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={activeTab === 'styles' ? addStyle : addStrategy} className="px-4 py-2 bg-cyan-600 text-white rounded-lg">Add</button>
+            <button onClick={activeTab === 'styles' ? addStyle : addStrategy} className="px-4 py-2 bg-cyan-600 rounded-lg">Add</button>
           </div>
         </div>
       )}

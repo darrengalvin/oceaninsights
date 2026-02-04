@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface Affirmation {
@@ -52,9 +52,9 @@ export default function AffirmationsContentPage() {
   async function fetchData() {
     setLoading(true);
     const [affRes, chalRes, actRes] = await Promise.all([
-      supabase.from('affirmations').select('*').order('sort_order'),
-      supabase.from('confidence_challenges').select('*').order('sort_order'),
-      supabase.from('confidence_actions').select('*').order('sort_order'),
+      supabaseAdmin.from('affirmations').select('*').order('sort_order'),
+      supabaseAdmin.from('confidence_challenges').select('*').order('sort_order'),
+      supabaseAdmin.from('confidence_actions').select('*').order('sort_order'),
     ]);
 
     if (affRes.data) setAffirmations(affRes.data);
@@ -84,7 +84,7 @@ export default function AffirmationsContentPage() {
       insertData.difficulty = newItem.difficulty;
     }
 
-    const { error } = await supabase.from(table).insert(insertData);
+    const { error } = await supabaseAdmin.from(table).insert(insertData);
 
     if (!error) {
       fetchData();
@@ -95,12 +95,12 @@ export default function AffirmationsContentPage() {
 
   async function deleteItem(table: string, id: string) {
     if (!confirm('Delete this item?')) return;
-    await supabase.from(table).delete().eq('id', id);
+    await supabaseAdmin.from(table).delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(table: string, id: string, current: boolean) {
-    await supabase.from(table).update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from(table).update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -145,7 +145,7 @@ export default function AffirmationsContentPage() {
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
+          className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -162,7 +162,7 @@ export default function AffirmationsContentPage() {
             onClick={() => { setActiveTab(tab.id); setShowAddForm(false); }}
             className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
               activeTab === tab.id
-                ? 'bg-cyan-600 text-white'
+                ? 'bg-cyan-600'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -227,7 +227,7 @@ export default function AffirmationsContentPage() {
             <button
               onClick={addItem}
               disabled={!newItem.text.trim()}
-              className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-50"
+              className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 disabled:opacity-50"
             >
               Add Item
             </button>

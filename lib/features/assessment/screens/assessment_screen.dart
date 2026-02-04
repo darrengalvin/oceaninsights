@@ -36,7 +36,7 @@ class AssessmentScreen extends StatelessWidget {
   
   Widget _buildTodaySection(BuildContext context, MoodProvider moodProvider) {
     final colours = context.colours;
-    final todaysMood = moodProvider.getTodaysMood();
+    final todaysEntries = moodProvider.getTodaysEntries();
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,18 +49,31 @@ class AssessmentScreen extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          todaysMood != null 
-              ? 'You\'ve already logged your mood today. Come back tomorrow!'
-              : 'Tap how you feel right now',
+          'Log whenever you want - track your mood throughout the day',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: colours.textMuted,
               ),
         ),
         const SizedBox(height: 20),
-        if (todaysMood != null)
-          _buildLoggedMood(context, todaysMood)
-        else
-          _buildMoodSelector(context, moodProvider),
+        
+        // Always show mood selector
+        _buildMoodSelector(context, moodProvider),
+        
+        // Show today's logs if any
+        if (todaysEntries.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Text(
+            'Today\'s Check-ins',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: 12),
+          ...todaysEntries.map((entry) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _buildLoggedMood(context, entry),
+          )),
+        ],
       ],
     );
   }
@@ -163,15 +176,15 @@ class AssessmentScreen extends StatelessWidget {
   
   Widget _buildStatsSection(BuildContext context, MoodProvider moodProvider) {
     final colours = context.colours;
-    final streak = moodProvider.getCurrentStreak();
     final average7Days = moodProvider.getAverageMood(7);
     final totalEntries = moodProvider.entries.length;
+    final todayCount = moodProvider.getTodayCount();
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Your Progress',
+          'Your Insights',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -181,10 +194,10 @@ class AssessmentScreen extends StatelessWidget {
           children: [
             Expanded(
               child: _StatCard(
-                label: 'Current Streak',
-                value: '$streak',
-                suffix: streak == 1 ? 'day' : 'days',
-                icon: Icons.local_fire_department_outlined,
+                label: 'Today',
+                value: '$todayCount',
+                suffix: todayCount == 1 ? 'check-in' : 'check-ins',
+                icon: Icons.today_outlined,
               ),
             ),
             const SizedBox(width: 12),

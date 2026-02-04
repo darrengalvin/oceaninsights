@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import '../../../core/services/analytics_service.dart';
 
 class PurchaseOption {
   final String productId;
@@ -262,13 +263,21 @@ class IAPService {
   void _handleSuccessfulPurchase(PurchaseDetails purchaseDetails) {
     debugPrint('✅ Purchase successful: ${purchaseDetails.productID}');
     
-    // Here you would typically:
-    // 1. Verify the purchase with your backend
-    // 2. Grant access to another user
-    // 3. Log the transaction
+    // Extract amount from product ID for analytics
+    double amount = 0;
+    final productId = purchaseDetails.productID;
+    if (productId.contains('5')) amount = 5;
+    if (productId.contains('10')) amount = 10;
+    if (productId.contains('25')) amount = 25;
+    if (productId.contains('50')) amount = 50;
+    if (productId.contains('100')) amount = 100;
     
-    // For now, we just log it
-    debugPrint('🎉 Someone just covered another person!');
+    // Track anonymous purchase in analytics
+    // This records: anonymous device_id + product + amount + timestamp
+    // It does NOT record: name, email, or any identifying info
+    AnalyticsService().trackPurchase(productId, amount);
+    
+    debugPrint('🎉 Someone just covered another person! (Anonymous)');
   }
 
   void dispose() {

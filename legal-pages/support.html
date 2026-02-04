@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Ocean Insight</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a1628;
+            --card: #111d2e;
+            --accent: #00d9c4;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #1e3a5f;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: var(--card);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        nav a:hover { background: rgba(0, 217, 196, 0.1); }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .crisis-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .crisis-box h2 {
+            color: #f87171;
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .crisis-box p {
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        
+        .crisis-numbers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .crisis-number {
+            background: rgba(239, 68, 68, 0.1);
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+        
+        .crisis-number strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .crisis-number span {
+            color: #f87171;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        section {
+            margin-bottom: 32px;
+        }
+        
+        h2 {
+            color: var(--text);
+            font-size: 20px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        
+        .contact-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            transition: border-color 0.2s;
+        }
+        
+        .contact-card:hover {
+            border-color: var(--accent);
+        }
+        
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 217, 196, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .contact-info h3 {
+            color: var(--text);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .contact-info p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .faq-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text);
+            font-weight: 500;
+        }
+        
+        .faq-question:hover {
+            background: rgba(0, 217, 196, 0.05);
+        }
+        
+        .faq-answer {
+            display: none;
+            padding: 0 20px 16px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+        
+        .faq-item.open .faq-answer {
+            display: block;
+            padding-top: 16px;
+        }
+        
+        .faq-item.open .faq-question svg {
+            transform: rotate(180deg);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">OI</a>
+        <h1>Support</h1>
+        <p>We're here to help you on your wellbeing journey</p>
+    </header>
+    
+    <nav>
+        <a href="/">Home</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/support">Support</a>
+    </nav>
+    
+    <main class="container">
+        <div class="crisis-box">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                If You're in Crisis
+            </h2>
+            <p>If you or someone you know is in immediate danger or experiencing a mental health emergency, please contact emergency services or a crisis helpline immediately. Ocean Insight is not a substitute for professional help.</p>
+            
+            <div class="crisis-numbers">
+                <div class="crisis-number">
+                    <strong>UK Emergency</strong>
+                    <span>999</span>
+                </div>
+                <div class="crisis-number">
+                    <strong>Samaritans (UK)</strong>
+                    <span>116 123</span>
+                </div>
+                <div class="crisis-number">
+                    <strong>US Emergency</strong>
+                    <span>911</span>
+                </div>
+                <div class="crisis-number">
+                    <strong>Suicide & Crisis Lifeline (US)</strong>
+                    <span>988</span>
+                </div>
+                <div class="crisis-number">
+                    <strong>Veterans Crisis Line</strong>
+                    <span>1-800-273-8255 (Press 1)</span>
+                </div>
+                <div class="crisis-number">
+                    <strong>Combat Stress (UK Veterans)</strong>
+                    <span>0800 138 1619</span>
+                </div>
+            </div>
+        </div>
+        
+        <section>
+            <h2>Contact Us</h2>
+            <a href="mailto:support@oceaninsight.app" class="contact-card">
+                <div class="contact-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d9c4" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </div>
+                <div class="contact-info">
+                    <h3>Email Support</h3>
+                    <p>support@oceaninsight.app</p>
+                </div>
+            </a>
+        </section>
+        
+        <section>
+            <h2>Frequently Asked Questions</h2>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">
+                    Does this app work offline?
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    Yes! All core features work completely offline. This includes breathing exercises, mood tracking, daily rituals, goals, affirmations, and games. Educational content syncs automatically when you have an internet connection, but previously downloaded content remains available offline.
+                </div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">
+                    Is my data private?
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    Absolutely. All your personal data (mood logs, goals, settings) stays on your device only. We don't collect personal information, and nothing is uploaded to external servers. If you delete the app, all your data is permanently removed. You can also manually delete all data through the app's "Manage Your Data" section.
+                </div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">
+                    Can I get a refund?
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    Refunds are handled by the Apple App Store or Google Play Store according to their respective policies. To request a refund, please contact the store where you made your purchase. Apple typically allows refunds within 14 days, and Google within 48 hours for immediate refunds or longer through their support process.
+                </div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">
+                    How does Pay It Forward work?
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    Someone before you contributed to cover your access to Ocean Insight. When you choose to Pay It Forward, you're covering access for someone else who genuinely can't afford it - like a teenager who needs mental health support but has no income, or someone facing financial hardship. It's an honesty-based system that keeps the chain going so everyone who needs help can receive it. Contributions are processed securely through the App Store or Google Play.
+                </div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">
+                    How do I delete all my data?
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    You can delete all your data at any time:
+                    <ol style="margin-top: 12px; padding-left: 20px;">
+                        <li>Go to the app's home screen</li>
+                        <li>Scroll down and tap "Your Data"</li>
+                        <li>Tap "Delete All My Data"</li>
+                        <li>Type DELETE to confirm</li>
+                    </ol>
+                    Alternatively, simply uninstalling the app will remove all data from your device.
+                </div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">
+                    Is this app a replacement for therapy?
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    No. Ocean Insight is designed to support your mental wellbeing with helpful tools and resources, but it is NOT a substitute for professional medical advice, diagnosis, or treatment. If you're struggling with mental health issues, please consult a qualified healthcare provider. If you're in crisis, please contact emergency services immediately.
+                </div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">
+                    What devices does the app support?
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    Ocean Insight is available on:
+                    <ul style="margin-top: 12px; padding-left: 20px;">
+                        <li><strong>iOS:</strong> iPhone and iPad running iOS 14.0 or later</li>
+                        <li><strong>Android:</strong> Devices running Android 6.0 (API level 23) or later</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">
+                    Can I transfer my data to a new phone?
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    Since data is stored locally on your device, transferring to a new phone depends on your backup method:
+                    <ul style="margin-top: 12px; padding-left: 20px;">
+                        <li><strong>iPhone to iPhone:</strong> Use iCloud backup or direct transfer during setup</li>
+                        <li><strong>Android to Android:</strong> Use Google backup or manufacturer's transfer tool</li>
+                        <li><strong>Cross-platform:</strong> Data cannot be transferred between iOS and Android</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Report a Bug</h2>
+            <p style="color: var(--text-muted); margin-bottom: 16px;">Found something not working correctly? Please email us with:</p>
+            <ul style="color: var(--text-muted); padding-left: 24px;">
+                <li>Your device model (e.g., iPhone 14, Samsung Galaxy S23)</li>
+                <li>Your operating system version</li>
+                <li>Steps to reproduce the issue</li>
+                <li>Screenshots if possible</li>
+            </ul>
+            <p style="color: var(--text-muted); margin-top: 16px;">
+                Email: <a href="mailto:support@oceaninsight.app" style="color: var(--accent);">support@oceaninsight.app</a>
+            </p>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2026 Ocean Insight. All rights reserved.</p>
+        <p style="margin-top: 12px;">
+            <a href="/privacy">Privacy</a> &middot; 
+            <a href="/terms">Terms</a> &middot; 
+            <a href="/support">Support</a>
+        </p>
+    </footer>
+</body>
+</html>

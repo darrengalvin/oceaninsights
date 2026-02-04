@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface ContentStats {
@@ -18,6 +18,7 @@ export default function ContentManagerPage() {
   const [loading, setLoading] = useState(true);
 
   const contentTypes: Omit<ContentStats, 'count'>[] = [
+    { table: 'user_type_items', label: 'User Type Screens', icon: '👥', href: '/admin/content-manager/user-screens', color: 'bg-white border-gray-200' },
     { table: 'mission_objectives', label: 'Mission Objectives', icon: '🎯', href: '/admin/objectives', color: 'bg-white border-gray-200' },
     { table: 'mood_reasons', label: 'Mood Reasons', icon: '😊', href: '/admin/content-manager/mood', color: 'bg-white border-gray-200' },
     { table: 'daily_brief_objectives', label: 'Daily Brief Options', icon: '📋', href: '/admin/content-manager/daily-brief', color: 'bg-white border-gray-200' },
@@ -42,7 +43,7 @@ export default function ContentManagerPage() {
     setLoading(true);
     
     const statsPromises = contentTypes.map(async (type) => {
-      const { count } = await supabase
+      const { count } = await supabaseAdmin
         .from(type.table)
         .select('*', { count: 'exact', head: true });
       

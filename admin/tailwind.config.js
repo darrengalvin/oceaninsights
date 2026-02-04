@@ -20,9 +20,30 @@ module.exports = {
           800: '#075985',
           900: '#0c4a6e',
         },
+        // Ocean Insight marketing colors (matching App Store screenshots)
+        landing: {
+          bg: '#8E99AB',            // Muted blue-grey background
+          bgDark: '#7D8899',        // Darker variant
+          bgLight: '#9BA5B5',       // Lighter variant
+        },
+        // Ocean Insight app colors (dark theme)
+        app: {
+          background: '#0D1520',    // deepOcean - main background
+          card: '#131D2A',          // midnightBlue - cards
+          cardLight: '#1A2634',     // slateDepth - lighter cards
+          border: '#243447',        // steelBlue - borders
+          borderAccent: '#1E3A5F',  // cardBorder - subtle blue
+        },
+        aqua: {
+          DEFAULT: '#00D9C4',       // aquaGlow - primary accent
+          dark: '#0891B2',          // deepTeal - secondary
+          light: '#67E8F9',         // softCyan - highlights
+        },
       },
     },
   },
   plugins: [],
 }
+
+
 

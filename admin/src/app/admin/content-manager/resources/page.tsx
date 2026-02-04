@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface ResourceCategory {
@@ -53,9 +53,9 @@ export default function ResourcesContentPage() {
   async function fetchData() {
     setLoading(true);
     const [catRes, secRes, resRes] = await Promise.all([
-      supabase.from('resource_categories').select('*').order('sort_order'),
-      supabase.from('resource_sections').select('*').order('sort_order'),
-      supabase.from('resources').select('*').order('sort_order'),
+      supabaseAdmin.from('resource_categories').select('*').order('sort_order'),
+      supabaseAdmin.from('resource_sections').select('*').order('sort_order'),
+      supabaseAdmin.from('resources').select('*').order('sort_order'),
     ]);
 
     if (catRes.data) setCategories(catRes.data);
@@ -68,7 +68,7 @@ export default function ResourcesContentPage() {
     if (!newCategory.title.trim()) return;
     const maxOrder = categories.reduce((max, c) => Math.max(max, c.sort_order), 0);
     
-    await supabase.from('resource_categories').insert({
+    await supabaseAdmin.from('resource_categories').insert({
       ...newCategory,
       sort_order: maxOrder + 1,
       is_active: true,
@@ -81,12 +81,12 @@ export default function ResourcesContentPage() {
 
   async function deleteCategory(id: string) {
     if (!confirm('Delete this category and all its sections/resources?')) return;
-    await supabase.from('resource_categories').delete().eq('id', id);
+    await supabaseAdmin.from('resource_categories').delete().eq('id', id);
     fetchData();
   }
 
   async function toggleActive(id: string, current: boolean) {
-    await supabase.from('resource_categories').update({ is_active: !current }).eq('id', id);
+    await supabaseAdmin.from('resource_categories').update({ is_active: !current }).eq('id', id);
     fetchData();
   }
 
@@ -113,7 +113,7 @@ export default function ResourcesContentPage() {
           <h1 className="text-3xl font-bold text-gray-900">Resources</h1>
           <p className="text-gray-600 mt-1">Resource directories and links</p>
         </div>
-        <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">
+        <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
           + Add Category
         </button>
       </div>
@@ -124,11 +124,11 @@ export default function ResourcesContentPage() {
           <div className="text-2xl font-bold text-violet-700">{categories.length}</div>
           <div className="text-sm text-violet-600">Categories</div>
         </div>
-        <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
+        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
           <div className="text-2xl font-bold text-purple-700">{sections.length}</div>
           <div className="text-sm text-purple-600">Sections</div>
         </div>
-        <div className="bg-pink-50 rounded-xl p-4 border border-pink-200">
+        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
           <div className="text-2xl font-bold text-pink-700">{resources.length}</div>
           <div className="text-sm text-pink-600">Resources</div>
         </div>
@@ -151,7 +151,7 @@ export default function ResourcesContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addCategory} className="px-4 py-2 bg-cyan-600 text-white rounded-lg">Add Category</button>
+            <button onClick={addCategory} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Category</button>
           </div>
         </div>
       )}
