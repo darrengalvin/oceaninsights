@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Ocean Insight app icon with realistic wave design"""
+"""Generate Below the Surface app icon with realistic wave design"""
 
 import os
 from pathlib import Path

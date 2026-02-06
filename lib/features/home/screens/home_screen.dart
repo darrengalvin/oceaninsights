@@ -961,10 +961,10 @@ class _SettingsSwitchTile extends StatelessWidget {
 }
 
 /// Full logo with waves icon + readable text below (for headers/branding)
-class _OceanInsightFullLogo extends StatelessWidget {
+class _BelowTheSurfaceFullLogo extends StatelessWidget {
   final double size;
   
-  const _OceanInsightFullLogo({
+  const _BelowTheSurfaceFullLogo({
     this.size = 60,
   });
 
@@ -976,11 +976,11 @@ class _OceanInsightFullLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // Wave icon in bordered box
-        _OceanInsightIcon(size: size),
+        _BelowTheSurfaceIcon(size: size),
         const SizedBox(height: 12),
         // Text below - clear and readable
         Text(
-          'OCEAN INSIGHT',
+          'BELOW THE SURFACE',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
@@ -994,10 +994,10 @@ class _OceanInsightFullLogo extends StatelessWidget {
 }
 
 /// Minimal wave icon in bordered box (for app icon / small uses)
-class _OceanInsightIcon extends StatelessWidget {
+class _BelowTheSurfaceIcon extends StatelessWidget {
   final double size;
   
-  const _OceanInsightIcon({
+  const _BelowTheSurfaceIcon({
     this.size = 60,
   });
 

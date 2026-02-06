@@ -44,7 +44,7 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Center(
               child: Text(
-                'OCEAN INSIGHT',
+                'BELOW THE SURFACE',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w300,
@@ -65,7 +65,7 @@ class AboutScreen extends StatelessWidget {
             _buildSection(
               context,
               'Our Mission',
-              'Ocean Insight is designed to support military personnel and their families with mental wellbeing tools that work completely offline. We understand that life at sea or on deployment means limited connectivity, so everything in this app works without internet access.',
+              'Below the Surface is designed to support military personnel and their families with mental wellbeing tools that work completely offline. We understand that life at sea or on deployment means limited connectivity, so everything in this app works without internet access.',
             ),
             
             _buildSection(
@@ -94,7 +94,7 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 32),
             Center(
               child: Text(
-                '© 2026 Ocean Insight',
+                '© 2026 Below the Surface',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: colours.textMuted,
                 ),

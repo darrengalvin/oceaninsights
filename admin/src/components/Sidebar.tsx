@@ -43,7 +43,7 @@ export default function Sidebar() {
     <>
       <div className="mb-8">
         <Link href="/admin" onClick={closeMobileMenu}>
-          <h1 className="text-xl font-bold text-ocean-700 cursor-pointer">Ocean Insight</h1>
+          <h1 className="text-xl font-bold text-ocean-700 cursor-pointer">Below the Surface</h1>
           <p className="text-sm text-gray-500">Admin Panel</p>
         </Link>
       </div>
@@ -139,7 +139,7 @@ export default function Sidebar() {
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <Link href="/admin">
-          <h1 className="text-lg font-bold text-ocean-700">Ocean Insight</h1>
+          <h1 className="text-lg font-bold text-ocean-700">Below the Surface</h1>
         </Link>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

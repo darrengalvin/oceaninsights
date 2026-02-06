@@ -11,7 +11,7 @@ You need to create **2 auto-renewable subscription products** in App Store Conne
 ### 1. Go to App Store Connect
 1. Visit https://appstoreconnect.apple.com
 2. Click **"My Apps"**
-3. Select **"Ocean Insight"** (or your app)
+3. Select **"Below the Surface"** (or your app)
 4. Go to **"In-App Purchases"** tab
 
 ---
@@ -23,7 +23,7 @@ Before creating subscriptions, you need a **Subscription Group**:
 1. Click **"+"** to create a new In-App Purchase
 2. Select **"Auto-Renewable Subscription"**
 3. You'll be prompted to create a **Subscription Group** first
-4. **Subscription Group Name**: `Ocean Insight Support`
+4. **Subscription Group Name**: `Below the Surface Support`
 5. Click **"Create"**
 
 ---

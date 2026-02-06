@@ -384,7 +384,7 @@ Which game interests you most? I can implement:
 2. **Submarine Garden** - Daily care game for deployment
 3. **Depth Dive** - Breath-hold exploration game
 
-All will include affirmations, mood tracking, and integration with your existing Deep Dive app!
+All will include affirmations, mood tracking, and integration with your existing Below the Surface app!
 
 What would you like to build next? 🎮🌊
 

@@ -1,6 +1,6 @@
 -- ============================================================
 -- COMPREHENSIVE APP CONTENT SCHEMA
--- All editable content for the DeepDive app
+-- All editable content for the Below the Surface app
 -- ============================================================
 
 -- ============================================================

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Deep Dive App Theme
+/// Below the Surface App Theme
 /// 
 /// Dark ocean theme - immersive, calm, professional
 /// Designed for military personnel in confined/low-light environments

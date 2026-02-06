@@ -26,7 +26,7 @@ class ThemeOption {
   });
 }
 
-/// All available themes for Deep Dive
+/// All available themes for Below the Surface
 class ThemeOptions {
   ThemeOptions._();
   
@@ -281,13 +281,13 @@ class ThemeOptions {
   );
 
   // ============================================
-  // THEME 11: OCEAN INSIGHT (Light blue-grey - Client's preference)
+  // THEME 11: BELOW THE SURFACE (Light blue-grey - Client's preference)
   // ============================================
-  static final oceanInsight = ThemeOption(
-    id: 'ocean_insight',
-    name: 'Ocean Insight',
+  static final belowTheSurface = ThemeOption(
+    id: 'below_the_surface',
+    name: 'Below the Surface',
     tagline: 'Light and clear, like calm seas',
-    description: 'The signature Ocean Insight theme. Light blue-grey background with clean, minimal styling.',
+    description: 'The signature Below the Surface theme. Light blue-grey background with clean, minimal styling.',
     bestFor: 'Clean, professional',
     previewBackground: const Color(0xFFCFD8E3),  // Light blue-grey
     previewCard: const Color(0xFFFFFFFF),        // White cards
@@ -309,7 +309,7 @@ class ThemeOptions {
   static final List<ThemeOption> all = [
     aqua,  // Best looking dark theme with aqua accents
     turquoise,
-    oceanInsight,  // Light theme option
+    belowTheSurface,  // Light theme option
     deepOcean,
     midnightSteel,
     arcticDepths,
@@ -324,7 +324,7 @@ class ThemeOptions {
   static ThemeOption getById(String id) {
     return all.firstWhere(
       (t) => t.id == id,
-      orElse: () => oceanInsight,
+      orElse: () => belowTheSurface,
     );
   }
   

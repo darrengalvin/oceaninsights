@@ -107,16 +107,16 @@ class VeteranScreen extends StatelessWidget {
                       icon: Icons.business_outlined,
                       categories: const [
                         ResourceCategory(title: 'Getting Started', icon: Icons.rocket_launch, resources: [
-                          ResourceItem(title: 'Boots to Business', subtitle: 'SBA veteran program', icon: Icons.school, description: 'Free entrepreneurship training for veterans. Learn fundamentals of business ownership.', details: ['Free 2-day workshop', 'Online option available', 'Includes business plan help']),
-                          ResourceItem(title: 'Veteran Business Outreach Centers', subtitle: 'SBA support', icon: Icons.support, description: 'Free business counseling, training, and mentoring for veteran entrepreneurs.'),
+                          ResourceItem(title: 'Veteran Business Training', subtitle: 'Free entrepreneurship programs', icon: Icons.school, description: 'Free entrepreneurship training for veterans. Learn fundamentals of business ownership.', details: ['Free workshops available', 'Online options', 'Business plan assistance']),
+                          ResourceItem(title: 'Veteran Business Support', subtitle: 'Counseling services', icon: Icons.support, description: 'Free business counseling, training, and mentoring for veteran entrepreneurs.'),
                         ]),
                         ResourceCategory(title: 'Funding', icon: Icons.attach_money, resources: [
-                          ResourceItem(title: 'SBA Veteran Loans', subtitle: 'Financing options', icon: Icons.account_balance, description: 'SBA offers loan programs with favorable terms for veteran-owned businesses.', details: ['No SBA borrowing limits', 'Reduced fees for veterans', 'Express loans available']),
+                          ResourceItem(title: 'Veteran Business Loans', subtitle: 'Financing options', icon: Icons.account_balance, description: 'Many countries offer loan programs with favorable terms for veteran-owned businesses.', details: ['Special veteran rates', 'Reduced fees often available', 'Expedited processing']),
                           ResourceItem(title: 'Veteran Grants', subtitle: 'Non-repayable funding', icon: Icons.card_giftcard, description: 'Various organizations offer grants specifically for veteran entrepreneurs.'),
                         ]),
                         ResourceCategory(title: 'Mentorship', icon: Icons.people, resources: [
-                          ResourceItem(title: 'SCORE Mentoring', subtitle: 'Free business mentors', icon: Icons.person, description: 'Volunteer business mentors provide free guidance. Many SCORE mentors are veterans.'),
-                          ResourceItem(title: 'Bunker Labs', subtitle: 'Veteran entrepreneur network', icon: Icons.groups, description: 'National network of veteran entrepreneurs offering programs, events, and community.'),
+                          ResourceItem(title: 'Business Mentoring', subtitle: 'Free business mentors', icon: Icons.person, description: 'Volunteer business mentors provide free guidance. Many are veterans themselves.'),
+                          ResourceItem(title: 'Veteran Entrepreneur Networks', subtitle: 'Connect with veteran business owners', icon: Icons.groups, description: 'Networks of veteran entrepreneurs offering programs, events, and community support.'),
                         ]),
                       ],
                     )),
@@ -144,7 +144,7 @@ class VeteranScreen extends StatelessWidget {
                         TipCard(title: 'Adjusting Your Fitness', content: 'Military PT is intense. You may need to adjust to a sustainable civilian routine. Focus on consistency over intensity.', keyPoints: ['Find what you enjoy', 'Recovery is important', 'Set realistic goals']),
                         TipCard(title: 'Dealing with Injuries', content: 'Many veterans have service-related injuries. Work with veteran healthcare or civilian providers to adapt workouts safely.', keyPoints: ['Don\'t push through pain', 'Consider physical therapy', 'Modify, don\'t quit']),
                         TipCard(title: 'Nutrition Basics', content: 'Without DFAC meals, you control your nutrition. Focus on whole foods, adequate protein, and hydration.', keyPoints: ['Protein with every meal', 'More vegetables', 'Limit processed foods']),
-                        TipCard(title: 'Veteran Fitness Programs', content: 'Many programs offer discounts or free access to veterans. Check gym, CrossFit, and community programs.', keyPoints: ['YMCA veteran programs', 'Team Red White & Blue', 'Local veteran fitness groups']),
+                        TipCard(title: 'Veteran Fitness Programs', content: 'Many programs offer discounts or free access to veterans. Check gym, fitness, and community programs.', keyPoints: ['Community fitness programs', 'Veteran running groups', 'Local veteran fitness groups']),
                       ],
                     )),
                   ),
@@ -285,16 +285,16 @@ class VeteranScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (_) => ResourceListScreen(
                       title: 'Local Meetups',
-                      subtitle: 'Connect with veterans near you',
-                      icon: Icons.location_on_outlined,
+                      subtitle: 'Find veteran groups and events in your area',
+                      icon: Icons.groups_outlined,
                       categories: const [
                         ResourceCategory(title: 'Regular Events', icon: Icons.calendar_today, resources: [
-                          ResourceItem(title: 'Coffee & Conversation', subtitle: 'Casual meetups', icon: Icons.coffee, description: 'Informal gatherings at local coffee shops. No agenda, just connection.', details: ['Check VFW/Legion posts', 'Team RWB chapters', 'Facebook groups']),
-                          ResourceItem(title: 'Fitness Groups', subtitle: 'Stay active together', icon: Icons.fitness_center, description: 'Running clubs, CrossFit groups, and outdoor activities for veterans.', details: ['Team Red White & Blue', 'The Mission Continues', 'Local gym vet groups']),
+                          ResourceItem(title: 'Coffee & Conversation', subtitle: 'Casual meetups', icon: Icons.coffee, description: 'Informal gatherings at local coffee shops. No agenda, just connection.', details: ['Check local veteran posts', 'Veteran community chapters', 'Social media groups']),
+                          ResourceItem(title: 'Fitness Groups', subtitle: 'Stay active together', icon: Icons.fitness_center, description: 'Running clubs, fitness groups, and outdoor activities for veterans.', details: ['Veteran fitness organizations', 'Community service groups', 'Local gym veteran groups']),
                         ]),
-                        ResourceCategory(title: 'Finding Events', icon: Icons.search, resources: [
-                          ResourceItem(title: 'Veteran Organizations', subtitle: 'VFW, Legion, DAV', icon: Icons.groups, description: 'Traditional veteran service organizations host regular events and meetings.'),
-                          ResourceItem(title: 'Online Platforms', subtitle: 'Find local events', icon: Icons.computer, description: 'Meetup.com, Facebook Groups, and organization websites list local events.'),
+                        ResourceCategory(title: 'Finding Events', icon: Icons.event, resources: [
+                          ResourceItem(title: 'Veteran Organizations', subtitle: 'Local veteran groups', icon: Icons.groups, description: 'Traditional veteran service organizations host regular events and meetings.'),
+                          ResourceItem(title: 'Online Platforms', subtitle: 'Find local events', icon: Icons.computer, description: 'Social media groups and organization websites list local events.'),
                         ]),
                       ],
                     )),
@@ -311,7 +311,7 @@ class VeteranScreen extends StatelessWidget {
                       icon: Icons.groups_outlined,
                       tips: const [
                         TipCard(title: 'Why Attend?', content: 'Veteran conferences offer networking, job opportunities, education, and community. Many offer free or discounted registration.', keyPoints: ['Career opportunities', 'Continuing education', 'Make connections']),
-                        TipCard(title: 'Major Conferences', content: 'HIRE Vets, Student Veterans of America Summit, Bunker Labs events, and industry-specific veteran conferences.', keyPoints: ['Annual events', 'Regional options', 'Virtual attendance often available']),
+                        TipCard(title: 'Major Conferences', content: 'Veteran employment summits, entrepreneur events, and industry-specific veteran conferences.', keyPoints: ['Annual events', 'Regional options', 'Virtual attendance often available']),
                         TipCard(title: 'Getting the Most Out', content: 'Set goals before attending. Who do you want to meet? What do you want to learn? Follow up after.', keyPoints: ['Prepare talking points', 'Bring business cards', 'Follow up within a week']),
                       ],
                     )),
@@ -367,8 +367,8 @@ class VeteranScreen extends StatelessWidget {
                                 ResourceItem(title: 'Honor Guard', subtitle: 'Veteran ceremonies', icon: Icons.flag, description: 'Participate in military funeral honors and ceremonies.'),
                               ]),
                               ResourceCategory(title: 'Community', icon: Icons.location_city, resources: [
-                                ResourceItem(title: 'The Mission Continues', subtitle: 'Service platoons', icon: Icons.groups, description: 'Veteran-led community service projects in cities nationwide.'),
-                                ResourceItem(title: 'Team Rubicon', subtitle: 'Disaster response', icon: Icons.emergency, description: 'Deploy military skills for disaster relief operations.'),
+                                ResourceItem(title: 'Community Service Projects', subtitle: 'Local volunteering', icon: Icons.groups, description: 'Veteran-led community service projects in cities and towns.'),
+                                ResourceItem(title: 'Disaster Response', subtitle: 'Emergency volunteering', icon: Icons.emergency, description: 'Deploy military skills for disaster relief operations.'),
                               ]),
                             ],
                           )),

@@ -1,5 +1,5 @@
 -- ============================================
--- OCEAN INSIGHT CONTENT MANAGEMENT SCHEMA
+-- BELOW THE SURFACE CONTENT MANAGEMENT SCHEMA
 -- Run this in Supabase SQL Editor
 -- ============================================
 

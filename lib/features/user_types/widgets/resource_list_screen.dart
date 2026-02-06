@@ -52,30 +52,16 @@ class _ResourceListScreenState extends State<ResourceListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
+          // Header - descriptive, not a search box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: accent.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+            child: Text(
+              widget.subtitle,
+              style: TextStyle(
+                color: colours.textMuted,
+                fontSize: 14,
               ),
-              child: Row(
-                children: [
-                  Icon(widget.icon, color: accent, size: 24),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      widget.subtitle,
-                      style: TextStyle(
-                        color: colours.textMuted,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              textAlign: TextAlign.center,
             ),
           ),
           const SizedBox(height: 16),

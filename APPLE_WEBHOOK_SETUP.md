@@ -45,7 +45,7 @@ Find your project ref in Supabase Dashboard > Settings > General.
 ### 4. Configure App Store Connect
 
 1. Go to [App Store Connect](https://appstoreconnect.apple.com)
-2. Select your app: **Ocean Insight**
+2. Select your app: **Below the Surface**
 3. Go to **App Information** (in General section)
 4. Scroll to **App Store Server Notifications**
 5. Enter your URLs:

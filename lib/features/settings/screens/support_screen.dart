@@ -8,10 +8,10 @@ class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
   
   // TODO: Update these with your actual URLs
-  static const String supportEmail = 'support@oceaninsight.app';
-  static const String websiteUrl = 'https://oceaninsight.app';
-  static const String privacyPolicyUrl = 'https://oceaninsight.app/privacy';
-  static const String termsUrl = 'https://oceaninsight.app/terms';
+  static const String supportEmail = 'support@belowthesurface.app';
+  static const String websiteUrl = 'https://belowthesurface.app';
+  static const String privacyPolicyUrl = 'https://belowthesurface.app/privacy';
+  static const String termsUrl = 'https://belowthesurface.app/terms';
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
@@ -25,7 +25,7 @@ class SupportScreen extends StatelessWidget {
       scheme: 'mailto',
       path: supportEmail,
       queryParameters: {
-        'subject': 'Ocean Insight Support Request',
+        'subject': 'Below the Surface Support Request',
         'body': 'App Version: 1.0.0\n\nPlease describe your issue:\n\n',
       },
     );

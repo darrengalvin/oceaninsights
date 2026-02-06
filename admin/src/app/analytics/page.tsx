@@ -103,7 +103,7 @@ export default function AnalyticsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Analytics Dashboard</h1>
-          <p className="text-gray-400 text-sm mt-1">Anonymous usage metrics for Ocean Insight</p>
+          <p className="text-gray-400 text-sm mt-1">Anonymous usage metrics for Below the Surface</p>
         </div>
         <div className="flex items-center gap-3">
           <select

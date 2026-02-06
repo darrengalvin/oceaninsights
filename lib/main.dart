@@ -68,17 +68,17 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   
-  runApp(const OceanInsightApp());
+  runApp(const BelowTheSurfaceApp());
 }
 
-class OceanInsightApp extends StatefulWidget {
-  const OceanInsightApp({super.key});
+class BelowTheSurfaceApp extends StatefulWidget {
+  const BelowTheSurfaceApp({super.key});
 
   @override
-  State<OceanInsightApp> createState() => _OceanInsightAppState();
+  State<BelowTheSurfaceApp> createState() => _BelowTheSurfaceAppState();
 }
 
-class _OceanInsightAppState extends State<OceanInsightApp> with WidgetsBindingObserver {
+class _BelowTheSurfaceAppState extends State<BelowTheSurfaceApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -131,7 +131,7 @@ class _OceanInsightAppState extends State<OceanInsightApp> with WidgetsBindingOb
           );
           
           return MaterialApp(
-            title: 'Ocean Insight',
+            title: 'Below the Surface',
             debugShowCheckedModeBanner: false,
             theme: themeProvider.themeData,
             darkTheme: themeProvider.themeData,

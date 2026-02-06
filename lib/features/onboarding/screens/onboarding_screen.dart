@@ -219,7 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           const Spacer(flex: 3),
           // Logo - clean, no border
-          _OceanInsightFullLogo(size: 100, showBorder: false),
+          _BelowTheSurfaceFullLogo(size: 100, showBorder: false),
           const SizedBox(height: 48),
           // Tagline - refined typography
           Text(
@@ -456,11 +456,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 }
 
 /// Full logo with waves icon + readable text below (for headers/branding)
-class _OceanInsightFullLogo extends StatelessWidget {
+class _BelowTheSurfaceFullLogo extends StatelessWidget {
   final double size;
   final bool showBorder;
   
-  const _OceanInsightFullLogo({
+  const _BelowTheSurfaceFullLogo({
     this.size = 80,
     this.showBorder = true,
   });
@@ -473,11 +473,11 @@ class _OceanInsightFullLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // Wave icon
-        _OceanInsightIcon(size: size, showBorder: showBorder),
+        _BelowTheSurfaceIcon(size: size, showBorder: showBorder),
         const SizedBox(height: 14),
         // Text below - refined letter-spacing
         Text(
-          'OCEAN INSIGHT',
+          'BELOW THE SURFACE',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w400,
@@ -491,11 +491,11 @@ class _OceanInsightFullLogo extends StatelessWidget {
 }
 
 /// Minimal wave icon (for app icon / small uses)
-class _OceanInsightIcon extends StatelessWidget {
+class _BelowTheSurfaceIcon extends StatelessWidget {
   final double size;
   final bool showBorder;
   
-  const _OceanInsightIcon({
+  const _BelowTheSurfaceIcon({
     this.size = 80,
     this.showBorder = true,
   });

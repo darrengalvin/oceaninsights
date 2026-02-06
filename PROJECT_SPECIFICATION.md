@@ -1,4 +1,4 @@
-# Ocean Insight - Mobile Mental Health Application
+# Below the Surface - Mobile Mental Health Application
 ## Technical Specification Document
 
 **Version:** 1.0  
@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary
 
-Ocean Insight is a comprehensive mental health and wellbeing mobile application designed specifically for military personnel who operate in environments with limited or no internet connectivity. The application provides evidence-based mental health resources, personalised AI-driven insights, guided breathing exercises, mood tracking, educational content, and calm audio—all functioning completely offline after initial setup.
+Below the Surface is a comprehensive mental health and wellbeing mobile application designed specifically for military personnel who operate in environments with limited or no internet connectivity. The application provides evidence-based mental health resources, personalised AI-driven insights, guided breathing exercises, mood tracking, educational content, and calm audio—all functioning completely offline after initial setup.
 
 The system consists of three main components:
 1. **Mobile Application** (Flutter - iOS/Android/Web)
@@ -1083,14 +1083,14 @@ Per user preference, the design avoids gradients (especially purple) to maintain
 - TestFlight for beta testing
 - App Store Connect setup
 - Required: Apple Developer account (£99/year)
-- Bundle ID: `com.oceaninsight.deepdive` (or similar)
+- Bundle ID: `com.belowthesurface.deepdive` (or similar)
 
 **Android:**
 - Google Play Store
 - Closed/open testing tracks
 - Play Console setup
 - Required: Google Play Developer account ($25 one-time)
-- Package name: `com.oceaninsight.deepdive` (or similar)
+- Package name: `com.belowthesurface.deepdive` (or similar)
 
 **Web:**
 - Firebase Hosting, Netlify, or Vercel
@@ -1424,7 +1424,7 @@ A detailed GPT prompt is provided (`gpt-content-generator.md`) to generate conte
 
 **Required In-App Disclaimer:**
 
-"Ocean Insight is designed to support your mental wellbeing and is not a substitute for professional medical advice, diagnosis, or treatment. If you are experiencing a mental health crisis or emergency, please contact emergency services or a mental health professional immediately."
+"Below the Surface is designed to support your mental wellbeing and is not a substitute for professional medical advice, diagnosis, or treatment. If you are experiencing a mental health crisis or emergency, please contact emergency services or a mental health professional immediately."
 
 **Placement:**
 - Onboarding screen
@@ -1825,7 +1825,7 @@ Unless specifically requested:
 
 ## 25. Conclusion
 
-Ocean Insight represents a comprehensive, privacy-first mental health solution specifically designed for military personnel operating in offline environments. The application balances sophisticated features (AI personalisation, content management, rich media) with strict privacy requirements and operational security constraints.
+Below the Surface represents a comprehensive, privacy-first mental health solution specifically designed for military personnel operating in offline environments. The application balances sophisticated features (AI personalisation, content management, rich media) with strict privacy requirements and operational security constraints.
 
 The three-component architecture (mobile app, admin panel, backend) provides scalability, maintainability, and content flexibility whilst ensuring the core user experience remains fully offline-capable.
 

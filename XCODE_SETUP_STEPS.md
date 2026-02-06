@@ -162,7 +162,7 @@ flutter build ios --release
 ## Your App Details
 
 **Bundle ID:** com.ocean.darrengalvin  
-**App Name:** Ocean Insight  
+**App Name:** Below the Surface  
 **SKU:** com.ocean.darrengalvin  
 **Apple ID:** 6758065156  
 **Min iOS:** 13.0

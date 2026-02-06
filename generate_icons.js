@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate Ocean Insight app icons from SVG
+ * Generate Below the Surface app icons from SVG
  */
 
 const fs = require('fs');
@@ -105,7 +105,7 @@ const iconSizes = {
 };
 
 async function generateIcons() {
-  console.log('🌊 Generating Ocean Insight app icons with wave design...\n');
+  console.log('🌊 Generating Below the Surface app icons with wave design...\n');
   
   const tool = await checkTools();
   if (!tool) {

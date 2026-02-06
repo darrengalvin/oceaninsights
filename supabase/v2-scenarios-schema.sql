@@ -1,4 +1,4 @@
--- Ocean Insight v2.0 - Scenario Engine Schema
+-- Below the Surface v2.0 - Scenario Engine Schema
 -- Decision training system with scenarios, options, and protocols
 
 -- Content Packs (organize scenarios and protocols)

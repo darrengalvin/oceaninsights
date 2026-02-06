@@ -103,7 +103,7 @@ Each notification includes:
 
 If permission was denied:
 1. User must go to device Settings
-2. Find Ocean Insight app
+2. Find Below the Surface app
 3. Enable notifications manually
 4. Return to app and toggle setting
 

@@ -1,6 +1,6 @@
 # App Store Submission Checklist
 
-Complete guide for getting Ocean Insight approved on Apple App Store and Google Play Store.
+Complete guide for getting Below the Surface approved on Apple App Store and Google Play Store.
 
 ---
 
@@ -8,7 +8,7 @@ Complete guide for getting Ocean Insight approved on Apple App Store and Google 
 
 - [x] Android INTERNET permission added
 - [x] Android BILLING permission added  
-- [x] Android app label fixed to "Ocean Insight"
+- [x] Android app label fixed to "Below the Surface"
 - [x] Terms of Service screen created
 - [x] Support screen with FAQ and crisis resources
 - [x] Links added to home screen (About, Privacy, Terms, Support)
@@ -22,17 +22,17 @@ Complete guide for getting Ocean Insight approved on Apple App Store and Google 
 Both stores REQUIRE publicly accessible URLs for:
 
 **Privacy Policy URL** (REQUIRED)
-- Host at: `https://oceaninsight.app/privacy`
+- Host at: `https://belowthesurface.app/privacy`
 - Must match in-app content
 - Include: data collection, third-party sharing, user rights
 
 **Terms of Service URL** (REQUIRED)
-- Host at: `https://oceaninsight.app/terms`
+- Host at: `https://belowthesurface.app/terms`
 - Must cover: medical disclaimer, purchases, liability
 
 **Support URL** (REQUIRED)
-- Host at: `https://oceaninsight.app/support`
-- Or use email: `support@oceaninsight.app`
+- Host at: `https://belowthesurface.app/support`
+- Or use email: `support@belowthesurface.app`
 
 > **Quick Option:** Use a free service like Notion, Carrd, or GitHub Pages to host these
 
@@ -73,12 +73,12 @@ Prepare screenshots for ALL required sizes:
 
 ### 4. App Store Metadata
 
-**App Name:** Ocean Insight  
+**App Name:** Below the Surface  
 **Subtitle:** Mental Wellbeing for Service Members
 
 **Description (First paragraph is crucial):**
 ```
-Ocean Insight is your personal mental wellbeing companion, designed specifically for military personnel, veterans, and their families. Whether you're at sea, on deployment, or at home, access powerful tools that work completely offline.
+Below the Surface is your personal mental wellbeing companion, designed specifically for military personnel, veterans, and their families. Whether you're at sea, on deployment, or at home, access powerful tools that work completely offline.
 
 Features include guided breathing exercises, mood tracking, educational content about brain function and psychology, goal setting, daily rituals, affirmations, and calming soundscapes.
 
@@ -96,7 +96,7 @@ mental health,wellbeing,military,veteran,breathing,meditation,mood,anxiety,stres
 
 Answer these in App Store Connect / Google Play Console:
 
-| Question | Answer for Ocean Insight |
+| Question | Answer for Below the Surface |
 |----------|-------------------------|
 | Violence | None |
 | Sexual Content | None |
@@ -140,7 +140,7 @@ Answer these in App Store Connect / Google Play Console:
 
 5. **Review Notes for Apple**
    ```
-   Ocean Insight is a mental wellbeing app for military personnel. 
+   Below the Surface is a mental wellbeing app for military personnel. 
    
    Key points for review:
    - No account/login required

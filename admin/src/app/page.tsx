@@ -30,7 +30,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <Waves className="w-8 h-8 text-slate-700" />
-              <span className="text-xl font-bold text-slate-800">Ocean Insight</span>
+              <span className="text-xl font-bold text-slate-800">Below the Surface</span>
             </div>
             <div className="flex items-center gap-4">
               <Link 
@@ -253,7 +253,7 @@ export default function LandingPage() {
 
           <div className="mt-12 text-center">
             <p className="text-white/80 text-sm max-w-xl mx-auto">
-              Ocean Insight was built by someone who understands operational security. 
+              Below the Surface was built by someone who understands operational security. 
               Your mental health tools should never compromise your safety or mission.
             </p>
           </div>
@@ -364,7 +364,7 @@ export default function LandingPage() {
             Ready to Dive Deep?
           </h2>
           <p className="text-slate-700 mb-10 max-w-xl mx-auto">
-            Download Ocean Insight and start building mental resilience grounded in military discipline.
+            Download Below the Surface and start building mental resilience grounded in military discipline.
           </p>
           
           <a 
@@ -394,7 +394,7 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Waves className="w-6 h-6 text-slate-700" />
-              <span className="text-slate-800 font-semibold">Ocean Insight</span>
+              <span className="text-slate-800 font-semibold">Below the Surface</span>
             </div>
             
             <div className="flex items-center gap-6 text-sm text-slate-600">
@@ -410,7 +410,7 @@ export default function LandingPage() {
             </div>
             
             <p className="text-sm text-slate-600">
-              © {new Date().getFullYear()} Ocean Insight
+              © {new Date().getFullYear()} Below the Surface
             </p>
           </div>
         </div>

@@ -45,7 +45,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             _buildSection(
               context,
               'Important Disclaimer',
-              'Ocean Insight is designed for general mental wellbeing support only. '
+              'Below the Surface is designed for general mental wellbeing support only. '
               'This app is NOT a replacement for professional medical advice, diagnosis, or treatment.\n\n'
               'If you are experiencing a mental health crisis or emergency, please seek immediate professional help.',
             ),
@@ -81,7 +81,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             _buildSection(
               context,
               'Pay It Forward Model',
-              'Ocean Insight uses a community "Pay It Forward" model. '
+              'Below the Surface uses a community "Pay It Forward" model. '
               'Your access was covered by someone before you. Contributions help cover access for others who cannot afford it, '
               'such as teenagers or those facing financial hardship.',
             ),

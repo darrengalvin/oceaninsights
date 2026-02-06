@@ -1,4 +1,4 @@
-# Deep Dive - Colour Palette Options
+# Below the Surface - Colour Palette Options
 
 ## Current: DEEP OCEAN
 ```

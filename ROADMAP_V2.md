@@ -1,4 +1,4 @@
-# Ocean Insight - Version 2.0 Product Roadmap
+# Below the Surface - Version 2.0 Product Roadmap
 
 **Date:** January 2026  
 **Current Version:** 1.0 (Reading + Breathing + Mood)  

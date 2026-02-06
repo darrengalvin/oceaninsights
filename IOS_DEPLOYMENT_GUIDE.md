@@ -1,6 +1,6 @@
-# Ocean Insight - iOS Deployment Guide
+# Below the Surface - iOS Deployment Guide
 
-**App Name:** Ocean Insights Cert  
+**App Name:** Below the Surfaces Cert  
 **Bundle ID:** com.ocean.darrengalvin  
 **SKU:** com.ocean.darrengalvin  
 **Apple ID:** 6758065156  
@@ -66,7 +66,7 @@ Open `pubspec.yaml` and ensure you have:
 
 ```yaml
 name: deep_dive
-description: Ocean Insight - Mental Health Companion for Military Personnel
+description: Below the Surface - Mental Health Companion for Military Personnel
 version: 1.0.0+1  # version+build number
 ```
 
@@ -102,10 +102,10 @@ Edit `ios/Runner/Info.plist`:
 <dict>
     <!-- App Name -->
     <key>CFBundleDisplayName</key>
-    <string>Ocean Insight</string>
+    <string>Below the Surface</string>
     
     <key>CFBundleName</key>
-    <string>Ocean Insight</string>
+    <string>Below the Surface</string>
     
     <!-- Bundle Identifier -->
     <key>CFBundleIdentifier</key>
@@ -345,7 +345,7 @@ flutter run --release
 | Field | Value |
 |-------|-------|
 | Platform | iOS |
-| Name | Ocean Insight |
+| Name | Below the Surface |
 | Primary Language | English (UK) |
 | Bundle ID | com.ocean.darrengalvin |
 | SKU | com.ocean.darrengalvin |
@@ -408,7 +408,7 @@ flutter run -d "iPhone 15 Pro Max"
 **Description** (4000 characters max):
 
 ```
-Ocean Insight is a comprehensive mental health and wellbeing companion designed specifically for military personnel, veterans, and their families. Unlike other wellbeing apps, Ocean Insight works completely offline – perfect for deployments and environments without internet access.
+Below the Surface is a comprehensive mental health and wellbeing companion designed specifically for military personnel, veterans, and their families. Unlike other wellbeing apps, Below the Surface works completely offline – perfect for deployments and environments without internet access.
 
 BUILT FOR SERVICE MEMBERS
 Designed with operational security (OPSEC) in mind. No GPS tracking, no camera access, no detailed journaling that could compromise your privacy or security.
@@ -456,10 +456,10 @@ The only mental health app designed for military personnel that works completely
 ```
 
 **Support URL:**
-- Create a simple website or use: `https://oceaninsight.app/support`
+- Create a simple website or use: `https://belowthesurface.app/support`
 
 **Marketing URL** (optional):
-- `https://oceaninsight.app`
+- `https://belowthesurface.app`
 
 ---
 
@@ -512,7 +512,7 @@ See section 7.5 below for automation setup.
 
 After upload:
 1. Go to: https://appstoreconnect.apple.com/
-2. Go to: **My Apps** → **Ocean Insight** → **TestFlight** tab
+2. Go to: **My Apps** → **Below the Surface** → **TestFlight** tab
 3. Wait for **"Processing"** to complete (10-60 minutes)
 4. You'll receive an email when ready
 
@@ -610,7 +610,7 @@ Before submitting, ensure you have:
 ### 8.3 Complete Version Information
 
 **Version Information:**
-- What's New in This Version: "Initial release of Ocean Insight..."
+- What's New in This Version: "Initial release of Below the Surface..."
 
 **App Review Information:**
 - Contact: Your email and phone
@@ -802,8 +802,8 @@ flutter devices
 **For Reference:**
 
 ```
-App Name: Ocean Insight
-Display Name: Ocean Insight
+App Name: Below the Surface
+Display Name: Below the Surface
 Bundle ID: com.ocean.darrengalvin
 SKU: com.ocean.darrengalvin
 Apple ID: 6758065156

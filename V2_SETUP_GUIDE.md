@@ -1,4 +1,4 @@
-# Ocean Insight v2.0 - Setup & Deployment Guide
+# Below the Surface v2.0 - Setup & Deployment Guide
 
 **Decision Training System Complete!** 🎉
 

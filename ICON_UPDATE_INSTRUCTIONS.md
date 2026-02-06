@@ -20,7 +20,7 @@ backups/old-app-icons/AppIcon.appiconset/
 1. Open `app-icon-generator.html` in **Safari** or **Chrome**
 2. You'll see the new wave-based icon design
 3. Right-click the icon and select **"Save Image As..."**
-4. Save as `ocean-insight-icon-1024.png`
+4. Save as `below-the-surface-icon-1024.png`
 5. Go to https://appicon.co/
 6. Upload the PNG file
 7. Download the generated assets
@@ -29,7 +29,7 @@ backups/old-app-icons/AppIcon.appiconset/
 ### Option 2: Using Browser Developer Tools
 1. Open `app-icon-generator.html` in a browser
 2. Click the **"Download as PNG"** button
-3. The icon will download automatically as `ocean-insight-icon-1024x1024.png`
+3. The icon will download automatically as `below-the-surface-icon-1024x1024.png`
 4. Follow steps 5-8 from Option 1 above
 
 ### Option 3: Manual Extract from HTML

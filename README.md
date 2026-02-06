@@ -1,4 +1,4 @@
-# Deep Dive
+# Below the Surface
 
 A mental health companion app for military personnel, specifically designed for submariners who deploy without internet access.
 

@@ -863,7 +863,7 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   icon: Icons.people_outline,
                   tips: const [
                     TipCard(title: 'LinkedIn is Essential', content: 'Create a strong LinkedIn profile. Connect with veterans, recruiters, and people in your target industry.', keyPoints: ['Professional photo', 'Translated military experience', 'Connect actively']),
-                    TipCard(title: 'Veteran Organizations', content: 'Join veteran groups for networking. VFW, American Legion, and industry-specific veteran groups are valuable.', keyPoints: ['Built-in trust', 'Shared experiences', 'Mentorship opportunities']),
+                    TipCard(title: 'Veteran Organizations', content: 'Join veteran groups for networking. Local veteran associations and industry-specific veteran groups are valuable.', keyPoints: ['Built-in trust', 'Shared experiences', 'Mentorship opportunities']),
                     TipCard(title: 'Informational Interviews', content: 'Ask people for 15-minute conversations about their career. Most are happy to help, and you learn a lot.', keyPoints: ['Ask questions, don\'t pitch', 'Follow up with thanks', 'Ask for referrals']),
                     TipCard(title: 'Give Before You Ask', content: 'Networking is about relationships, not transactions. Help others first, and opportunities will come.', keyPoints: ['Share resources', 'Make introductions', 'Be genuinely helpful']),
                   ],

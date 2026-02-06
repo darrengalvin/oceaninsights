@@ -45,13 +45,13 @@ class TermsOfServiceScreen extends StatelessWidget {
             _buildSection(
               context,
               '1. Acceptance of Terms',
-              'By downloading, installing, or using Ocean Insight ("the App"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the App.',
+              'By downloading, installing, or using Below the Surface ("the App"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the App.',
             ),
             
             _buildSection(
               context,
               '2. Important Medical Disclaimer',
-              'Ocean Insight is designed for general mental wellbeing support ONLY.\n\n'
+              'Below the Surface is designed for general mental wellbeing support ONLY.\n\n'
               '• This App is NOT a substitute for professional medical advice, diagnosis, or treatment\n'
               '• Never disregard professional medical advice because of something you read in this App\n'
               '• If you are experiencing a mental health crisis, please contact emergency services immediately\n'
@@ -62,7 +62,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             _buildSection(
               context,
               '3. The Pay It Forward Model',
-              'Ocean Insight operates on a community-supported "Pay It Forward" model:\n\n'
+              'Below the Surface operates on a community-supported "Pay It Forward" model:\n\n'
               '• The App is free to download and use\n'
               '• Your access has been covered by someone before you in the chain\n'
               '• You are invited (but not required) to contribute to cover someone else\'s access\n'
@@ -104,7 +104,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             _buildSection(
               context,
               '7. Intellectual Property',
-              '• All content, features, and functionality are owned by Ocean Insight\n'
+              '• All content, features, and functionality are owned by Below the Surface\n'
               '• You may not copy, modify, distribute, or reverse engineer the App\n'
               '• The App is licensed, not sold, for personal, non-commercial use only',
             ),
@@ -113,7 +113,7 @@ class TermsOfServiceScreen extends StatelessWidget {
               context,
               '8. Limitation of Liability',
               'To the maximum extent permitted by law:\n\n'
-              '• Ocean Insight is provided "as is" without warranties of any kind\n'
+              '• Below the Surface is provided "as is" without warranties of any kind\n'
               '• We are not liable for any damages arising from your use of the App\n'
               '• We are not responsible for any decisions you make based on App content\n'
               '• Our liability is limited to the amount you have contributed, if any',

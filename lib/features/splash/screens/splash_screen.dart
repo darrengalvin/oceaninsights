@@ -177,7 +177,7 @@ class _SplashScreenState extends State<SplashScreen>
                         SizedBox(
                           width: double.infinity,
                           child: Text(
-                            'OCEAN INSIGHT',
+                            'BELOW THE SURFACE',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.outfit(
                               fontSize: 32,
