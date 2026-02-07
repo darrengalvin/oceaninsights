@@ -134,7 +134,7 @@ class PremiumPrompt extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: colours.cardBackground,
+        color: colours.card,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
@@ -171,7 +171,7 @@ class PremiumPrompt extends StatelessWidget {
             "You're getting the hang of it!",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
-              color: colours.textPrimary,
+              color: colours.textBright,
             ),
             textAlign: TextAlign.center,
           ),
@@ -181,7 +181,7 @@ class PremiumPrompt extends StatelessWidget {
           Text(
             config.message ?? 'Subscribe to unlock unlimited access to all features.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colours.textSecondary,
+              color: colours.textLight,
             ),
             textAlign: TextAlign.center,
           ),
