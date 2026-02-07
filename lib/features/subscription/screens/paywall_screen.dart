@@ -227,6 +227,21 @@ class _PaywallScreenState extends State<PaywallScreen> {
               ),
             ),
             
+            // Auto-renewal disclaimer (required by Apple)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. '
+                'Manage subscriptions in your Apple ID settings.',
+                style: TextStyle(
+                  color: const Color(0xFF1A2332).withOpacity(0.5),
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 8),
+            
             // Terms and Privacy links
             Padding(
               padding: const EdgeInsets.only(bottom: 24),
@@ -235,7 +250,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      // Navigate to terms
+                      Navigator.of(context).pushNamed('/terms');
                     },
                     child: Text(
                       'Terms of Use',
@@ -253,7 +268,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // Navigate to privacy
+                      Navigator.of(context).pushNamed('/privacy');
                     },
                     child: Text(
                       'Privacy Policy',
