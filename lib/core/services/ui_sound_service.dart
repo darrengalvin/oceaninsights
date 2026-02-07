@@ -61,9 +61,8 @@ class UISoundService {
       return _clickPlayer!.seek(Duration.zero);
     }).then((_) {
       return _clickPlayer!.play();
-    }).then((_) {
-      debugPrint('🔊 Click sound played');
     }).catchError((e) {
+      // Only log errors, not every click
       debugPrint('⚠️ Failed to play click sound: $e');
     });
   }
