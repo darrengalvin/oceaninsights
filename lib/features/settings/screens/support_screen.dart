@@ -7,11 +7,10 @@ import '../../../core/theme/theme_options.dart';
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
   
-  // TODO: Update these with your actual URLs
-  static const String supportEmail = 'support@belowthesurface.app';
-  static const String websiteUrl = 'https://belowthesurface.app';
-  static const String privacyPolicyUrl = 'https://belowthesurface.app/privacy';
-  static const String termsUrl = 'https://belowthesurface.app/terms';
+  static const String supportEmail = 'admin@yourcaio.co.uk';
+  static const String websiteUrl = 'https://admin-pi-eosin-53.vercel.app';
+  static const String privacyPolicyUrl = 'https://admin-pi-eosin-53.vercel.app/privacy';
+  static const String termsUrl = 'https://admin-pi-eosin-53.vercel.app/terms';
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
