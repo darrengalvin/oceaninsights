@@ -9,8 +9,8 @@ class SupportScreen extends StatelessWidget {
   
   static const String supportEmail = 'admin@yourcaio.co.uk';
   static const String websiteUrl = 'https://admin-pi-eosin-53.vercel.app';
-  static const String privacyPolicyUrl = 'https://admin-pi-eosin-53.vercel.app/privacy';
-  static const String termsUrl = 'https://admin-pi-eosin-53.vercel.app/terms';
+  static const String privacyPolicyUrl = 'https://admin-pi-eosin-53.vercel.app/privacy.html';
+  static const String termsUrl = 'https://admin-pi-eosin-53.vercel.app/terms.html';
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
