@@ -189,12 +189,6 @@ class SupportScreen extends StatelessWidget {
               'Can I get a refund?',
               'Refunds are handled through Apple App Store or Google Play Store according to their respective policies.',
             ),
-            _buildFaqItem(
-              context,
-              'How does Pay It Forward work?',
-              'Someone before you contributed to cover your access. When you choose to Pay It Forward, you\'re covering access for someone else who genuinely can\'t afford it - like a teenager who needs support but has no income. It\'s an honesty system that keeps the chain going so everyone who needs help can get it.',
-            ),
-            
             const SizedBox(height: 20),
           ],
         ),

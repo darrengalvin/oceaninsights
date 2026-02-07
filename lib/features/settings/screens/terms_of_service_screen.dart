@@ -61,40 +61,17 @@ class TermsOfServiceScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              '3. The Pay It Forward Model',
-              'Below the Surface operates on a community-supported "Pay It Forward" model:\n\n'
+              '3. Free Access',
+              'Below the Surface is completely free:\n\n'
               '• The App is free to download and use\n'
-              '• Your access has been covered by someone before you in the chain\n'
-              '• You are invited (but not required) to contribute to cover someone else\'s access\n'
-              '• This ensures those who genuinely cannot afford to pay (teenagers, those between jobs, families in difficulty) still receive support\n\n'
-              'This is an honesty-based system. The App continues to exist because enough people choose to contribute.',
+              '• All features are available with no locked content\n'
+              '• No subscriptions or premium tiers required\n'
+              '• Works completely offline for deployment environments',
             ),
             
             _buildSection(
               context,
-              '4. Contributions & Payments',
-              'If you choose to contribute:\n\n'
-              '• Contributions are processed securely through Apple App Store or Google Play Store\n'
-              '• You can choose one-time or monthly contributions\n'
-              '• Monthly contributions can be cancelled at any time through your app store settings\n'
-              '• Contributions cover access for others who genuinely cannot afford it (e.g., teenagers, those in financial hardship)\n'
-              '• Contributions also support ongoing development, servers, and maintenance\n'
-              '• Refunds are subject to the respective app store\'s refund policy',
-            ),
-            
-            _buildSection(
-              context,
-              '5. No Obligation to Pay',
-              'You are under no obligation to contribute:\n\n'
-              '• If you cannot afford to contribute, you are still welcome to use the App\n'
-              '• Your access will not be restricted based on contribution status\n'
-              '• We trust users to contribute when and if they are able\n'
-              '• The chain continues because of the generosity of those who can',
-            ),
-            
-            _buildSection(
-              context,
-              '6. User Content & Data',
+              '4. User Content & Data',
               '• All personal data (mood logs, settings, preferences) is stored locally on your device\n'
               '• We do not collect, store, or transmit personal information to our servers\n'
               '• If you delete the App, all your data is permanently deleted\n'
@@ -103,7 +80,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              '7. Intellectual Property',
+              '5. Intellectual Property',
               '• All content, features, and functionality are owned by Below the Surface\n'
               '• You may not copy, modify, distribute, or reverse engineer the App\n'
               '• The App is licensed, not sold, for personal, non-commercial use only',
@@ -111,7 +88,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              '8. Limitation of Liability',
+              '6. Limitation of Liability',
               'To the maximum extent permitted by law:\n\n'
               '• Below the Surface is provided "as is" without warranties of any kind\n'
               '• We are not liable for any damages arising from your use of the App\n'
@@ -121,22 +98,13 @@ class TermsOfServiceScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              '9. Sustainability',
-              'The Pay It Forward model requires community participation to remain sustainable:\n\n'
-              '• If contributions decline significantly, the App may need to change its model or cease operation\n'
-              '• We will provide notice of any significant changes to the model\n'
-              '• Users who have contributed will be notified of any changes that affect them',
-            ),
-            
-            _buildSection(
-              context,
-              '10. Changes to Terms',
+              '7. Changes to Terms',
               'We may update these terms from time to time. Continued use of the App after changes constitutes acceptance of the new terms.',
             ),
             
             _buildSection(
               context,
-              '11. Contact Us',
+              '8. Contact Us',
               'For questions about these terms, please contact us through the App Store or Google Play Store listing, or via the Support section in the App.',
             ),
             

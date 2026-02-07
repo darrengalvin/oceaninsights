@@ -67,7 +67,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
               '• No camera or microphone access\n'
               '• No advertisements\n'
               '• No data sharing with third parties\n'
-              '• Optional Pay It Forward contributions (processed by Apple/Google)\n'
               '• Internet used only for content sync (no personal data sent)',
             ),
             
@@ -76,14 +75,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
               'Your Data',
               'All app data (mood logs, settings, preferences) is stored locally on your device only. '
               'If you delete the app, all data is permanently removed.',
-            ),
-            
-            _buildSection(
-              context,
-              'Pay It Forward Model',
-              'Below the Surface uses a community "Pay It Forward" model. '
-              'Your access was covered by someone before you. Contributions help cover access for others who cannot afford it, '
-              'such as teenagers or those facing financial hardship.',
             ),
             
             _buildSection(
