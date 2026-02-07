@@ -12,6 +12,7 @@ import 'core/services/ui_sound_service.dart';
 import 'core/services/ui_preferences_service.dart';
 import 'core/services/analytics_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/subscription_service.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/home/screens/home_screen.dart';
@@ -56,6 +57,9 @@ void main() async {
   
   // Initialise notification service (daily affirmations)
   await NotificationService().initialize();
+  
+  // Initialise subscription service (handles premium status with offline caching)
+  await SubscriptionService().initialize();
   
   // Initialise content sync service and sync if online
   // This downloads all admin-managed content for offline use

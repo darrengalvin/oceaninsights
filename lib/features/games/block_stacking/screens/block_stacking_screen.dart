@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/theme_options.dart';
 import '../../../../core/services/ui_sound_service.dart';
 import '../../../affirmations/data/affirmations_data.dart';
+import '../../../subscription/mixins/tease_mixin.dart';
+import '../../../subscription/widgets/premium_gate.dart';
 import '../models/game_block.dart';
 import '../models/game_particle.dart';
 import '../widgets/block_painter.dart';
@@ -21,7 +23,11 @@ class BlockStackingScreen extends StatefulWidget {
 enum GameMode { normal, zen }
 
 class _BlockStackingScreenState extends State<BlockStackingScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, TeaseMixin {
+  
+  // Tease config: Allow 3 blocks before showing paywall
+  @override
+  TeaseConfig get teaseConfig => TeaseConfig.game('Block Stacking');
   final List<GameBlock> _stackedBlocks = [];
   final List<GameParticle> _particles = [];
   GameBlock? _movingBlock;
@@ -77,6 +83,9 @@ class _BlockStackingScreenState extends State<BlockStackingScreen>
   
   void _startGame() {
     if (_canvasSize == null) return;
+    
+    // Reset tease tracker for new game
+    resetTeaseTracker();
     
     // Start with a base block at the bottom center
     _stackedBlocks.clear();
@@ -239,8 +248,24 @@ class _BlockStackingScreenState extends State<BlockStackingScreen>
       _stackedBlocks.add(placedBlock);
       _score++;
       
+      // Track tease action for non-premium users
+      recordTeaseAction();
+      
       if (_score > _highScore) {
         _highScore = _score;
+      }
+      
+      // Check if tease limit reached (after allowing this block to place)
+      if (hasReachedTeaseLimit) {
+        // Pause the game and show paywall
+        _gameTimer?.cancel();
+        Future.delayed(const Duration(milliseconds: 500), () {
+          showTeasePaywall(onDismiss: () {
+            // If they dismiss, end the game gracefully
+            setState(() => _gameOver = true);
+          });
+        });
+        return;
       }
       
       // Handle perfect placement
