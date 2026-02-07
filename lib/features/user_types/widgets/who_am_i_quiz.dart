@@ -4,6 +4,8 @@ import 'dart:math';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Interactive Who Am I Quiz - Discover values and strengths
 class WhoAmIQuizScreen extends StatefulWidget {
@@ -243,6 +245,11 @@ class _WhoAmIQuizScreenState extends State<WhoAmIQuizScreen> {
     
     // Move to next question or show results
     if (_currentQuestion < _questions.length - 1) {
+      // Gate after first question for free users
+      if (_currentQuestion >= 1 && !SubscriptionService().isPremium) {
+        checkPremiumAccess(context, featureName: 'Who Am I Quiz');
+        return;
+      }
       setState(() => _currentQuestion++);
     } else {
       _showResults();

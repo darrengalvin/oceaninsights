@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
 import '../../../core/services/content_sync_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Interactive Mission Planner - Plan Primary/Secondary/Contingency tasks (tap-only)
 /// Uses synced content from admin panel - works offline with cached data
@@ -119,6 +121,11 @@ class _MissionPlannerScreenState extends State<MissionPlannerScreen> {
               selectedOption: _selectedSecondary,
               isComplete: _secondaryComplete,
               onSelect: (option) {
+                // Secondary requires premium
+                if (!SubscriptionService().isPremium) {
+                  checkPremiumAccess(context, featureName: 'Mission Planner');
+                  return;
+                }
                 HapticFeedback.lightImpact();
                 UISoundService().playClick();
                 setState(() => _selectedSecondary = option);
@@ -142,6 +149,11 @@ class _MissionPlannerScreenState extends State<MissionPlannerScreen> {
               selectedOption: _selectedContingency,
               isComplete: _contingencyComplete,
               onSelect: (option) {
+                // Contingency requires premium
+                if (!SubscriptionService().isPremium) {
+                  checkPremiumAccess(context, featureName: 'Mission Planner');
+                  return;
+                }
                 HapticFeedback.lightImpact();
                 UISoundService().playClick();
                 setState(() => _selectedContingency = option);

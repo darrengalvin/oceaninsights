@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Interactive Skills Translator - MOS/Military role to civilian jobs
 class SkillsTranslatorScreen extends StatefulWidget {
@@ -281,6 +283,12 @@ class _SkillsTranslatorScreenState extends State<SkillsTranslatorScreen> {
   }
   
   void _translateSkills() {
+    // Gate results for premium
+    if (!SubscriptionService().isPremium) {
+      checkPremiumAccess(context, featureName: 'Skills Translator');
+      return;
+    }
+    
     // Get matching jobs or use defaults
     final jobs = _jobMappings[_selectedRole] ?? [
       _CivilianJob('Project Manager', 'Lead and coordinate projects', 75, ['Leadership', 'Planning', 'Communication']),

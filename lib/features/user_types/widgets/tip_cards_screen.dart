@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
 import '../../../core/services/content_sync_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Reusable swipeable tip cards screen (no typing)
 /// Can load tips from database using slug, or use provided tips
@@ -165,6 +167,18 @@ class _TipCardsScreenState extends State<TipCardsScreen> {
                 itemCount: _tips.length,
                 onPageChanged: (index) {
                   HapticFeedback.selectionClick();
+                  
+                  // Gate after 2 tips for free users
+                  if (index >= 2 && !SubscriptionService().isPremium) {
+                    _pageController.animateToPage(
+                      1, // Jump back to tip 2
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                    );
+                    checkPremiumAccess(context, featureName: widget.title);
+                    return;
+                  }
+                  
                   setState(() => _currentIndex = index);
                 },
                 itemBuilder: (context, index) {

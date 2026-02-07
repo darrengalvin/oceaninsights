@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Interest Explorer - mini challenges to discover interests (no typing)
 class InterestExplorerScreen extends StatefulWidget {
@@ -317,6 +319,13 @@ class _InterestExplorerScreenState extends State<InterestExplorerScreen> {
                                 onTap: () {
                                   HapticFeedback.lightImpact();
                                   UISoundService().playClick();
+                                  
+                                  // Gate after 1 challenge for free users
+                                  if (_triedChallenges.length >= 1 && !SubscriptionService().isPremium) {
+                                    checkPremiumAccess(context, featureName: 'Interest Explorer');
+                                    return;
+                                  }
+                                  
                                   setState(() {
                                     _triedChallenges.add(challengeId);
                                   });

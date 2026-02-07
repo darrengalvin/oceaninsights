@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../../breathing/screens/breathing_screen.dart';
 import '../../music/screens/music_screen.dart';
 
@@ -330,6 +332,13 @@ class _BigFeelingsToolkitScreenState extends State<BigFeelingsToolkitScreen> {
         onTap: () {
           HapticFeedback.lightImpact();
           UISoundService().playClick();
+          
+          // Gate tools for premium
+          if (!SubscriptionService().isPremium) {
+            checkPremiumAccess(context, featureName: 'Big Feelings Toolkit');
+            return;
+          }
+          
           _navigateToTool(tool);
         },
         borderRadius: BorderRadius.circular(16),

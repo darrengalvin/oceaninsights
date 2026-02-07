@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../services/ritual_service.dart';
 import '../services/ritual_topics_service.dart';
 import '../models/ritual_item.dart';
 import '../models/ritual_topic_models.dart';
 import 'topic_browser_screen.dart';
+
+// Track ritual checks for tease gating
+int _ritualChecksThisSession = 0;
+const int _freeRitualChecks = 2;
 
 /// Full-screen modal for managing daily rituals
 class RitualsModalScreen extends StatefulWidget {
@@ -483,6 +489,16 @@ class _TopicRitualTile extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: () async {
         HapticFeedback.lightImpact();
+        
+        // Premium check - only for completing items, not unchecking
+        if (!isCompleted && !SubscriptionService().isPremium) {
+          _ritualChecksThisSession++;
+          if (_ritualChecksThisSession > _freeRitualChecks) {
+            checkPremiumAccess(context, featureName: 'Daily Rituals');
+            return;
+          }
+        }
+        
         if (isCompleted) {
           UISoundService().playClick();
         } else {
@@ -748,6 +764,16 @@ class _RitualTile extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () async {
           HapticFeedback.lightImpact();
+          
+          // Premium check - only for completing items, not unchecking
+          if (!ritual.isCompleted && !SubscriptionService().isPremium) {
+            _ritualChecksThisSession++;
+            if (_ritualChecksThisSession > _freeRitualChecks) {
+              checkPremiumAccess(context, featureName: 'Daily Rituals');
+              return;
+            }
+          }
+          
           UISoundService().playClick();
           await service.toggleRitual(ritual.id);
           onChanged();

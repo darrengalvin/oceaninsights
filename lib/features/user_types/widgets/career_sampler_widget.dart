@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Interactive Career Sampler - Swipeable job preview cards
 class CareerSamplerScreen extends StatefulWidget {
@@ -188,6 +190,16 @@ class _CareerSamplerScreenState extends State<CareerSamplerScreen> {
               controller: _pageController,
               itemCount: _careers.length,
               onPageChanged: (index) {
+                // Gate after viewing 2 career cards for free users
+                if (index >= 2 && !SubscriptionService().isPremium) {
+                  _pageController.animateToPage(
+                    1, // Jump back to card 2
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                  );
+                  checkPremiumAccess(context, featureName: 'Career Sampler');
+                  return;
+                }
                 setState(() => _currentIndex = index);
               },
               itemBuilder: (context, index) {

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Reusable interactive checklist screen (no typing)
 class ChecklistScreen extends StatefulWidget {
@@ -27,6 +29,8 @@ class ChecklistScreen extends StatefulWidget {
 
 class _ChecklistScreenState extends State<ChecklistScreen> {
   final Map<String, bool> _checkedItems = {};
+  int _checksThisSession = 0;
+  static const int _freeChecks = 3;
   
   int get _totalItems => widget.categories.fold(0, (sum, cat) => sum + cat.items.length);
   int get _completedItems => _checkedItems.values.where((v) => v).length;
@@ -197,6 +201,16 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                             onTap: () {
                               HapticFeedback.lightImpact();
                               UISoundService().playClick();
+                              
+                              // Gate after free checks (only for checking, not unchecking)
+                              if (!isChecked && !SubscriptionService().isPremium) {
+                                _checksThisSession++;
+                                if (_checksThisSession > _freeChecks) {
+                                  checkPremiumAccess(context, featureName: 'Checklists');
+                                  return;
+                                }
+                              }
+                              
                               setState(() {
                                 _checkedItems[itemKey] = !isChecked;
                               });

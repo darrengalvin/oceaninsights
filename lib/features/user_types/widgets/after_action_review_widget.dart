@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
 import '../../../core/services/content_sync_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Interactive After Action Review - Reflect on your day (tap-only, no typing)
 /// Uses synced content from admin panel - works offline with cached data
@@ -194,6 +196,11 @@ class _AfterActionReviewScreenState extends State<AfterActionReviewScreen> {
             child: ElevatedButton(
               onPressed: _overallRating > 0
                   ? () {
+                      // Gate full review for premium
+                      if (!SubscriptionService().isPremium) {
+                        checkPremiumAccess(context, featureName: 'After Action Review');
+                        return;
+                      }
                       HapticFeedback.mediumImpact();
                       setState(() => _currentStep = 1);
                     }

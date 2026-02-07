@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
 import '../../../core/services/content_sync_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Confidence Builder - tools for self-esteem and self-expression (no typing)
 /// Uses synced content from admin panel - works offline with cached data
@@ -240,6 +242,11 @@ class _ConfidenceBuilderScreenState extends State<ConfidenceBuilderScreen> {
             child: ElevatedButton(
               onPressed: _selectedChallenge != null
                   ? () {
+                      // Gate step 2+ for premium
+                      if (!SubscriptionService().isPremium) {
+                        checkPremiumAccess(context, featureName: 'Confidence Builder');
+                        return;
+                      }
                       HapticFeedback.mediumImpact();
                       setState(() => _currentStep = 1);
                     }
