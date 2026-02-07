@@ -54,6 +54,7 @@ class ContentSyncService {
   static const String _keyUserTypeScreens = 'content_user_type_screens';
   static const String _keyUserTypeSections = 'content_user_type_sections';
   static const String _keyUserTypeItems = 'content_user_type_items';
+  static const String _keyAppSettings = 'content_app_settings';
 
   SupabaseClient get _supabase => Supabase.instance.client;
 
@@ -103,6 +104,7 @@ class ContentSyncService {
         _syncResources(),
         _syncChecklists(),
         _syncUserTypeScreens(),
+        _syncAppSettings(),
       ]);
       
       // Update last sync time
@@ -1204,6 +1206,40 @@ class ContentSyncService {
       return items;
     } catch (e) {
       return [];
+    }
+  }
+
+  // ============================================================
+  // APP SETTINGS
+  // ============================================================
+
+  Future<void> _syncAppSettings() async {
+    try {
+      // Use RPC to get secret settings (only accessible via service role or RPC)
+      final response = await _supabase
+          .rpc('get_setting', params: {'setting_key': 'developer_phrase'});
+      
+      if (response != null) {
+        final settings = {'developer_phrase': response};
+        await _prefs?.setString(_keyAppSettings, jsonEncode(settings));
+        debugPrint('Synced app settings');
+      }
+    } catch (e) {
+      debugPrint('Failed to sync app settings: $e');
+    }
+  }
+
+  /// Get the developer phrase for secret access
+  /// Returns cached value or default if not synced
+  String getDeveloperPhrase() {
+    final data = _prefs?.getString(_keyAppSettings);
+    if (data == null) return 'deepblue'; // Default fallback
+    
+    try {
+      final Map<String, dynamic> settings = jsonDecode(data);
+      return settings['developer_phrase'] ?? 'deepblue';
+    } catch (e) {
+      return 'deepblue';
     }
   }
 }

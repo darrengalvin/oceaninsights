@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/subscription_service.dart';
+import '../../../core/services/content_sync_service.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -15,9 +16,6 @@ class _AboutScreenState extends State<AboutScreen> {
   int _tapCount = 0;
   DateTime? _lastTap;
   
-  // Secret phrase for developer access
-  static const String _secretPhrase = 'deepblue';
-  
   void _handleVersionTap() {
     final now = DateTime.now();
     
@@ -29,11 +27,11 @@ class _AboutScreenState extends State<AboutScreen> {
     _lastTap = now;
     _tapCount++;
     
-    if (_tapCount >= 10) {
+    if (_tapCount >= 7) {
       _tapCount = 0;
       _showDeveloperDialog();
-    } else if (_tapCount >= 7) {
-      // Give a subtle hint after 7 taps
+    } else if (_tapCount >= 5) {
+      // Give a subtle hint after 5 taps
       HapticFeedback.lightImpact();
     }
   }
@@ -85,7 +83,10 @@ class _AboutScreenState extends State<AboutScreen> {
   }
   
   void _validatePhrase(String phrase, TextEditingController controller) {
-    if (phrase.toLowerCase().trim() == _secretPhrase) {
+    // Get phrase from database (cached locally)
+    final secretPhrase = ContentSyncService().getDeveloperPhrase();
+    
+    if (phrase.toLowerCase().trim() == secretPhrase.toLowerCase()) {
       final subscriptionService = SubscriptionService();
       subscriptionService.toggleDeveloperOverride();
       

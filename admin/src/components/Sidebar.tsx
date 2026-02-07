@@ -130,6 +130,13 @@ export default function Sidebar() {
           <CreditCard className="w-5 h-5" />
           Subscriptions
         </Link>
+        
+        <div className="my-2 border-t border-gray-200" />
+        
+        <Link href="/admin/settings" className={linkClass('/admin/settings')} onClick={closeMobileMenu}>
+          <Settings2 className="w-5 h-5" />
+          App Settings
+        </Link>
       </nav>
     </>
   )
