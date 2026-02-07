@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/services/subscription_service.dart';
-import '../../../core/theme/app_colours.dart';
+import '../../../core/theme/theme_options.dart';
 import '../screens/paywall_screen.dart';
 
 /// Configuration for how much "tease" to allow before showing paywall

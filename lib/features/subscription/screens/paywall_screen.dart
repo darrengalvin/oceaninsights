@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/services/subscription_service.dart';
-import '../../../core/theme/app_colours.dart';
+import '../../../core/theme/theme_options.dart';
 
 /// The main paywall screen shown when users try to access premium features
 class PaywallScreen extends StatefulWidget {

@@ -437,17 +437,12 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
     final subscriptionService = SubscriptionService();
     final scenarioService = context.read<ScenarioService>();
     
-    // Allow first scenario in each pack for free (tease)
+    // Allow first scenario for free (tease)
     if (!subscriptionService.isPremium) {
-      final pack = scenarioService.getContentPacks().firstWhere(
-        (p) => p.scenarios.any((s) => s.id == scenario.id),
-        orElse: () => scenarioService.getContentPacks().first,
-      );
+      final allScenarios = scenarioService.getAllScenarios();
+      final isFirst = allScenarios.isNotEmpty && allScenarios.first.id == scenario.id;
       
-      final isFirstInPack = pack.scenarios.isNotEmpty && 
-          pack.scenarios.first.id == scenario.id;
-      
-      if (!isFirstInPack) {
+      if (!isFirst) {
         final unlocked = await checkPremiumAccess(context, featureName: 'Scenario Training');
         if (!unlocked) return;
       }
