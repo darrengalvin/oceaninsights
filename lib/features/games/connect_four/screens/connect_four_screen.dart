@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/theme/theme_options.dart';
 import '../../../../core/services/ui_sound_service.dart';
+import '../../../subscription/mixins/tease_mixin.dart';
+import '../../../subscription/widgets/premium_gate.dart';
 import '../models/game_cell.dart';
 import '../widgets/game_board_painter.dart';
 
@@ -15,7 +17,15 @@ class ConnectFourScreen extends StatefulWidget {
 }
 
 class _ConnectFourScreenState extends State<ConnectFourScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, TeaseMixin {
+  
+  // Tease config: Allow 2 pieces before showing paywall
+  @override
+  TeaseConfig get teaseConfig => TeaseConfig(
+    featureName: 'Connect Four',
+    maxActions: 2,
+    message: 'Enjoying Connect Four? Subscribe to keep playing!',
+  );
   static const int rows = 6;
   static const int columns = 7;
 
@@ -50,6 +60,9 @@ class _ConnectFourScreenState extends State<ConnectFourScreen>
   }
 
   void _initializeGame() {
+    // Reset tease tracker for new game
+    resetTeaseTracker();
+    
     _board = List.generate(
       rows,
       (row) => List.generate(columns, (col) => Player.none),
@@ -106,6 +119,19 @@ class _ConnectFourScreenState extends State<ConnectFourScreen>
     });
 
     HapticFeedback.mediumImpact();
+    
+    // Track tease action for player's moves only
+    if (_currentPlayer == Player.player1) {
+      recordTeaseAction();
+      
+      // Check if tease limit reached
+      if (hasReachedTeaseLimit) {
+        showTeasePaywall(onDismiss: () {
+          setState(() => _isGameOver = true);
+        });
+        return;
+      }
+    }
 
     // Check for win
     final winLine = _checkWin(targetRow, column);

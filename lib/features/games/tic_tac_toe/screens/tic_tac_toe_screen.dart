@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/theme/theme_options.dart';
 import '../../../../core/services/ui_sound_service.dart';
+import '../../../subscription/mixins/tease_mixin.dart';
+import '../../../subscription/widgets/premium_gate.dart';
 import '../models/game_state.dart';
 import '../widgets/game_grid_painter.dart';
 
@@ -14,7 +16,15 @@ class TicTacToeScreen extends StatefulWidget {
 }
 
 class _TicTacToeScreenState extends State<TicTacToeScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, TeaseMixin {
+  
+  // Tease config: Allow 2 moves before showing paywall
+  @override
+  TeaseConfig get teaseConfig => TeaseConfig(
+    featureName: 'Tic Tac Toe',
+    maxActions: 2,
+    message: 'Enjoying Tic Tac Toe? Subscribe to keep playing!',
+  );
   late List<CellState> _board;
   CellState _currentPlayer = CellState.x;
   WinResult? _winResult;
@@ -52,6 +62,9 @@ class _TicTacToeScreenState extends State<TicTacToeScreen>
   }
 
   void _initializeGame() {
+    // Reset tease tracker for new game
+    resetTeaseTracker();
+    
     _board = List.filled(9, CellState.empty);
     _currentPlayer = CellState.x;
     _winResult = null;
@@ -74,6 +87,17 @@ class _TicTacToeScreenState extends State<TicTacToeScreen>
 
     UISoundService().playClick();
     HapticFeedback.lightImpact();
+    
+    // Track tease action for player moves
+    recordTeaseAction();
+    
+    // Check if tease limit reached
+    if (hasReachedTeaseLimit) {
+      showTeasePaywall(onDismiss: () {
+        setState(() => _isGameOver = true);
+      });
+      return;
+    }
 
     // Check for win
     final result = _checkWin();

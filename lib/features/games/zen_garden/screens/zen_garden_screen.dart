@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/theme/theme_options.dart';
 import '../../../../core/services/ui_sound_service.dart';
+import '../../../subscription/mixins/tease_mixin.dart';
+import '../../../subscription/widgets/premium_gate.dart';
 import '../widgets/sand_painter.dart';
 import '../models/sand_particle.dart';
 import '../models/zen_pattern.dart';
@@ -16,7 +18,15 @@ class ZenGardenScreen extends StatefulWidget {
 }
 
 class _ZenGardenScreenState extends State<ZenGardenScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, TeaseMixin {
+  
+  // Tease config: Allow 10 seconds of drawing before showing paywall
+  @override
+  TeaseConfig get teaseConfig => TeaseConfig(
+    featureName: 'Zen Garden',
+    maxDuration: const Duration(seconds: 10),
+    message: 'Finding your calm? Subscribe to continue your zen journey.',
+  );
   final List<SandParticle> _particles = [];
   double _brushSize = 20.0;
   bool _isClearing = false;
@@ -49,6 +59,17 @@ class _ZenGardenScreenState extends State<ZenGardenScreen>
 
   void _addParticle(Offset position) {
     if (_isClearing) return;
+    
+    // Start tease timer on first interaction
+    startTeaseTimer();
+    
+    // Check if tease limit reached
+    if (hasReachedTeaseLimit) {
+      showTeasePaywall(onDismiss: () {
+        Navigator.of(context).pop();
+      });
+      return;
+    }
 
     setState(() {
       // Add multiple particles around the touch point for fuller effect

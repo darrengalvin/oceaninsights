@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/theme/theme_options.dart';
 import '../../../../core/services/ui_sound_service.dart';
+import '../../../subscription/mixins/tease_mixin.dart';
+import '../../../subscription/widgets/premium_gate.dart';
 import '../models/memory_card.dart';
 import '../widgets/memory_card_widget.dart';
 
@@ -14,7 +16,15 @@ class MemoryMatchScreen extends StatefulWidget {
   State<MemoryMatchScreen> createState() => _MemoryMatchScreenState();
 }
 
-class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
+class _MemoryMatchScreenState extends State<MemoryMatchScreen> with TeaseMixin {
+  
+  // Tease config: Allow 3 card flips (1.5 turns) before showing paywall
+  @override
+  TeaseConfig get teaseConfig => TeaseConfig(
+    featureName: 'Memory Match',
+    maxActions: 3,
+    message: 'Enjoying Memory Match? Subscribe to keep playing!',
+  );
   DifficultyLevel _difficulty = DifficultyLevel.medium;
   List<MemoryCard> _cards = [];
   List<MemoryCard> _flippedCards = [];
@@ -44,6 +54,9 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
   }
 
   void _initializeGame() {
+    // Reset tease tracker for new game
+    resetTeaseTracker();
+    
     setState(() {
       _cards = _generateCards();
       _flippedCards.clear();
@@ -116,6 +129,18 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
     });
 
     UISoundService().playClick();
+    
+    // Track tease action for each card flip
+    recordTeaseAction();
+    
+    // Check if tease limit reached
+    if (hasReachedTeaseLimit) {
+      _gameTimer?.cancel();
+      showTeasePaywall(onDismiss: () {
+        setState(() => _isGameComplete = true);
+      });
+      return;
+    }
 
     if (_flippedCards.length == 2) {
       _isProcessing = true;
