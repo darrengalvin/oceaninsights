@@ -41,19 +41,33 @@ class SubscriptionService extends ChangeNotifier {
   static const String _keyStatus = 'status';
   static const String _keyExpiry = 'expiry';
   static const String _keyProductId = 'product_id';
+  static const String _keyDevOverride = 'dev_override';
   
   Box? _box;
+  bool _developerOverride = false;
 
-  SubscriptionStatus get status => _status;
-  bool get isPremium => _status == SubscriptionStatus.active;
+  SubscriptionStatus get status => _developerOverride ? SubscriptionStatus.active : _status;
+  bool get isPremium => _developerOverride || _status == SubscriptionStatus.active;
+  bool get isDeveloperMode => _developerOverride;
   DateTime? get expiryDate => _expiryDate;
   List<ProductDetails> get products => _products;
   bool get isAvailable => _isAvailable;
+
+  /// Toggle developer override (for testing)
+  void toggleDeveloperOverride() {
+    _developerOverride = !_developerOverride;
+    _box?.put(_keyDevOverride, _developerOverride);
+    debugPrint('🔧 Developer override: $_developerOverride');
+    notifyListeners();
+  }
 
   /// Initialize the subscription service
   Future<void> initialize() async {
     // Open local cache
     _box = await Hive.openBox(_boxName);
+    
+    // Load developer override
+    _developerOverride = _box?.get(_keyDevOverride) ?? false;
     
     // Load cached status first (for offline support)
     await _loadCachedStatus();
