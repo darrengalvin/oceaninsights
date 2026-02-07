@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/theme_options.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../data/affirmations_data.dart';
 
 class AffirmationsScreen extends StatefulWidget {
@@ -14,12 +16,15 @@ class AffirmationsScreen extends StatefulWidget {
 class _AffirmationsScreenState extends State<AffirmationsScreen> {
   late PageController _pageController;
   int _currentIndex = 0;
+  int _viewedCount = 0; // Track how many they've seen
+  static const int _freeLimit = 2; // Allow 2 free affirmations
   
   @override
   void initState() {
     super.initState();
     _currentIndex = Random().nextInt(AffirmationsData.affirmations.length);
     _pageController = PageController(initialPage: _currentIndex);
+    _viewedCount = 1; // They see one on load
   }
   
   @override
@@ -60,7 +65,28 @@ class _AffirmationsScreenState extends State<AffirmationsScreen> {
           Expanded(
             child: PageView.builder(
               controller: _pageController,
-              onPageChanged: (index) {
+              onPageChanged: (index) async {
+                final subscriptionService = SubscriptionService();
+                
+                // Check tease limit
+                if (!subscriptionService.isPremium) {
+                  _viewedCount++;
+                  if (_viewedCount > _freeLimit) {
+                    // Revert to previous page
+                    _pageController.jumpToPage(_currentIndex);
+                    
+                    // Show paywall
+                    final unlocked = await checkPremiumAccess(
+                      context, 
+                      featureName: 'Affirmations',
+                    );
+                    if (unlocked) {
+                      setState(() {});
+                    }
+                    return;
+                  }
+                }
+                
                 setState(() {
                   _currentIndex = index;
                 });

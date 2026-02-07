@@ -3,12 +3,18 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../../settings/screens/contact_help_screen.dart';
 import '../../breathing/screens/breathing_screen.dart';
 import '../widgets/skills_translator_widget.dart';
 import '../widgets/tip_cards_screen.dart';
 import '../widgets/checklist_screen.dart';
 import '../widgets/resource_list_screen.dart';
+
+// Track items viewed for tease gating
+int _veteranItemsViewed = 0;
+const int _veteranFreeLimit = 2;
 
 /// Veteran support screen with comprehensive resources
 class VeteranScreen extends StatelessWidget {
@@ -671,9 +677,20 @@ class _VeteranSection extends StatelessWidget {
     final colours = context.colours;
     
     return InkWell(
-      onTap: () {
+      onTap: () async {
         HapticFeedback.lightImpact();
         UISoundService().playClick();
+        
+        // Check subscription after free limit
+        final subscriptionService = SubscriptionService();
+        if (!subscriptionService.isPremium) {
+          _veteranItemsViewed++;
+          if (_veteranItemsViewed > _veteranFreeLimit) {
+            final unlocked = await checkPremiumAccess(context, featureName: 'Veteran Resources');
+            if (!unlocked) return;
+          }
+        }
+        
         item.onTap();
       },
       child: Padding(

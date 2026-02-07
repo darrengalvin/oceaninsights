@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../../goals/screens/goals_screen.dart';
 import '../../breathing/screens/breathing_screen.dart';
 import '../widgets/big_feelings_toolkit.dart';
@@ -14,6 +16,10 @@ import '../widgets/interest_explorer_screen.dart';
 import '../widgets/tip_cards_screen.dart';
 import '../widgets/checklist_screen.dart';
 import '../widgets/resource_list_screen.dart';
+
+// Track items viewed for tease gating
+int _youthItemsViewed = 0;
+const int _youthFreeLimit = 2;
 
 /// Young Person support screen with youth-focused resources
 class YoungPersonScreen extends StatelessWidget {
@@ -596,9 +602,20 @@ class _YouthSection extends StatelessWidget {
     final colours = context.colours;
     
     return InkWell(
-      onTap: () {
+      onTap: () async {
         HapticFeedback.lightImpact();
         UISoundService().playClick();
+        
+        // Check subscription after free limit
+        final subscriptionService = SubscriptionService();
+        if (!subscriptionService.isPremium) {
+          _youthItemsViewed++;
+          if (_youthItemsViewed > _youthFreeLimit) {
+            final unlocked = await checkPremiumAccess(context, featureName: 'Youth Resources');
+            if (!unlocked) return;
+          }
+        }
+        
         item.onTap();
       },
       child: Padding(

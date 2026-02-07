@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../models/ritual_topic_models.dart';
 import '../services/ritual_topics_service.dart';
 import 'topic_detail_screen.dart';
@@ -50,9 +52,22 @@ class _TopicBrowserScreenState extends State<TopicBrowserScreen> {
     setState(() => _loading = false);
   }
 
-  void _navigateToTopic(RitualTopic topic) {
+  void _navigateToTopic(RitualTopic topic) async {
     HapticFeedback.lightImpact();
     UISoundService().playClick();
+    
+    // First topic is free, others require subscription
+    final subscriptionService = SubscriptionService();
+    if (!subscriptionService.isPremium) {
+      final allTopics = _service.getAllTopics();
+      final isFirst = allTopics.isNotEmpty && allTopics.first.id == topic.id;
+      
+      if (!isFirst) {
+        final unlocked = await checkPremiumAccess(context, featureName: 'Rituals');
+        if (!unlocked) return;
+      }
+    }
+    
     Navigator.push(
       context,
       MaterialPageRoute(

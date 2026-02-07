@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../core/theme/theme_options.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../data/goals_data.dart';
 import 'goal_flow_screen.dart';
 
@@ -182,8 +184,16 @@ class _GoalsScreenState extends State<GoalsScreen> {
                     final category = GoalsData.categories[index];
                     return _CategoryCard(
                       category: category,
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
+                        
+                        // First goal is free, additional goals need subscription
+                        final subscriptionService = SubscriptionService();
+                        if (!subscriptionService.isPremium && _savedGoals.isNotEmpty) {
+                          final unlocked = await checkPremiumAccess(context, featureName: 'Goals');
+                          if (!unlocked) return;
+                        }
+                        
                         Navigator.push(
                           context,
                           MaterialPageRoute(

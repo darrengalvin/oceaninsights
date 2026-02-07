@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../data/quotes_data.dart';
 
 class QuotesScreen extends StatefulWidget {
@@ -15,12 +17,15 @@ class QuotesScreen extends StatefulWidget {
 class _QuotesScreenState extends State<QuotesScreen> {
   late PageController _pageController;
   int _currentIndex = 0;
+  int _viewedCount = 0; // Track how many they've seen
+  static const int _freeLimit = 2; // Allow 2 free quotes
   
   @override
   void initState() {
     super.initState();
     _currentIndex = Random().nextInt(QuotesData.quotes.length);
     _pageController = PageController(initialPage: _currentIndex);
+    _viewedCount = 1; // They see one on load
   }
   
   @override
@@ -56,7 +61,28 @@ class _QuotesScreenState extends State<QuotesScreen> {
           Expanded(
             child: PageView.builder(
               controller: _pageController,
-              onPageChanged: (index) {
+              onPageChanged: (index) async {
+                final subscriptionService = SubscriptionService();
+                
+                // Check tease limit
+                if (!subscriptionService.isPremium) {
+                  _viewedCount++;
+                  if (_viewedCount > _freeLimit) {
+                    // Revert to previous page
+                    _pageController.jumpToPage(_currentIndex);
+                    
+                    // Show paywall
+                    final unlocked = await checkPremiumAccess(
+                      context, 
+                      featureName: 'Quotes',
+                    );
+                    if (unlocked) {
+                      setState(() {});
+                    }
+                    return;
+                  }
+                }
+                
                 setState(() {
                   _currentIndex = index;
                 });

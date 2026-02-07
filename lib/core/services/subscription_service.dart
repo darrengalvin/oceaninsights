@@ -193,19 +193,21 @@ class SubscriptionService extends ChangeNotifier {
     }).toList();
   }
 
+  /// Clear subscription status (for testing)
+  Future<void> clearSubscription() async {
+    await _saveStatus(SubscriptionStatus.none, null);
+    _developerOverride = false;
+    await _box?.put(_keyDevOverride, false);
+    debugPrint('🧹 Subscription status cleared');
+    notifyListeners();
+  }
+
   /// Purchase a subscription
   Future<bool> purchase(String productId) async {
     if (!_isAvailable) {
-      debugPrint('⚠️ IAP not available - simulating successful purchase for dev');
-      // For development/testing
-      await Future.delayed(const Duration(seconds: 1));
-      await _saveStatus(
-        SubscriptionStatus.active,
-        DateTime.now().add(productId == yearlySubId 
-            ? const Duration(days: 365) 
-            : const Duration(days: 30)),
-      );
-      return true;
+      debugPrint('⚠️ IAP not available - use developer toggle instead');
+      // Don't auto-simulate - user should use developer override for testing
+      return false;
     }
 
     final product = _products.firstWhere(

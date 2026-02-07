@@ -46,14 +46,34 @@ class _AboutScreenState extends State<AboutScreen> {
         title: const Text('Developer Access'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              subscriptionService.isPremium 
-                  ? 'Premium is currently: ENABLED' 
-                  : 'Premium is currently: DISABLED',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: subscriptionService.isPremium ? Colors.green : Colors.orange,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: subscriptionService.isPremium 
+                    ? Colors.green.withOpacity(0.1) 
+                    : Colors.orange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    subscriptionService.isPremium 
+                        ? '✅ Premium ENABLED' 
+                        : '🔒 Premium DISABLED',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: subscriptionService.isPremium ? Colors.green : Colors.orange,
+                    ),
+                  ),
+                  if (subscriptionService.isDeveloperMode)
+                    const Text(
+                      '(Developer Override Active)',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -61,7 +81,7 @@ class _AboutScreenState extends State<AboutScreen> {
               controller: controller,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Enter phrase',
+                labelText: 'Enter phrase to toggle',
                 border: OutlineInputBorder(),
               ),
               onSubmitted: (value) => _validatePhrase(value, controller),
@@ -70,12 +90,26 @@ class _AboutScreenState extends State<AboutScreen> {
         ),
         actions: [
           TextButton(
+            onPressed: () async {
+              await subscriptionService.clearSubscription();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Subscription status reset'),
+                  backgroundColor: Colors.blue,
+                ),
+              );
+              setState(() {});
+            },
+            child: const Text('Reset All', style: TextStyle(color: Colors.red)),
+          ),
+          TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => _validatePhrase(controller.text, controller),
-            child: const Text('Toggle Premium'),
+            child: const Text('Toggle'),
           ),
         ],
       ),

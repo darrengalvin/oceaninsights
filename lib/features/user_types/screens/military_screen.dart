@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../../scenarios/screens/scenario_library_screen.dart';
 import '../../scenarios/screens/protocol_library_screen.dart';
 import '../../breathing/screens/breathing_screen.dart';
@@ -15,6 +17,10 @@ import '../widgets/mission_planner_widget.dart';
 import '../widgets/tip_cards_screen.dart';
 import '../widgets/checklist_screen.dart';
 import '../widgets/resource_list_screen.dart';
+
+// Track items viewed for tease gating
+int _militaryItemsViewed = 0;
+const int _freeItemLimit = 2; // Allow first 2 items free
 
 /// Military support screen with service mode tabs
 class MilitaryScreen extends StatefulWidget {
@@ -1058,9 +1064,20 @@ class _MilitarySection extends StatelessWidget {
     final colours = context.colours;
     
     return InkWell(
-      onTap: () {
+      onTap: () async {
         HapticFeedback.lightImpact();
         UISoundService().playClick();
+        
+        // Check subscription after free limit
+        final subscriptionService = SubscriptionService();
+        if (!subscriptionService.isPremium) {
+          _militaryItemsViewed++;
+          if (_militaryItemsViewed > _freeItemLimit) {
+            final unlocked = await checkPremiumAccess(context, featureName: 'Military Resources');
+            if (!unlocked) return;
+          }
+        }
+        
         item.onTap();
       },
       child: Padding(
