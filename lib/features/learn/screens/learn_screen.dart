@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/user_provider.dart';
+import '../../subscription/widgets/premium_gate.dart';
+import '../../../core/services/subscription_service.dart';
 import '../data/learn_content.dart';
 import 'article_screen.dart';
 
@@ -139,7 +141,15 @@ class _ArticleListView extends StatelessWidget {
         return _ArticleCard(
           article: article,
           showAgeTag: showAgeTag,
-          onTap: () {
+          onTap: () async {
+            final subscriptionService = SubscriptionService();
+            
+            // Allow first article for free (tease)
+            if (!subscriptionService.isPremium && index > 0) {
+              final unlocked = await checkPremiumAccess(context, featureName: 'Learn');
+              if (!unlocked) return;
+            }
+            
             Navigator.push(
               context,
               MaterialPageRoute(

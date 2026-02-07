@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
+import '../../../core/services/subscription_service.dart';
 import '../models/scenario.dart';
 import '../models/user_response_profile.dart';
 import '../services/scenario_service.dart';
@@ -432,6 +434,25 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
   }
 
   void _openScenario(BuildContext context, Scenario scenario) async {
+    final subscriptionService = SubscriptionService();
+    final scenarioService = context.read<ScenarioService>();
+    
+    // Allow first scenario in each pack for free (tease)
+    if (!subscriptionService.isPremium) {
+      final pack = scenarioService.getContentPacks().firstWhere(
+        (p) => p.scenarios.any((s) => s.id == scenario.id),
+        orElse: () => scenarioService.getContentPacks().first,
+      );
+      
+      final isFirstInPack = pack.scenarios.isNotEmpty && 
+          pack.scenarios.first.id == scenario.id;
+      
+      if (!isFirstInPack) {
+        final unlocked = await checkPremiumAccess(context, featureName: 'Scenario Training');
+        if (!unlocked) return;
+      }
+    }
+    
     final result = await Navigator.push(
       context,
       MaterialPageRoute(

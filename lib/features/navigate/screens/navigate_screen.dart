@@ -6,6 +6,8 @@ import '../../../core/theme/theme_options.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/services/content_service.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
 import '../data/navigate_content.dart';
 import 'topic_list_screen.dart';
 
@@ -122,10 +124,12 @@ class _NavigateScreenState extends State<NavigateScreen> {
             const SizedBox(height: 24),
 
             // Life Areas Grid
-            ...contentService.getDomains().map((domain) {
+            ...contentService.getDomains().asMap().entries.map((entry) {
+              final index = entry.key;
+              final domain = entry.value;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: _DomainCard(domain: domain),
+                child: _DomainCard(domain: domain, isFirst: index == 0),
               );
             }),
           ],
@@ -152,8 +156,9 @@ class _NavigateScreenState extends State<NavigateScreen> {
 
 class _DomainCard extends StatelessWidget {
   final ContentDomain domain;
+  final bool isFirst;
 
-  const _DomainCard({required this.domain});
+  const _DomainCard({required this.domain, this.isFirst = false});
 
   IconData _getIcon(String iconName) {
     switch (iconName) {
@@ -194,9 +199,17 @@ class _DomainCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: hasContent
-              ? () {
+              ? () async {
                   HapticFeedback.lightImpact();
                   UISoundService().playClick();
+                  
+                  // First domain is free, others require subscription
+                  final subscriptionService = SubscriptionService();
+                  if (!isFirst && !subscriptionService.isPremium) {
+                    final unlocked = await checkPremiumAccess(context, featureName: 'Navigate');
+                    if (!unlocked) return;
+                  }
+                  
                   Navigator.push(
                     context,
                     MaterialPageRoute(

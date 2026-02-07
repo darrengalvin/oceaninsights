@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../core/theme/theme_options.dart';
+import '../../subscription/widgets/premium_gate.dart';
+import '../../../core/services/subscription_service.dart';
 
 /// Breathing exercise types
 enum BreathingExercise {
@@ -210,7 +212,16 @@ class _BreathingScreenState extends State<BreathingScreen>
     super.dispose();
   }
   
-  void _startExercise(BreathingExercise exercise) {
+  void _startExercise(BreathingExercise exercise) async {
+    // Box Breathing is free, others require subscription
+    if (exercise != BreathingExercise.boxBreathing) {
+      final subscriptionService = SubscriptionService();
+      if (!subscriptionService.isPremium) {
+        final unlocked = await checkPremiumAccess(context, featureName: exercise.name);
+        if (!unlocked) return;
+      }
+    }
+    
     setState(() {
       _selectedExercise = exercise;
       _isActive = true;

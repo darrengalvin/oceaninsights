@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../core/theme/theme_options.dart';
+import '../../subscription/mixins/tease_mixin.dart';
+import '../../subscription/widgets/premium_gate.dart';
 
 /// Sound category for organisation
 enum SoundCategory {
@@ -65,7 +68,7 @@ class MusicScreen extends StatefulWidget {
   State<MusicScreen> createState() => _MusicScreenState();
 }
 
-class _MusicScreenState extends State<MusicScreen> {
+class _MusicScreenState extends State<MusicScreen> with TeaseMixin {
   SoundCategory _selectedCategory = SoundCategory.nature;
   String? _playingTrackId;
   
@@ -73,6 +76,12 @@ class _MusicScreenState extends State<MusicScreen> {
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
   bool _isLoading = false;
+  
+  // Tease: 10 second audio preview
+  @override
+  TeaseConfig get teaseConfig => TeaseConfig.audio('Soundscapes');
+  
+  StreamSubscription? _teasePositionSub;
   
   @override
   void initState() {
@@ -83,6 +92,15 @@ class _MusicScreenState extends State<MusicScreen> {
     _audioPlayer.positionStream.listen((position) {
       if (mounted) {
         setState(() => _position = position);
+        
+        // Check tease limit (10 seconds)
+        if (!isPremium && position.inSeconds >= 10 && _playingTrackId != null) {
+          _audioPlayer.pause();
+          _audioPlayer.seek(Duration.zero);
+          showTeasePaywall(onDismiss: () {
+            setState(() => _playingTrackId = null);
+          });
+        }
       }
     });
     

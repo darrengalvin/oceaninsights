@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../subscription/widgets/premium_gate.dart';
+import '../../../core/services/subscription_service.dart';
 import '../models/protocol.dart';
 import '../services/scenario_service.dart';
 import 'protocol_detail_screen.dart';
@@ -227,7 +229,21 @@ class _ProtocolLibraryScreenState extends State<ProtocolLibraryScreen> {
     );
   }
 
-  void _openProtocol(BuildContext context, Protocol protocol) {
+  void _openProtocol(BuildContext context, Protocol protocol) async {
+    final subscriptionService = SubscriptionService();
+    final scenarioService = context.read<ScenarioService>();
+    
+    // Allow first protocol for free (tease)
+    if (!subscriptionService.isPremium) {
+      final allProtocols = scenarioService.getAllProtocols();
+      final isFirst = allProtocols.isNotEmpty && allProtocols.first.id == protocol.id;
+      
+      if (!isFirst) {
+        final unlocked = await checkPremiumAccess(context, featureName: 'Communication Protocols');
+        if (!unlocked) return;
+      }
+    }
+    
     Navigator.push(
       context,
       MaterialPageRoute(
