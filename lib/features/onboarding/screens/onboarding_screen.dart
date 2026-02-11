@@ -159,7 +159,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           ),
                         )
-                      // Other pages: back and continue
+                      // Other pages: back and continue/skip
                       : Row(
                           children: [
                             TextButton(
@@ -171,9 +171,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               child: const Text('Back'),
                             ),
                             const Spacer(),
+                            // Show Skip on optional pages (1 and 2) when nothing selected
+                            if ((_currentPage == 1 && _selectedUserType == null) ||
+                                (_currentPage == 2 && _selectedAgeBracket == null))
+                              TextButton(
+                                onPressed: _nextPage,
+                                style: TextButton.styleFrom(
+                                  foregroundColor: colours.textMuted,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                ),
+                                child: const Text('Skip'),
+                              ),
+                            const SizedBox(width: 8),
                             ElevatedButton(
                               onPressed: _currentPage < 3 
-                                  ? (_canProceed() ? _nextPage : null)
+                                  ? _nextPage
                                   : _completeOnboarding,
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
@@ -195,18 +207,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
   
   bool _canProceed() {
-    switch (_currentPage) {
-      case 0:
-        return true;
-      case 1:
-        return _selectedUserType != null;
-      case 2:
-        return _selectedAgeBracket != null;
-      case 3:
-        return true;
-      default:
-        return true;
-    }
+    // All pages can proceed - user type and age are OPTIONAL per Apple guidelines 5.1.1
+    return true;
   }
   
   Widget _buildWelcomePage() {
@@ -270,7 +272,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'This helps us provide relevant content\n(for statistics only)',
+            'Optional - helps us show relevant content',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: colours.textLight,
             ),
@@ -313,7 +315,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'This helps us show relevant scenarios',
+            'Optional - helps personalise your experience',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: colours.textLight,
             ),
