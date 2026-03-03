@@ -16,6 +16,9 @@ import '../widgets/interest_explorer_screen.dart';
 import '../widgets/tip_cards_screen.dart';
 import '../widgets/checklist_screen.dart';
 import '../widgets/resource_list_screen.dart';
+import '../../young_person/screens/body_education_screen.dart';
+import '../../young_person/screens/sex_education_screen.dart';
+import '../../young_person/screens/bullying_support_screen.dart';
 
 // Track items viewed for tease gating
 int _youthItemsViewed = 0;
@@ -93,6 +96,39 @@ class YoungPersonScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ConfidenceBuilderScreen()),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Education & Wellbeing
+            _YouthSection(
+              icon: Icons.health_and_safety_outlined,
+              title: 'Education & Wellbeing',
+              items: [
+                _YouthItem(
+                  title: 'Your Body',
+                  subtitle: 'Puberty, body changes & myth-busting quiz',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const BodyEducationScreen()),
+                  ),
+                ),
+                _YouthItem(
+                  title: 'Relationships & Sex Ed',
+                  subtitle: 'Consent, healthy relationships & staying safe',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SexEducationScreen()),
+                  ),
+                ),
+                _YouthItem(
+                  title: 'Bullying Support',
+                  subtitle: 'Assessment, coping tools & how to get help',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const BullyingSupportScreen()),
                   ),
                 ),
               ],

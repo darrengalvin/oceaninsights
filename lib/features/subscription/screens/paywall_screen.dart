@@ -33,6 +33,21 @@ class _PaywallScreenState extends State<PaywallScreen> {
       (o) => o.isRecommended,
       orElse: () => options.first,
     ).productId;
+
+    // Listen for subscription status changes (purchase stream is async)
+    _subscriptionService.addListener(_onSubscriptionChanged);
+  }
+
+  @override
+  void dispose() {
+    _subscriptionService.removeListener(_onSubscriptionChanged);
+    super.dispose();
+  }
+
+  void _onSubscriptionChanged() {
+    if (_subscriptionService.isPremium && mounted) {
+      Navigator.of(context).pop(true);
+    }
   }
 
   Future<void> _purchase() async {
@@ -42,13 +57,54 @@ class _PaywallScreenState extends State<PaywallScreen> {
     HapticFeedback.mediumImpact();
     
     try {
+      // Check if IAP is available first
+      if (!_subscriptionService.isAvailable) {
+        if (mounted) {
+          _showError(
+            'Purchase Not Available',
+            'In-app purchases are not available on this device. '
+            'Please ensure you are signed into your App Store / Google Play account '
+            'and have a valid payment method.',
+          );
+        }
+        return;
+      }
+
+      // Check if products have loaded
+      if (_subscriptionService.products.isEmpty) {
+        if (mounted) {
+          _showError(
+            'Products Not Loaded',
+            'Could not load subscription options from the store. '
+            'Please check your internet connection and try again.',
+          );
+        }
+        return;
+      }
+
       final success = await _subscriptionService.purchase(_selectedProductId!);
+      
       if (success && mounted) {
-        // Wait a moment for the purchase to process
-        await Future.delayed(const Duration(milliseconds: 500));
+        // Purchase was initiated — wait for the purchase stream to confirm
+        // The purchase dialog is now showing (or processing)
+        await Future.delayed(const Duration(milliseconds: 1500));
         if (_subscriptionService.isPremium && mounted) {
           Navigator.of(context).pop(true); // Return success
         }
+      } else if (!success && mounted) {
+        _showError(
+          'Purchase Failed',
+          'The purchase could not be completed. '
+          'Please check your payment method and try again.',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showError(
+          'Something Went Wrong',
+          'An unexpected error occurred: ${e.toString().length > 100 ? e.toString().substring(0, 100) : e}. '
+          'Please try again.',
+        );
       }
     } finally {
       if (mounted) {
@@ -57,13 +113,48 @@ class _PaywallScreenState extends State<PaywallScreen> {
     }
   }
 
+  void _showError(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _restore() async {
     setState(() => _isRestoring = true);
     HapticFeedback.lightImpact();
     
     try {
-      await _subscriptionService.restorePurchases();
-      // Wait for restoration to process
+      if (!_subscriptionService.isAvailable) {
+        if (mounted) {
+          _showError(
+            'Store Not Available',
+            'Cannot connect to the App Store / Google Play. '
+            'Please check your internet connection and that you are signed in.',
+          );
+        }
+        return;
+      }
+
+      final success = await _subscriptionService.restorePurchases();
+      if (!success && mounted) {
+        _showError(
+          'Restore Failed',
+          'Could not restore purchases. Please check your internet connection and try again.',
+        );
+        return;
+      }
+
+      // Wait for the purchase stream to process restored purchases
       await Future.delayed(const Duration(seconds: 2));
       if (_subscriptionService.isPremium && mounted) {
         Navigator.of(context).pop(true);

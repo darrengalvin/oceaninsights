@@ -33,6 +33,7 @@ void main() async {
   await Hive.openBox('user_data');
   await Hive.openBox('mood_entries');
   await Hive.openBox('settings');
+  await Hive.openBox('health_tracker');
   
   // Initialise content service (handles Supabase + caching)
   await ContentService.instance.init();

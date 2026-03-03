@@ -33,6 +33,19 @@ export default function ContentManagerPage() {
     { table: 'learning_styles', label: 'Learning & Study', icon: '📖', href: '/admin/content-manager/learning', color: 'bg-white border-gray-200' },
     { table: 'affirmations', label: 'Affirmations', icon: '✨', href: '/admin/content-manager/affirmations', color: 'bg-white border-gray-200' },
     { table: 'interest_categories', label: 'Interest Explorer', icon: '🎨', href: '/admin/content-manager/interests', color: 'bg-white border-gray-200' },
+    { table: 'harassment_wizard_steps', label: 'Harassment Support Wizard', icon: '🛡️', href: '/admin/content-manager/harassment-wizard', color: 'bg-white border-gray-200' },
+    { table: 'body_education_topics', label: 'Body Education', icon: '🧬', href: '/admin/content-manager/body-education', color: 'bg-white border-gray-200' },
+    { table: 'sex_ed_consent_scenarios', label: 'Sex Education', icon: '💜', href: '/admin/content-manager/sex-education', color: 'bg-white border-gray-200' },
+    { table: 'bullying_guidance_cards', label: 'Bullying Support', icon: '🛡️', href: '/admin/content-manager/bullying-support', color: 'bg-white border-gray-200' },
+    { table: 'health_contraception_methods', label: 'Health Tracker Education', icon: '🩺', href: '/admin/content-manager/health-education', color: 'bg-white border-gray-200' },
+    { table: 'service_family_deployment_phases', label: 'Service Family', icon: '👨‍👩‍👧‍👦', href: '/admin/content-manager/service-family', color: 'bg-white border-gray-200' },
+    { table: 'whats_new_releases', label: "What's New", icon: '🆕', href: '/admin/content-manager/whats-new', color: 'bg-white border-gray-200' },
+    { table: 'kindness_flip_cards', label: 'Learning to be Kind', icon: '💛', href: '/admin/content-manager/kindness', color: 'bg-white border-gray-200' },
+    { table: 'culture_values', label: 'Service Culture (C2 Drill)', icon: '🎖️', href: '/admin/content-manager/service-culture', color: 'bg-white border-gray-200' },
+    { table: 'perks_facts', label: 'Military Perks', icon: '💪', href: '/admin/content-manager/military-perks', color: 'bg-white border-gray-200' },
+    { table: 'brain_myths', label: 'Brain Science & Psychology', icon: '🧠', href: '/admin/content-manager/brain-science', color: 'bg-white border-gray-200' },
+    { table: 'donation_impacts', label: 'Donations', icon: '💛', href: '/admin/content-manager/donations', color: 'bg-white border-gray-200' },
+    { table: 'lgbtq_timeline', label: 'LGBTQ+ Support', icon: '🏳️‍🌈', href: '/admin/content-manager/lgbtq-support', color: 'bg-white border-gray-200' },
   ];
 
   useEffect(() => {

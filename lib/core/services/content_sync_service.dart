@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../features/whats_new/whats_new_service.dart';
 
 /// Service that syncs all admin-managed content from Supabase
 /// and caches it locally for offline use.
@@ -55,6 +56,63 @@ class ContentSyncService {
   static const String _keyUserTypeSections = 'content_user_type_sections';
   static const String _keyUserTypeItems = 'content_user_type_items';
   static const String _keyAppSettings = 'content_app_settings';
+  // Harassment Wizard
+  static const String _keyHarassmentSteps = 'content_harassment_steps';
+  static const String _keyHarassmentOptions = 'content_harassment_options';
+  static const String _keyHarassmentGuidance = 'content_harassment_guidance';
+  static const String _keyHarassmentContacts = 'content_harassment_contacts';
+  // Body Education
+  static const String _keyBodyTopics = 'content_body_topics';
+  static const String _keyBodyQuiz = 'content_body_quiz';
+  // Sex Education
+  static const String _keySexEdSti = 'content_sex_ed_sti';
+  static const String _keySexEdKeyFacts = 'content_sex_ed_key_facts';
+  // Bullying Support
+  static const String _keyBullyingGuidance = 'content_bullying_guidance';
+  static const String _keyBullyingBystander = 'content_bullying_bystander';
+  static const String _keyBullyingCoping = 'content_bullying_coping';
+  static const String _keyBullyingSupportOrgs = 'content_bullying_support_orgs';
+  // Health Education
+  static const String _keyContraceptionMethods = 'content_contraception_methods';
+  static const String _keyPregnancyTopics = 'content_pregnancy_topics';
+  // Learning to be Kind
+  static const String _keyKindnessFlipCards = 'content_kindness_flip_cards';
+  static const String _keyKindnessScenarios = 'content_kindness_scenarios';
+  static const String _keyKindnessOptions = 'content_kindness_options';
+  // Service Culture (C2 Drill)
+  static const String _keyCultureValues = 'content_culture_values';
+  static const String _keyCultureScenarios = 'content_culture_scenarios';
+  // Military Perks
+  static const String _keyPerksFacts = 'content_perks_facts';
+  static const String _keyPerksRegretStories = 'content_perks_regret_stories';
+  // Brain Science
+  static const String _keyBrainMyths = 'content_brain_myths';
+  static const String _keyBrainBiases = 'content_brain_biases';
+  static const String _keyBrainBiasOptions = 'content_brain_bias_options';
+  static const String _keyBrainExperiments = 'content_brain_experiments';
+  static const String _keyBrainExperimentSteps = 'content_brain_experiment_steps';
+  // Donations
+  static const String _keyDonationImpacts = 'content_donation_impacts';
+  static const String _keyDonationSettings = 'content_donation_settings';
+  // LGBTQ+ Support
+  static const String _keyLgbtqTimeline = 'content_lgbtq_timeline';
+  static const String _keyLgbtqMyths = 'content_lgbtq_myths';
+  static const String _keyLgbtqTerms = 'content_lgbtq_terms';
+  static const String _keyLgbtqAllyScenarios = 'content_lgbtq_ally_scenarios';
+  static const String _keyLgbtqAllyOptions = 'content_lgbtq_ally_options';
+  static const String _keyLgbtqDeployRegions = 'content_lgbtq_deploy_regions';
+  static const String _keyLgbtqSupportOrgs = 'content_lgbtq_support_orgs';
+  static const String _keyLgbtqAffirmations = 'content_lgbtq_affirmations';
+  // Service Family
+  static const String _keySFPhases = 'content_sf_phases';
+  static const String _keySFTips = 'content_sf_tips';
+  static const String _keySFUnderstand = 'content_sf_understand';
+  static const String _keySFSelfcare = 'content_sf_selfcare';
+  static const String _keySFAffirmations = 'content_sf_affirmations';
+  static const String _keySFChildrenAges = 'content_sf_children_ages';
+  static const String _keySFChildrenTips = 'content_sf_children_tips';
+  static const String _keySFHelpSigns = 'content_sf_help_signs';
+  static const String _keySFSupportOrgs = 'content_sf_support_orgs';
 
   SupabaseClient get _supabase => Supabase.instance.client;
 
@@ -105,6 +163,19 @@ class ContentSyncService {
         _syncChecklists(),
         _syncUserTypeScreens(),
         _syncAppSettings(),
+        _syncHarassmentWizard(),
+        _syncBodyEducation(),
+        _syncSexEducation(),
+        _syncBullyingSupport(),
+        _syncHealthEducation(),
+        _syncServiceFamily(),
+        _syncKindness(),
+        _syncServiceCulture(),
+        _syncMilitaryPerks(),
+        _syncBrainScience(),
+        _syncDonations(),
+        _syncLgbtqSupport(),
+        WhatsNewService().syncReleases(),
       ]);
       
       // Update last sync time
@@ -1242,6 +1313,684 @@ class ContentSyncService {
       return 'deepblue';
     }
   }
+
+  // ============================================================
+  // HARASSMENT WIZARD
+  // ============================================================
+
+  Future<void> _syncHarassmentWizard() async {
+    try {
+      final stepsResponse = await _supabase
+          .from('harassment_wizard_steps')
+          .select()
+          .eq('is_active', true)
+          .order('step_number');
+      await _prefs?.setString(_keyHarassmentSteps, jsonEncode(stepsResponse));
+      
+      final optionsResponse = await _supabase
+          .from('harassment_wizard_options')
+          .select()
+          .eq('is_active', true)
+          .order('sort_order');
+      await _prefs?.setString(_keyHarassmentOptions, jsonEncode(optionsResponse));
+      
+      final guidanceResponse = await _supabase
+          .from('harassment_wizard_guidance')
+          .select()
+          .eq('is_active', true)
+          .order('sort_order');
+      await _prefs?.setString(_keyHarassmentGuidance, jsonEncode(guidanceResponse));
+      
+      final contactsResponse = await _supabase
+          .from('harassment_wizard_contacts')
+          .select()
+          .eq('is_active', true)
+          .order('sort_order');
+      await _prefs?.setString(_keyHarassmentContacts, jsonEncode(contactsResponse));
+      
+      debugPrint('Synced harassment wizard content');
+    } catch (e) {
+      debugPrint('Failed to sync harassment wizard: $e');
+    }
+  }
+
+  List<HarassmentWizardStep> getHarassmentWizardSteps() {
+    final data = _prefs?.getString(_keyHarassmentSteps);
+    if (data == null) return _getDefaultHarassmentSteps();
+    
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      final steps = list.map((e) => HarassmentWizardStep.fromJson(e)).toList();
+      return steps.isEmpty ? _getDefaultHarassmentSteps() : steps;
+    } catch (e) {
+      return _getDefaultHarassmentSteps();
+    }
+  }
+
+  List<HarassmentWizardStep> _getDefaultHarassmentSteps() {
+    return [
+      HarassmentWizardStep(id: '1', title: 'What are you experiencing?', subtitle: 'Select the option that best describes your situation.', stepNumber: 1),
+      HarassmentWizardStep(id: '2', title: 'Where is this happening?', subtitle: 'This helps us provide the most relevant guidance.', stepNumber: 2),
+      HarassmentWizardStep(id: '3', title: 'How often is this happening?', subtitle: 'There is no wrong answer. Your experience is valid.', stepNumber: 3),
+      HarassmentWizardStep(id: '4', title: 'How is this affecting you?', subtitle: 'Select all that apply.', stepNumber: 4),
+    ];
+  }
+
+  List<HarassmentWizardOption> getHarassmentWizardOptions() {
+    final data = _prefs?.getString(_keyHarassmentOptions);
+    if (data == null) return _getDefaultHarassmentOptions();
+    
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      final options = list.map((e) => HarassmentWizardOption.fromJson(e)).toList();
+      return options.isEmpty ? _getDefaultHarassmentOptions() : options;
+    } catch (e) {
+      return _getDefaultHarassmentOptions();
+    }
+  }
+
+  List<HarassmentWizardOption> _getDefaultHarassmentOptions() {
+    return [
+      HarassmentWizardOption(id: '1', stepId: '1', text: 'Unwanted comments or remarks', description: 'Comments about your appearance, gender, or personal life', tag: 'verbal'),
+      HarassmentWizardOption(id: '2', stepId: '1', text: 'Unwanted physical contact', description: 'Any physical contact you did not welcome', tag: 'physical'),
+      HarassmentWizardOption(id: '3', stepId: '1', text: 'Being excluded or isolated', description: 'Deliberately left out of activities or briefings', tag: 'exclusion'),
+      HarassmentWizardOption(id: '4', stepId: '1', text: 'Inappropriate messages or images', description: 'Unwanted sexual or demeaning content', tag: 'digital'),
+      HarassmentWizardOption(id: '5', stepId: '1', text: 'Pressure for relationship or favours', tag: 'coercion'),
+      HarassmentWizardOption(id: '6', stepId: '1', text: 'Feeling unsafe', tag: 'safety'),
+      HarassmentWizardOption(id: '7', stepId: '1', text: 'Bullying related to gender', tag: 'gender_bullying'),
+      HarassmentWizardOption(id: '8', stepId: '1', text: 'Something else that feels wrong', tag: 'other'),
+      HarassmentWizardOption(id: '10', stepId: '2', text: 'In the workplace', tag: 'workplace'),
+      HarassmentWizardOption(id: '11', stepId: '2', text: 'In accommodation or barracks', tag: 'accommodation'),
+      HarassmentWizardOption(id: '12', stepId: '2', text: 'Online or social media', tag: 'online'),
+      HarassmentWizardOption(id: '13', stepId: '2', text: 'During deployment or exercise', tag: 'deployment'),
+      HarassmentWizardOption(id: '14', stepId: '2', text: 'During training', tag: 'training'),
+      HarassmentWizardOption(id: '15', stepId: '2', text: 'At social events', tag: 'social'),
+      HarassmentWizardOption(id: '20', stepId: '3', text: 'It happened once', tag: 'once'),
+      HarassmentWizardOption(id: '21', stepId: '3', text: 'A few times', tag: 'few_times'),
+      HarassmentWizardOption(id: '22', stepId: '3', text: 'Regularly', tag: 'regular'),
+      HarassmentWizardOption(id: '23', stepId: '3', text: 'Constantly', tag: 'constant'),
+      HarassmentWizardOption(id: '30', stepId: '4', text: 'Anxiety or worry', tag: 'impact_anxiety'),
+      HarassmentWizardOption(id: '31', stepId: '4', text: 'Difficulty sleeping', tag: 'impact_sleep'),
+      HarassmentWizardOption(id: '32', stepId: '4', text: 'Loss of confidence', tag: 'impact_confidence'),
+      HarassmentWizardOption(id: '33', stepId: '4', text: 'Avoiding certain people or places', tag: 'impact_avoidance'),
+      HarassmentWizardOption(id: '34', stepId: '4', text: 'Affecting my work performance', tag: 'impact_work'),
+      HarassmentWizardOption(id: '35', stepId: '4', text: 'Thinking about leaving the service', tag: 'impact_leaving'),
+    ];
+  }
+
+  List<HarassmentGuidanceCard> getHarassmentWizardGuidance() {
+    final data = _prefs?.getString(_keyHarassmentGuidance);
+    if (data == null) return _getDefaultHarassmentGuidance();
+    
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      final guidance = list.map((e) => HarassmentGuidanceCard.fromJson(e)).toList();
+      return guidance.isEmpty ? _getDefaultHarassmentGuidance() : guidance;
+    } catch (e) {
+      return _getDefaultHarassmentGuidance();
+    }
+  }
+
+  List<HarassmentGuidanceCard> _getDefaultHarassmentGuidance() {
+    return [
+      HarassmentGuidanceCard(id: '1', title: 'You are not alone', message: 'What you are experiencing is not your fault, and you do not have to deal with it alone.', guidanceType: 'info', priority: 100, matchTags: [], isUniversal: true),
+      HarassmentGuidanceCard(id: '2', title: 'Your rights', message: 'Under the Armed Forces Act and the Equality Act 2010, you are protected from harassment, bullying, and discrimination.', guidanceType: 'rights', priority: 90, matchTags: [], isUniversal: true),
+      HarassmentGuidanceCard(id: '3', title: 'Formal complaint process', message: 'You have the right to make a formal Service Complaint. Contact your Unit Welfare Officer to begin the process.', guidanceType: 'action_formal', priority: 70, matchTags: [], isUniversal: true),
+      HarassmentGuidanceCard(id: '4', title: 'Informal options', message: 'Not ready for a formal complaint? Speak to a trusted colleague, contact SSAFA, or use the Confidential Support Line.', guidanceType: 'action_informal', priority: 65, matchTags: [], isUniversal: true),
+    ];
+  }
+
+  List<HarassmentContact> getHarassmentWizardContacts() {
+    final data = _prefs?.getString(_keyHarassmentContacts);
+    if (data == null) return _getDefaultHarassmentContacts();
+    
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      final contacts = list.map((e) => HarassmentContact.fromJson(e)).toList();
+      return contacts.isEmpty ? _getDefaultHarassmentContacts() : contacts;
+    } catch (e) {
+      return _getDefaultHarassmentContacts();
+    }
+  }
+
+  List<HarassmentContact> _getDefaultHarassmentContacts() {
+    return [
+      HarassmentContact(id: '1', name: 'Local Emergency Services', description: 'If you are in immediate danger, call your local emergency number. UK: 999. International: 112. On base: contact the Guardroom or Duty Officer.', isEmergency: true),
+      HarassmentContact(id: '2', name: 'Your Unit Welfare Officer', description: 'Your first point of contact for confidential support within your unit.', availability: 'During working hours or via Duty Officer', isEmergency: false),
+      HarassmentContact(id: '3', name: 'Unit Padre / Chaplain', description: 'Completely confidential support. Conversations with a Padre are privileged.', availability: 'Available at all times', isEmergency: false),
+      HarassmentContact(id: '4', name: 'SSAFA', description: 'Forces charity providing confidential support worldwide.', website: 'https://www.ssafa.org.uk', availability: 'Online support available worldwide', isEmergency: false),
+    ];
+  }
+
+  // ============================================================
+  // BODY EDUCATION SYNC
+  // ============================================================
+
+  Future<void> _syncBodyEducation() async {
+    try {
+      final topics = await _supabase.from('body_education_topics').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyBodyTopics, jsonEncode(topics));
+      final quiz = await _supabase.from('body_education_quiz').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyBodyQuiz, jsonEncode(quiz));
+      debugPrint('Synced body education content');
+    } catch (e) { debugPrint('Error syncing body education: $e'); }
+  }
+
+  List<Map<String, dynamic>> getBodyTopics(String tab) {
+    final data = _prefs?.getString(_keyBodyTopics);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>().where((t) => t['tab'] == tab).toList();
+    } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getBodyQuiz() {
+    final data = _prefs?.getString(_keyBodyQuiz);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  // ============================================================
+  // SEX EDUCATION SYNC
+  // ============================================================
+
+  Future<void> _syncSexEducation() async {
+    try {
+      final sti = await _supabase.from('sex_ed_sti_info').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySexEdSti, jsonEncode(sti));
+      final facts = await _supabase.from('sex_ed_key_facts').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySexEdKeyFacts, jsonEncode(facts));
+      debugPrint('Synced sex education content');
+    } catch (e) { debugPrint('Error syncing sex education: $e'); }
+  }
+
+  List<Map<String, dynamic>> getSexEdStiInfo() {
+    final data = _prefs?.getString(_keySexEdSti);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSexEdKeyFacts() {
+    final data = _prefs?.getString(_keySexEdKeyFacts);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  // ============================================================
+  // BULLYING SUPPORT SYNC
+  // ============================================================
+
+  Future<void> _syncBullyingSupport() async {
+    try {
+      final guidance = await _supabase.from('bullying_guidance_cards').select('*').eq('is_active', true).order('priority', ascending: false);
+      await _prefs?.setString(_keyBullyingGuidance, jsonEncode(guidance));
+      final bystander = await _supabase.from('bullying_bystander_actions').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyBullyingBystander, jsonEncode(bystander));
+      final coping = await _supabase.from('bullying_coping_strategies').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyBullyingCoping, jsonEncode(coping));
+      final orgs = await _supabase.from('bullying_support_orgs').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyBullyingSupportOrgs, jsonEncode(orgs));
+      debugPrint('Synced bullying support content');
+    } catch (e) { debugPrint('Error syncing bullying support: $e'); }
+  }
+
+  List<Map<String, dynamic>> getBullyingGuidanceCards() {
+    final data = _prefs?.getString(_keyBullyingGuidance);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getBullyingBystanderActions() {
+    final data = _prefs?.getString(_keyBullyingBystander);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getBullyingCopingStrategies() {
+    final data = _prefs?.getString(_keyBullyingCoping);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getBullyingSupportOrgs() {
+    final data = _prefs?.getString(_keyBullyingSupportOrgs);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  // ============================================================
+  // HEALTH EDUCATION SYNC
+  // ============================================================
+
+  Future<void> _syncHealthEducation() async {
+    try {
+      final methods = await _supabase.from('health_contraception_methods').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyContraceptionMethods, jsonEncode(methods));
+      final pregnancy = await _supabase.from('health_pregnancy_topics').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyPregnancyTopics, jsonEncode(pregnancy));
+      debugPrint('Synced health education content');
+    } catch (e) { debugPrint('Error syncing health education: $e'); }
+  }
+
+  List<Map<String, dynamic>> getContraceptionMethods() {
+    final data = _prefs?.getString(_keyContraceptionMethods);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getPregnancyTopics() {
+    final data = _prefs?.getString(_keyPregnancyTopics);
+    if (data == null) return [];
+    try {
+      final List<dynamic> list = jsonDecode(data);
+      return list.cast<Map<String, dynamic>>();
+    } catch (e) { return []; }
+  }
+
+  // ============================================================
+  // SERVICE FAMILY SYNC
+  // ============================================================
+
+  Future<void> _syncServiceFamily() async {
+    try {
+      final phases = await _supabase.from('service_family_deployment_phases').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFPhases, jsonEncode(phases));
+
+      final tips = await _supabase.from('service_family_deployment_tips').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFTips, jsonEncode(tips));
+
+      final understand = await _supabase.from('service_family_understand_topics').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFUnderstand, jsonEncode(understand));
+
+      final selfcare = await _supabase.from('service_family_selfcare_strategies').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFSelfcare, jsonEncode(selfcare));
+
+      final affirmations = await _supabase.from('service_family_affirmations').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFAffirmations, jsonEncode(affirmations));
+
+      final childAges = await _supabase.from('service_family_children_age_groups').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFChildrenAges, jsonEncode(childAges));
+
+      final childTips = await _supabase.from('service_family_children_tips').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFChildrenTips, jsonEncode(childTips));
+
+      final helpSigns = await _supabase.from('service_family_help_signs').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFHelpSigns, jsonEncode(helpSigns));
+
+      final orgs = await _supabase.from('service_family_support_orgs').select('*').eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keySFSupportOrgs, jsonEncode(orgs));
+
+      debugPrint('Synced service family content');
+    } catch (e) { debugPrint('Error syncing service family: $e'); }
+  }
+
+  List<Map<String, dynamic>> getSFDeploymentPhases() {
+    final data = _prefs?.getString(_keySFPhases);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSFDeploymentTips() {
+    final data = _prefs?.getString(_keySFTips);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSFUnderstandTopics() {
+    final data = _prefs?.getString(_keySFUnderstand);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSFSelfcareStrategies() {
+    final data = _prefs?.getString(_keySFSelfcare);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSFAffirmations() {
+    final data = _prefs?.getString(_keySFAffirmations);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSFChildrenAgeGroups() {
+    final data = _prefs?.getString(_keySFChildrenAges);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSFChildrenTips() {
+    final data = _prefs?.getString(_keySFChildrenTips);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSFHelpSigns() {
+    final data = _prefs?.getString(_keySFHelpSigns);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getSFSupportOrgs() {
+    final data = _prefs?.getString(_keySFSupportOrgs);
+    if (data == null) return [];
+    try { return (jsonDecode(data) as List).cast<Map<String, dynamic>>(); } catch (e) { return []; }
+  }
+  // ============================================================
+  // LEARNING TO BE KIND SYNC
+  // ============================================================
+
+  Future<void> _syncKindness() async {
+    try {
+      final flipRes = await _supabase.from('kindness_flip_cards').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyKindnessFlipCards, jsonEncode(flipRes));
+      debugPrint('Synced ${flipRes.length} kindness flip cards');
+
+      final scenRes = await _supabase.from('kindness_react_scenarios').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyKindnessScenarios, jsonEncode(scenRes));
+      debugPrint('Synced ${scenRes.length} kindness scenarios');
+
+      final optRes = await _supabase.from('kindness_react_options').select().order('sort_order');
+      await _prefs?.setString(_keyKindnessOptions, jsonEncode(optRes));
+      debugPrint('Synced ${optRes.length} kindness reaction options');
+    } catch (e) {
+      debugPrint('Failed to sync kindness content: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> getKindnessFlipCards() {
+    final data = _prefs?.getString(_keyKindnessFlipCards);
+    if (data == null) return [];
+    try {
+      return List<Map<String, dynamic>>.from(jsonDecode(data));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  List<Map<String, dynamic>> getKindnessScenarios() {
+    final data = _prefs?.getString(_keyKindnessScenarios);
+    if (data == null) return [];
+    try {
+      final scenarios = List<Map<String, dynamic>>.from(jsonDecode(data));
+      final optionsData = _prefs?.getString(_keyKindnessOptions);
+      final options = optionsData != null ? List<Map<String, dynamic>>.from(jsonDecode(optionsData)) : <Map<String, dynamic>>[];
+
+      return scenarios.map((s) {
+        final sOpts = options.where((o) => o['scenario_id'] == s['id']).toList();
+        return {...s, 'options': sOpts};
+      }).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // ============================================================
+  // SERVICE CULTURE (C2 DRILL) SYNC
+  // ============================================================
+
+  Future<void> _syncServiceCulture() async {
+    try {
+      final valRes = await _supabase.from('culture_values').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyCultureValues, jsonEncode(valRes));
+      debugPrint('Synced ${valRes.length} culture values');
+
+      final scenRes = await _supabase.from('culture_scenarios').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyCultureScenarios, jsonEncode(scenRes));
+      debugPrint('Synced ${scenRes.length} culture scenarios');
+    } catch (e) {
+      debugPrint('Failed to sync service culture content: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> getCultureValues() {
+    final data = _prefs?.getString(_keyCultureValues);
+    if (data == null) return [];
+    try {
+      return List<Map<String, dynamic>>.from(jsonDecode(data));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  List<Map<String, dynamic>> getCultureScenarios() {
+    final data = _prefs?.getString(_keyCultureScenarios);
+    if (data == null) return [];
+    try {
+      return List<Map<String, dynamic>>.from(jsonDecode(data));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // ============================================================
+  // MILITARY PERKS SYNC
+  // ============================================================
+
+  Future<void> _syncMilitaryPerks() async {
+    try {
+      final factsRes = await _supabase.from('perks_facts').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyPerksFacts, jsonEncode(factsRes));
+      debugPrint('Synced ${factsRes.length} perks facts');
+
+      final storiesRes = await _supabase.from('perks_regret_stories').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyPerksRegretStories, jsonEncode(storiesRes));
+      debugPrint('Synced ${storiesRes.length} perks regret stories');
+    } catch (e) {
+      debugPrint('Failed to sync military perks: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> getPerksFacts() {
+    final data = _prefs?.getString(_keyPerksFacts);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getPerksRegretStories() {
+    final data = _prefs?.getString(_keyPerksRegretStories);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  // ============================================================
+  // BRAIN SCIENCE SYNC
+  // ============================================================
+
+  Future<void> _syncBrainScience() async {
+    try {
+      final mythsRes = await _supabase.from('brain_myths').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyBrainMyths, jsonEncode(mythsRes));
+      debugPrint('Synced ${mythsRes.length} brain myths');
+
+      final biasesRes = await _supabase.from('brain_biases').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyBrainBiases, jsonEncode(biasesRes));
+
+      final biasOptsRes = await _supabase.from('brain_bias_options').select().order('sort_order');
+      await _prefs?.setString(_keyBrainBiasOptions, jsonEncode(biasOptsRes));
+
+      final expsRes = await _supabase.from('brain_experiments').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyBrainExperiments, jsonEncode(expsRes));
+
+      final stepsRes = await _supabase.from('brain_experiment_steps').select().order('sort_order');
+      await _prefs?.setString(_keyBrainExperimentSteps, jsonEncode(stepsRes));
+
+      debugPrint('Synced brain science content');
+    } catch (e) {
+      debugPrint('Failed to sync brain science: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> getBrainMyths() {
+    final data = _prefs?.getString(_keyBrainMyths);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getBrainBiases() {
+    final data = _prefs?.getString(_keyBrainBiases);
+    if (data == null) return [];
+    try {
+      final biases = List<Map<String, dynamic>>.from(jsonDecode(data));
+      final optsData = _prefs?.getString(_keyBrainBiasOptions);
+      final opts = optsData != null ? List<Map<String, dynamic>>.from(jsonDecode(optsData)) : <Map<String, dynamic>>[];
+      return biases.map((b) => {...b, 'options': opts.where((o) => o['bias_id'] == b['id']).toList()}).toList();
+    } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getBrainExperiments() {
+    final data = _prefs?.getString(_keyBrainExperiments);
+    if (data == null) return [];
+    try {
+      final exps = List<Map<String, dynamic>>.from(jsonDecode(data));
+      final stepsData = _prefs?.getString(_keyBrainExperimentSteps);
+      final steps = stepsData != null ? List<Map<String, dynamic>>.from(jsonDecode(stepsData)) : <Map<String, dynamic>>[];
+      return exps.map((e) => {...e, 'steps': steps.where((s) => s['experiment_id'] == e['id']).toList()}).toList();
+    } catch (e) { return []; }
+  }
+
+  // ============================================================
+  // DONATIONS SYNC
+  // ============================================================
+
+  Future<void> _syncDonations() async {
+    try {
+      final impactsRes = await _supabase.from('donation_impacts').select().eq('is_active', true).order('sort_order');
+      await _prefs?.setString(_keyDonationImpacts, jsonEncode(impactsRes));
+
+      final settingsRes = await _supabase.from('donation_settings').select();
+      await _prefs?.setString(_keyDonationSettings, jsonEncode(settingsRes));
+
+      debugPrint('Synced donations content');
+    } catch (e) {
+      debugPrint('Failed to sync donations: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> getDonationImpacts() {
+    final data = _prefs?.getString(_keyDonationImpacts);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  String getDonationSetting(String key, {String defaultValue = ''}) {
+    final data = _prefs?.getString(_keyDonationSettings);
+    if (data == null) return defaultValue;
+    try {
+      final settings = List<Map<String, dynamic>>.from(jsonDecode(data));
+      final match = settings.firstWhere((s) => s['key'] == key, orElse: () => {});
+      return (match['value'] as String?) ?? defaultValue;
+    } catch (e) { return defaultValue; }
+  }
+
+  // ============================================================
+  // LGBTQ+ SUPPORT SYNC
+  // ============================================================
+
+  Future<void> _syncLgbtqSupport() async {
+    try {
+      final timeline = await _supabase.from('lgbtq_timeline').select().order('sort_order');
+      await _prefs?.setString(_keyLgbtqTimeline, jsonEncode(timeline));
+
+      final myths = await _supabase.from('lgbtq_myths').select().order('sort_order');
+      await _prefs?.setString(_keyLgbtqMyths, jsonEncode(myths));
+
+      final terms = await _supabase.from('lgbtq_terms').select().order('sort_order');
+      await _prefs?.setString(_keyLgbtqTerms, jsonEncode(terms));
+
+      final scenarios = await _supabase.from('lgbtq_ally_scenarios').select().order('sort_order');
+      await _prefs?.setString(_keyLgbtqAllyScenarios, jsonEncode(scenarios));
+
+      final options = await _supabase.from('lgbtq_ally_options').select().order('option_index');
+      await _prefs?.setString(_keyLgbtqAllyOptions, jsonEncode(options));
+
+      final regions = await _supabase.from('lgbtq_deploy_regions').select().order('sort_order');
+      await _prefs?.setString(_keyLgbtqDeployRegions, jsonEncode(regions));
+
+      final orgs = await _supabase.from('lgbtq_support_orgs').select().order('sort_order');
+      await _prefs?.setString(_keyLgbtqSupportOrgs, jsonEncode(orgs));
+
+      final affirmations = await _supabase.from('lgbtq_affirmations').select().order('sort_order');
+      await _prefs?.setString(_keyLgbtqAffirmations, jsonEncode(affirmations));
+
+      debugPrint('Synced LGBTQ+ support content');
+    } catch (e) {
+      debugPrint('Failed to sync LGBTQ+ support: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> getLgbtqTimeline() {
+    final data = _prefs?.getString(_keyLgbtqTimeline);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getLgbtqMyths() {
+    final data = _prefs?.getString(_keyLgbtqMyths);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getLgbtqTerms() {
+    final data = _prefs?.getString(_keyLgbtqTerms);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getLgbtqAllyScenarios() {
+    final data = _prefs?.getString(_keyLgbtqAllyScenarios);
+    if (data == null) return [];
+    try {
+      final scenarios = List<Map<String, dynamic>>.from(jsonDecode(data));
+      final optsData = _prefs?.getString(_keyLgbtqAllyOptions);
+      final opts = optsData != null ? List<Map<String, dynamic>>.from(jsonDecode(optsData)) : <Map<String, dynamic>>[];
+      return scenarios.map((s) => {...s, 'options': opts.where((o) => o['scenario_id'] == s['id']).toList()}).toList();
+    } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getLgbtqDeployRegions() {
+    final data = _prefs?.getString(_keyLgbtqDeployRegions);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getLgbtqSupportOrgs() {
+    final data = _prefs?.getString(_keyLgbtqSupportOrgs);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
+
+  List<Map<String, dynamic>> getLgbtqAffirmations() {
+    final data = _prefs?.getString(_keyLgbtqAffirmations);
+    if (data == null) return [];
+    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
+  }
 }
 
 // ============================================================
@@ -1923,5 +2672,114 @@ class UserTypeItem {
     icon: json['icon'] ?? 'arrow_forward',
     actionType: json['action_type'] ?? 'tip_cards',
     actionData: json['action_data'],
+  );
+}
+
+// ============================================================
+// HARASSMENT WIZARD MODELS
+// ============================================================
+
+class HarassmentWizardStep {
+  final String id;
+  final String title;
+  final String subtitle;
+  final int stepNumber;
+
+  HarassmentWizardStep({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.stepNumber,
+  });
+
+  factory HarassmentWizardStep.fromJson(Map<String, dynamic> json) => HarassmentWizardStep(
+    id: json['id'] ?? '',
+    title: json['title'] ?? '',
+    subtitle: json['subtitle'] ?? '',
+    stepNumber: json['step_number'] ?? 0,
+  );
+}
+
+class HarassmentWizardOption {
+  final String id;
+  final String stepId;
+  final String text;
+  final String? description;
+  final String tag;
+
+  HarassmentWizardOption({
+    required this.id,
+    required this.stepId,
+    required this.text,
+    this.description,
+    required this.tag,
+  });
+
+  factory HarassmentWizardOption.fromJson(Map<String, dynamic> json) => HarassmentWizardOption(
+    id: json['id'] ?? '',
+    stepId: json['step_id'] ?? '',
+    text: json['text'] ?? '',
+    description: json['description'],
+    tag: json['tag'] ?? '',
+  );
+}
+
+class HarassmentGuidanceCard {
+  final String id;
+  final String title;
+  final String message;
+  final String guidanceType;
+  final int priority;
+  final List<String> matchTags;
+  final bool isUniversal;
+
+  HarassmentGuidanceCard({
+    required this.id,
+    required this.title,
+    required this.message,
+    required this.guidanceType,
+    required this.priority,
+    required this.matchTags,
+    required this.isUniversal,
+  });
+
+  factory HarassmentGuidanceCard.fromJson(Map<String, dynamic> json) => HarassmentGuidanceCard(
+    id: json['id'] ?? '',
+    title: json['title'] ?? '',
+    message: json['message'] ?? '',
+    guidanceType: json['guidance_type'] ?? 'info',
+    priority: json['priority'] ?? 0,
+    matchTags: (json['match_tags'] as List<dynamic>?)?.cast<String>() ?? [],
+    isUniversal: json['is_universal'] ?? false,
+  );
+}
+
+class HarassmentContact {
+  final String id;
+  final String name;
+  final String? description;
+  final String? phone;
+  final String? website;
+  final String? availability;
+  final bool isEmergency;
+
+  HarassmentContact({
+    required this.id,
+    required this.name,
+    this.description,
+    this.phone,
+    this.website,
+    this.availability,
+    required this.isEmergency,
+  });
+
+  factory HarassmentContact.fromJson(Map<String, dynamic> json) => HarassmentContact(
+    id: json['id'] ?? '',
+    name: json['name'] ?? '',
+    description: json['description'],
+    phone: json['phone'],
+    website: json['website'],
+    availability: json['availability'],
+    isEmergency: json['is_emergency'] ?? false,
   );
 }

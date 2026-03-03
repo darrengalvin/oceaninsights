@@ -1,7 +1,7 @@
 name: deep_dive
 description: Below the Surface - Mental Health Companion for Military Personnel
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
@@ -31,6 +31,7 @@ dependencies:
   
   # Shared preferences for simple settings
   shared_preferences: ^2.2.2
+  package_info_plus: ^8.0.0
   
   # UUID for generating unique IDs
   uuid: ^4.2.1

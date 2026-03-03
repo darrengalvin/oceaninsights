@@ -22,9 +22,9 @@ class SubscriptionService extends ChangeNotifier {
   final InAppPurchase _iap = InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   
-  // Product IDs for App Store Connect
-  static const String monthlySubId = 'com.belowthesurface.sub.monthly';
-  static const String yearlySubId = 'com.belowthesurface.sub.yearly';
+  // Product IDs — must match App Store Connect exactly
+  static const String monthlySubId = 'below_premium_monthly';
+  static const String yearlySubId = 'below_premium_yearly';
   
   static const Set<String> _productIds = {
     monthlySubId,
@@ -206,24 +206,33 @@ class SubscriptionService extends ChangeNotifier {
   Future<bool> purchase(String productId) async {
     if (!_isAvailable) {
       debugPrint('⚠️ IAP not available - use developer toggle instead');
-      // Don't auto-simulate - user should use developer override for testing
       return false;
     }
 
-    final product = _products.firstWhere(
-      (p) => p.id == productId,
-      orElse: () => throw Exception('Product not found: $productId'),
-    );
+    if (_products.isEmpty) {
+      debugPrint('⚠️ No products loaded — attempting to reload');
+      await _loadProducts();
+      if (_products.isEmpty) {
+        debugPrint('❌ Still no products after reload');
+        return false;
+      }
+    }
 
+    final matchingProducts = _products.where((p) => p.id == productId);
+    if (matchingProducts.isEmpty) {
+      debugPrint('❌ Product not found: $productId. Available: ${_products.map((p) => p.id).toList()}');
+      return false;
+    }
+
+    final product = matchingProducts.first;
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     
     try {
-      // Subscriptions are non-consumable
       final bool success = await _iap.buyNonConsumable(purchaseParam: purchaseParam);
-      debugPrint(success ? '✅ Purchase initiated' : '❌ Purchase failed');
+      debugPrint(success ? '✅ Purchase initiated for $productId' : '❌ Purchase call returned false for $productId');
       return success;
     } catch (e) {
-      debugPrint('❌ Purchase error: $e');
+      debugPrint('❌ Purchase error for $productId: $e');
       return false;
     }
   }

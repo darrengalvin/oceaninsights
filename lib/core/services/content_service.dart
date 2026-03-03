@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../config/supabase_config.dart';
+import '../../features/navigate/data/navigate_content.dart';
 
 /// Content item from the database
 class ContentItem {

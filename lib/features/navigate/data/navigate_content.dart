@@ -491,8 +491,14 @@ class NavigateContent {
         GuidanceCard(
           id: 'men_3',
           title: 'What Men Often Need',
-          content: 'Research shows men often want the same things as everyone else: to feel respected, valued, appreciated. To feel wanted and that their presence makes a difference. To have emotional safety - a space with no judgement. To be loved for who they are, not what they provide.',
+          content: 'Research shows men often want the same things as everyone else: to feel respected and not belittled. Appreciation — to know their actions and feelings are seen. Emotional safety — a space with no judgement. Desire — to feel wanted. To matter — to know their presence makes a difference. Acceptance — being loved for exactly who they are, not what they provide.',
           affirmation: 'Your needs are valid.',
+        ),
+        GuidanceCard(
+          id: 'men_4',
+          title: 'The Needs Nobody Talks About',
+          content: 'Autonomy — the space to make choices and feel trusted. Permission to feel — even if you don\'t always know how to express emotions, having the space to try without judgement. And peace — less chaos, less criticism, calm environments. These aren\'t luxuries. They\'re what allows a man to be present, open, and connected.',
+          affirmation: 'Needing peace is not the same as avoiding life.',
         ),
       ],
     ),
@@ -514,36 +520,315 @@ class NavigateContent {
         GuidanceCard(
           id: 'cycle_1',
           title: 'Menstrual Phase (Days 1-5)',
-          content: 'During your period, oestrogen and progesterone are at their lowest. You might feel tired, sensitive, inward-focused, or experience lower mood. This is a time when emotions may feel closer to the surface and tolerance for stress can be lower.',
+          content: 'During your period, oestrogen and progesterone are at their lowest. Your body is shedding the uterine lining and energy naturally dips. You might feel tired, sensitive, inward-focused, experience lower mood, and have cramps. This is a time when emotions may feel closer to the surface and tolerance for stress can be lower.',
           actionSteps: [
-            'Rest and reduce demands where possible',
-            'Be patient with yourself',
-            'Comfort and self-care are especially important now',
+            'Rest, comfort, patience, and reduced demands',
+            'A warm water bottle or gentle stretching can help with cramps',
+            'Be patient with yourself — this phase is about recovery, not performance',
           ],
           affirmation: 'This is a time for rest, not achievement.',
         ),
         GuidanceCard(
           id: 'cycle_2',
           title: 'Follicular Phase (Days 6-14)',
-          content: 'After your period, oestrogen starts rising. Many women feel clearer thinking, optimism returning, motivation, and productive energy. Oestrogen supports mood, focus, and confidence.',
+          content: 'After your period, oestrogen starts rising. Many women feel clearer thinking, optimism returning, motivation, and productive energy. Oestrogen supports mood, focus, and confidence. You may feel more emotionally balanced and energised here than at any other point in your cycle.',
+          actionSteps: [
+            'This is a great time for challenging tasks and big decisions',
+            'Strength training and higher-intensity exercise feel more natural now',
+            'Use this energy window for things that need focus and drive',
+          ],
           affirmation: 'This is often a high point for mood and energy.',
         ),
         GuidanceCard(
           id: 'cycle_3',
           title: 'Ovulation (Mid-cycle)',
-          content: 'When oestrogen peaks, you may feel more social, confident, expressive, and emotionally open. Your body is biologically primed for connection and communication. This is often a high point for mood and energy.',
+          content: 'When oestrogen peaks, you may feel more social, confident, expressive, emotionally open, and sexually inclined. Your body is biologically primed for connection and communication. This is often a high point for mood and energy.',
+          actionSteps: [
+            'Social activities and communication tasks suit this phase well',
+            'Be aware that ligament laxity increases around ovulation — slightly higher injury risk during intense physical activity',
+            'Trust what your body is telling you',
+          ],
           affirmation: 'Trust your natural rhythms.',
         ),
         GuidanceCard(
           id: 'cycle_4',
           title: 'Luteal Phase (Days 15-28)',
-          content: 'After ovulation, progesterone rises then drops if pregnancy doesn\'t occur. Hormonal shifts affect serotonin (your mood-regulating chemical). You might feel more irritable, anxious, overwhelmed, or tearful. This is when PMS symptoms may appear.',
+          content: 'After ovulation, progesterone rises then drops if pregnancy doesn\'t occur. Hormonal shifts affect serotonin — a mood-regulating chemical. You might feel more irritable, anxious, overwhelmed, or tearful. This is when premenstrual syndrome (PMS) symptoms may appear. For some women, this phase feels emotionally heavy or overstimulating. This is hormonal fluctuations — not a character flaw.',
           actionSteps: [
-            'Recognise that hormones are affecting your mood',
-            'This isn\'t "you" - it\'s hormonal fluctuations',
+            'Recognise that hormones are affecting your mood — this isn\'t "you"',
             'Plan demanding tasks for earlier in your cycle if possible',
+            'Complex carbohydrates and magnesium-rich foods can help stabilise mood',
           ],
           affirmation: 'Your feelings are real, and they will shift.',
+        ),
+      ],
+    ),
+    NavigateTopic(
+      id: 'what_women_want',
+      title: 'What Women Often Need',
+      subtitle: 'Understanding emotional needs in relationships',
+      area: LifeArea.relationships,
+      type: ContentType.understand,
+      audienceFilter: ['woman'],
+      cards: [
+        GuidanceCard(
+          id: 'ww_1',
+          title: 'Emotional Safety',
+          content: 'Feeling secure enough to express emotions without them being dismissed, minimised, or used against you. A relationship where you can be vulnerable without fear. This is the foundation everything else is built on.',
+          affirmation: 'You deserve to feel safe being yourself.',
+        ),
+        GuidanceCard(
+          id: 'ww_2',
+          title: 'Consistency',
+          content: 'Words and actions that align. Knowing someone will show up — not just on the good days. Consistency isn\'t about grand gestures; it\'s about the small, reliable things that build trust over time.',
+          affirmation: 'You deserve someone whose actions match their words.',
+        ),
+        GuidanceCard(
+          id: 'ww_3',
+          title: 'Communication',
+          content: 'The effort to listen, to try to understand, and to talk through issues calmly rather than shutting down or exploding. Communication isn\'t about agreeing on everything — it\'s about being willing to try.',
+          affirmation: 'Being heard matters.',
+        ),
+        GuidanceCard(
+          id: 'ww_4',
+          title: 'Affection',
+          content: 'Emotional and physical closeness — not just in the good times. A hand held during a hard day. A hug that says "I\'m here." Affection isn\'t a luxury; it\'s how many women feel connected and valued.',
+          affirmation: 'Wanting closeness is not neediness.',
+        ),
+        GuidanceCard(
+          id: 'ww_5',
+          title: 'To Feel Seen',
+          content: 'Not just looked at — truly seen. Noticed when something is wrong. Appreciated for the invisible work you do. Acknowledged as a whole person, not just a role you fill.',
+          affirmation: 'You are more than what you do for others.',
+        ),
+        GuidanceCard(
+          id: 'ww_6',
+          title: 'Support Without Avoidance',
+          content: 'Being supportive means being present — not avoidant or detached when things get difficult. It means leaning in, not pulling away. Being willing to sit in discomfort together.',
+          affirmation: 'You deserve someone who stays in the room.',
+        ),
+        GuidanceCard(
+          id: 'ww_7',
+          title: 'Growth',
+          content: 'Encouragement to evolve and pursue purpose. A partner who celebrates your ambition rather than feeling threatened by it. Growth isn\'t about changing who you are — it\'s about becoming more of who you are.',
+          affirmation: 'Your growth is not a threat to the right person.',
+        ),
+        GuidanceCard(
+          id: 'ww_8',
+          title: 'Valued as a Woman',
+          content: 'Loving what you have and not lusting over what you don\'t have. Feeling chosen — not settled for. Knowing your partner sees you, appreciates you, and isn\'t constantly looking elsewhere.',
+          affirmation: 'You are enough. Right now. As you are.',
+        ),
+      ],
+    ),
+    NavigateTopic(
+      id: 'cycle_training',
+      title: 'Your Cycle & Training',
+      subtitle: 'How to train smarter with your body',
+      area: LifeArea.physicalHealth,
+      type: ContentType.grow,
+      audienceFilter: ['woman'],
+      cards: [
+        GuidanceCard(
+          id: 'ct_1',
+          title: 'Menstrual Phase — Gentle & Recovery',
+          content: 'Energy is lowest here. Your body is doing internal work. Light movement helps — walks, yoga, gentle stretching — but this is not the time to push for personal bests. Listen to your body. Rest is productive.',
+          actionSteps: [
+            'Walking, swimming, or gentle yoga',
+            'Prioritise mobility and flexibility',
+            'Reduce training volume — not the time for heavy sessions',
+          ],
+          affirmation: 'Rest is part of training.',
+        ),
+        GuidanceCard(
+          id: 'ct_2',
+          title: 'Follicular Phase — Strength & Power',
+          content: 'Rising oestrogen supports muscle recovery and energy. This is your window for strength training, skill acquisition, and higher-intensity work. Your body responds well to challenge right now.',
+          actionSteps: [
+            'Strength training and resistance work',
+            'Try new skills or increase training load',
+            'Your body recovers faster in this phase',
+          ],
+          affirmation: 'Your body is built for this.',
+        ),
+        GuidanceCard(
+          id: 'ct_3',
+          title: 'Ovulation — Peak Performance',
+          content: 'Oestrogen peaks and testosterone briefly rises. Many women feel strongest here. Great for high-intensity work and fitness tests. However, be aware that ligament laxity also increases — warm up thoroughly and be mindful of joint-loading exercises.',
+          actionSteps: [
+            'High-intensity intervals, sprints, circuits',
+            'Warm up thoroughly — ACL injury risk is slightly elevated',
+            'Schedule fitness assessments here if you can',
+          ],
+          affirmation: 'This is your power window.',
+        ),
+        GuidanceCard(
+          id: 'ct_4',
+          title: 'Luteal Phase — Steady & Moderate',
+          content: 'As progesterone rises, your body temperature increases and perceived effort goes up — the same workout can feel harder. Endurance may dip. Favour moderate, steady-state exercise. Reduce intensity and focus on consistency rather than pushing limits.',
+          actionSteps: [
+            'Steady-state cardio, moderate resistance training',
+            'Stay hydrated — you may sweat more in this phase',
+            'Don\'t judge your fitness by how this phase feels',
+          ],
+          affirmation: 'Showing up is enough.',
+        ),
+      ],
+    ),
+    NavigateTopic(
+      id: 'perimenopause',
+      title: 'Perimenopause',
+      subtitle: 'The transition nobody warns you about',
+      area: LifeArea.physicalHealth,
+      type: ContentType.understand,
+      audienceFilter: ['woman'],
+      cards: [
+        GuidanceCard(
+          id: 'peri_1',
+          title: 'What Is Perimenopause?',
+          content: 'Perimenopause is the transition period before menopause, often starting in your mid-to-late 40s but sometimes earlier. Hormone levels become unpredictable — oestrogen can spike and crash rather than gradually declining. Many women are blindsided because nobody told them this was coming.',
+          affirmation: 'Knowledge is power.',
+        ),
+        GuidanceCard(
+          id: 'peri_2',
+          title: 'The Symptoms',
+          content: 'Irregular periods, hot flushes, night sweats, brain fog, anxiety (often sudden and unexplained), joint pain, fatigue, sleep disruption, mood swings, rage, low libido, weight changes, and heart palpitations. These are frequently misdiagnosed as stress, anxiety disorders, or depression — especially in high-pressure military environments.',
+          actionSteps: [
+            'Track your symptoms — patterns help your doctor diagnose',
+            'Ask your GP or MO specifically about perimenopause',
+            'Don\'t accept "it\'s just stress" if symptoms don\'t add up',
+          ],
+          affirmation: 'You are not losing your mind. Your hormones are shifting.',
+        ),
+        GuidanceCard(
+          id: 'peri_3',
+          title: 'Getting Help',
+          content: 'HRT (Hormone Replacement Therapy) is safe for most women and can be life-changing. Cognitive behavioural therapy (CBT) can help with mood symptoms. Exercise, sleep hygiene, and reducing alcohol also make a significant difference. You should not have to suffer in silence — this is a medical condition, not a weakness.',
+          actionSteps: [
+            'Speak to your GP or MO — ask directly about HRT options',
+            'Keep a symptom diary for at least 3 months',
+            'Connect with other women going through it — you are not alone',
+          ],
+          affirmation: 'Asking for help is strength.',
+        ),
+      ],
+    ),
+    NavigateTopic(
+      id: 'pmdd',
+      title: 'PMDD — Beyond PMS',
+      subtitle: 'When your luteal phase becomes unbearable',
+      area: LifeArea.selfUnderstanding,
+      type: ContentType.understand,
+      audienceFilter: ['woman'],
+      cards: [
+        GuidanceCard(
+          id: 'pmdd_1',
+          title: 'What Is PMDD?',
+          content: 'Premenstrual Dysphoric Disorder affects 5-8% of women. It\'s not "bad PMS" — it\'s a severe sensitivity to normal hormonal changes that causes extreme mood shifts in the luteal phase. Symptoms include severe depression, rage, hopelessness, anxiety, and in some cases suicidal thoughts — that lift almost immediately once your period starts.',
+          affirmation: 'If this sounds familiar, you are not broken.',
+        ),
+        GuidanceCard(
+          id: 'pmdd_2',
+          title: 'How to Know',
+          content: 'The hallmark of PMDD is the pattern: severe symptoms in the 1-2 weeks before your period that disappear within a few days of bleeding starting. If you track your mood against your cycle and see this pattern repeating, speak to your doctor. Many women are misdiagnosed with depression or bipolar disorder before PMDD is identified.',
+          actionSteps: [
+            'Track mood daily alongside your cycle for 2-3 months',
+            'Note when symptoms start and when they lift',
+            'Show your doctor the pattern — it\'s the key to diagnosis',
+          ],
+          affirmation: 'Naming it is the first step to managing it.',
+        ),
+        GuidanceCard(
+          id: 'pmdd_3',
+          title: 'Treatment Options',
+          content: 'PMDD is treatable. Options include SSRIs (which can be taken only during the luteal phase), hormonal treatments to suppress ovulation, CBT, and lifestyle adjustments. Many women find dramatic improvement once they get the right support. You do not have to white-knuckle through every month.',
+          affirmation: 'There is help. You deserve it.',
+        ),
+      ],
+    ),
+    NavigateTopic(
+      id: 'iron_deficiency',
+      title: 'Iron & Energy',
+      subtitle: 'Why you might be running on empty',
+      area: LifeArea.physicalHealth,
+      type: ContentType.understand,
+      audienceFilter: ['woman'],
+      cards: [
+        GuidanceCard(
+          id: 'iron_1',
+          title: 'The Hidden Drain',
+          content: 'Heavy periods are the most common cause of iron deficiency in women. Low iron means less oxygen reaches your muscles and brain. The result: persistent fatigue, dizziness, breathlessness on exertion, brain fog, and reduced physical performance. Many active women attribute this to overtraining or stress when the real issue is their iron levels.',
+          affirmation: 'Tiredness isn\'t always about effort.',
+        ),
+        GuidanceCard(
+          id: 'iron_2',
+          title: 'Signs to Watch For',
+          content: 'Unusual tiredness that rest doesn\'t fix. Feeling breathless during exercise that used to be manageable. Pale skin, brittle nails, feeling cold. Difficulty concentrating. Craving ice or non-food items (pica). If you\'re experiencing these alongside heavy periods, ask your doctor for a ferritin blood test — not just haemoglobin.',
+          actionSteps: [
+            'Ask specifically for a ferritin test — it catches depletion earlier',
+            'Iron-rich foods: red meat, spinach, lentils, fortified cereals',
+            'Vitamin C helps iron absorption — pair with meals',
+          ],
+          affirmation: 'Your body is trying to tell you something.',
+        ),
+      ],
+    ),
+    NavigateTopic(
+      id: 'endometriosis',
+      title: 'Endometriosis',
+      subtitle: 'Pain that deserves to be taken seriously',
+      area: LifeArea.physicalHealth,
+      type: ContentType.understand,
+      audienceFilter: ['woman'],
+      cards: [
+        GuidanceCard(
+          id: 'endo_1',
+          title: 'What Is It?',
+          content: 'Endometriosis is a condition where tissue similar to the uterine lining grows outside the womb — on the ovaries, bowel, or elsewhere in the pelvis. It affects roughly 1 in 10 women. Symptoms include severe period pain, chronic pelvic pain, pain during or after sex, fatigue, and difficulty getting pregnant. The average time to diagnosis is 7.5 years — often because women are told their pain is "normal".',
+          affirmation: 'Pain that stops you functioning is never "just a period".',
+        ),
+        GuidanceCard(
+          id: 'endo_2',
+          title: 'In the Military',
+          content: 'Service women with endometriosis often push through pain to avoid being seen as weak or unreliable. But untreated endometriosis gets worse, not better. If period pain regularly affects your ability to train, work, or sleep — that is not normal and you deserve investigation. Treatments include hormonal management, pain relief, and in some cases surgery.',
+          actionSteps: [
+            'Keep a pain diary — note severity, timing, and impact on duties',
+            'Ask your MO for a referral to gynaecology if pain is severe',
+            'Hormonal contraception can sometimes help manage symptoms',
+          ],
+          affirmation: 'Advocating for your health is not weakness.',
+        ),
+      ],
+    ),
+    NavigateTopic(
+      id: 'period_ops',
+      title: 'Periods on Operations',
+      subtitle: 'Practical management in the field',
+      area: LifeArea.militaryLife,
+      type: ContentType.grow,
+      audienceFilter: ['woman', 'serving'],
+      cards: [
+        GuidanceCard(
+          id: 'ops_1',
+          title: 'Suppressing Periods for Deployment',
+          content: 'Many service women choose to suppress periods before and during deployment using hormonal contraception. This is medically safe and widely used. The combined pill taken back-to-back, the hormonal IUD, the implant, or the injection can all reduce or eliminate periods. Speak to your MO well before deployment to find what works for your body — don\'t leave it to the last minute.',
+          actionSteps: [
+            'Discuss options with your MO at least 3 months before deployment',
+            'Trial the method at home first to check for side effects',
+            'Carry backup supplies (panty liners, painkillers) regardless',
+          ],
+          affirmation: 'Planning ahead is professionalism, not weakness.',
+        ),
+        GuidanceCard(
+          id: 'ops_2',
+          title: 'Managing in the Field',
+          content: 'When periods happen on exercise or operations: menstrual cups are popular because they\'re reusable and last up to 12 hours. Period pants work well as backup. Carry disposal bags (opaque, sealable) for used products. Baby wipes for hygiene when showers aren\'t available. Anti-diarrhoea medication (Imodium) can help if bowel changes accompany your period.',
+          actionSteps: [
+            'Practice using a menstrual cup before you need it in the field',
+            'Pack supplies in your grab bag — not in a bergen that might get separated',
+            'Dark-coloured underwear gives peace of mind',
+          ],
+          affirmation: 'Every woman who has served has figured this out. You will too.',
         ),
       ],
     ),
@@ -674,26 +959,30 @@ class NavigateContent {
   static List<NavigateTopic> getTopicsForArea(LifeArea area) {
     final all = <NavigateTopic>[];
 
-    // Add topics based on area
     switch (area) {
       case LifeArea.relationships:
         all.addAll(relationshipsUnderstand);
         all.addAll(relationshipsReflect);
         all.addAll(relationshipsGrow);
+        all.addAll(mensContent.where((t) => t.area == area));
+        all.addAll(womensContent.where((t) => t.area == area));
         break;
       case LifeArea.selfUnderstanding:
         all.addAll(selfUnderstand);
-        all.addAll(mensContent);
-        all.addAll(womensContent);
+        all.addAll(mensContent.where((t) => t.area == area));
+        all.addAll(womensContent.where((t) => t.area == area));
+        break;
+      case LifeArea.physicalHealth:
+        all.addAll(womensContent.where((t) => t.area == area));
         break;
       case LifeArea.militaryLife:
         all.addAll(militaryContent);
+        all.addAll(womensContent.where((t) => t.area == area));
         break;
       case LifeArea.mentalHealth:
         all.addAll(urgentSupport);
         break;
       default:
-        // Other areas to be added
         break;
     }
 

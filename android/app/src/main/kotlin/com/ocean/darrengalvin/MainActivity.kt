@@ -1,4 +1,4 @@
-package com.example.deep_dive
+package com.ocean.darrengalvin
 
 import io.flutter.embedding.android.FlutterActivity
 

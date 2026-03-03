@@ -10,6 +10,10 @@ import '../../scenarios/screens/protocol_library_screen.dart';
 import '../../breathing/screens/breathing_screen.dart';
 import '../../settings/screens/contact_help_screen.dart';
 import '../../goals/screens/goals_screen.dart';
+import '../../service_women/screens/harassment_wizard_screen.dart';
+import '../../service_women/screens/health_tracker_screen.dart';
+import '../../service_women/screens/womens_guidance_screen.dart';
+import '../../navigate/data/navigate_content.dart';
 import '../widgets/daily_brief_widget.dart';
 import '../widgets/after_action_review_widget.dart';
 import '../widgets/skills_translator_widget.dart';
@@ -317,6 +321,109 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                     TipCard(title: 'Interview Preparation', content: 'Practice the STAR method: Situation, Task, Action, Result. Have 3-5 stories ready that show your skills.', keyPoints: ['STAR method for answers', 'Practice out loud', 'Research the company']),
                     TipCard(title: 'Common Questions', content: 'Be ready for: "Why are you leaving the military?" "How do your skills transfer?" "Tell me about a challenge you overcame."', keyPoints: ['Stay positive about transition', 'Connect your experience', 'Show eagerness to learn']),
                   ],
+                )),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _MilitarySection(
+          icon: Icons.shield_outlined,
+          title: 'Service Women',
+          items: [
+            _MilitaryItem(
+              title: 'Harassment & Unwanted Behaviour',
+              subtitle: 'Private guided support assessment',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HarassmentWizardScreen()),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'Health Tracker',
+              subtitle: 'Period, symptoms & wellbeing — private & on-device',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HealthTrackerScreen()),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'Your Menstrual Cycle',
+              subtitle: 'Understanding your monthly patterns',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => WomensGuidanceScreen(
+                  topic: NavigateContent.womensContent.firstWhere((t) => t.id == 'menstrual_cycle'),
+                )),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'Your Cycle & Training',
+              subtitle: 'How to train smarter with your body',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => WomensGuidanceScreen(
+                  topic: NavigateContent.womensContent.firstWhere((t) => t.id == 'cycle_training'),
+                )),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'Periods on Operations',
+              subtitle: 'Practical management in the field',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => WomensGuidanceScreen(
+                  topic: NavigateContent.womensContent.firstWhere((t) => t.id == 'period_ops'),
+                )),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'Perimenopause',
+              subtitle: 'The transition nobody warns you about',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => WomensGuidanceScreen(
+                  topic: NavigateContent.womensContent.firstWhere((t) => t.id == 'perimenopause'),
+                )),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'PMDD — Beyond PMS',
+              subtitle: 'When your luteal phase becomes unbearable',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => WomensGuidanceScreen(
+                  topic: NavigateContent.womensContent.firstWhere((t) => t.id == 'pmdd'),
+                )),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'Endometriosis',
+              subtitle: 'Pain that deserves to be taken seriously',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => WomensGuidanceScreen(
+                  topic: NavigateContent.womensContent.firstWhere((t) => t.id == 'endometriosis'),
+                )),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'Iron & Energy',
+              subtitle: 'Why you might be running on empty',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => WomensGuidanceScreen(
+                  topic: NavigateContent.womensContent.firstWhere((t) => t.id == 'iron_deficiency'),
+                )),
+              ),
+            ),
+            _MilitaryItem(
+              title: 'What Women Often Need',
+              subtitle: 'Understanding emotional needs in relationships',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => WomensGuidanceScreen(
+                  topic: NavigateContent.womensContent.firstWhere((t) => t.id == 'what_women_want'),
                 )),
               ),
             ),

@@ -40,9 +40,32 @@ import '../../rituals/screens/topic_browser_screen.dart';
 import '../../user_types/screens/military_screen.dart';
 import '../../user_types/screens/veteran_screen.dart';
 import '../../user_types/screens/young_person_screen.dart';
+import '../../service_family/screens/service_family_screen.dart';
+import '../../whats_new/whats_new_sheet.dart';
+import '../../kindness/screens/kindness_screen.dart';
+import '../../service_culture/screens/service_culture_screen.dart';
+import '../../military_perks/screens/military_perks_screen.dart';
+import '../../brain_science/screens/brain_science_screen.dart';
+import '../../donations/screens/donations_screen.dart';
+import '../../lgbtq_support/screens/lgbtq_support_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        showWhatsNewIfNeeded(context);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -272,15 +295,33 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        // Young Person
-        _FeatureRow(
-          icon: Icons.school_rounded,
-          title: 'Young Person',
-          subtitle: 'Life skills, guidance, and support for younger users',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const YoungPersonScreen()),
-          ),
+        // Young Person + Service Family
+        Row(
+          children: [
+            Expanded(
+              child: _UserTypeCard(
+                icon: Icons.school_rounded,
+                title: 'Young Person',
+                subtitle: 'Life skills, guidance, and support for younger users',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const YoungPersonScreen()),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _UserTypeCard(
+                icon: Icons.family_restroom_rounded,
+                title: 'Service Family',
+                subtitle: 'Support for partners, spouses & families of service members',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ServiceFamilyScreen()),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -369,6 +410,60 @@ class HomeScreen extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const LearnScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.favorite_outline_rounded,
+          title: 'Learning to be Kind',
+          subtitle: 'Flip the story and shift your perspective',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const KindnessScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.military_tech_outlined,
+          title: 'Service Culture',
+          subtitle: 'C2 Drill values, scenarios & daily focus',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ServiceCultureScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.workspace_premium_outlined,
+          title: 'Military Perks',
+          subtitle: 'Calculate your benefits & see what you\'d lose',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MilitaryPerksScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.psychology_outlined,
+          title: 'Brain Science',
+          subtitle: 'Psychology myths, biases & famous experiments',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BrainScienceScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.diversity_3_rounded,
+          title: 'LGBTQ+ Support',
+          subtitle: 'History, ally training, deployment safety & resources',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const LgbtqSupportScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.volunteer_activism_rounded,
+          title: 'Support Charities',
+          subtitle: 'Donate to our monthly partner charities',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const DonationsScreen()),
           ),
         ),
       ],
