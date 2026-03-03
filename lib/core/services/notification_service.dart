@@ -48,7 +48,7 @@ class NotificationService {
       );
 
       await _notifications.initialize(
-        initSettings,
+        settings: initSettings,
         onDidReceiveNotificationResponse: _onNotificationTapped,
       );
 
@@ -194,15 +194,13 @@ class NotificationService {
 
       // Schedule the notification
       await _notifications.zonedSchedule(
-        _dailyAffirmationId,
-        'Daily Affirmation 🌊',
-        affirmation,
-        tz.TZDateTime.from(scheduledDate, tz.local),
-        details,
+        id: _dailyAffirmationId,
+        title: 'Daily Affirmation 🌊',
+        body: affirmation,
+        scheduledDate: tz.TZDateTime.from(scheduledDate, tz.local),
+        notificationDetails: details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time, // Repeat daily
+        matchDateTimeComponents: DateTimeComponents.time,
         payload: 'affirmation',
       );
 
@@ -216,7 +214,7 @@ class NotificationService {
   Future<void> cancelDailyAffirmation() async {
     if (!_isInitialized) return;
     try {
-      await _notifications.cancel(_dailyAffirmationId);
+      await _notifications.cancel(id: _dailyAffirmationId);
     } catch (e) {
       debugPrint('⚠️ Failed to cancel notification: $e');
     }
@@ -266,10 +264,10 @@ class NotificationService {
       final affirmation = _getRandomAffirmation();
       
       await _notifications.show(
-        0,
-        'Daily Affirmation 🌊',
-        affirmation,
-        details,
+        id: 0,
+        title: 'Daily Affirmation 🌊',
+        body: affirmation,
+        notificationDetails: details,
       );
       
       debugPrint('📤 Test notification sent: $affirmation');
