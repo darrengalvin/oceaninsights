@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../../../core/services/ui_sound_service.dart';
+import '../../../core/services/content_sync_service.dart';
 
 class DonationsScreen extends StatefulWidget {
   const DonationsScreen({super.key});
@@ -25,8 +26,15 @@ class _DonationsScreenState extends State<DonationsScreen> {
     {'emoji': '🤝', 'text': 'Help fund a community wellbeing event for service members'},
   ];
 
+  static const _fallbackDonateUrl =
+      'https://www.gofundme.com/f/various-military-charities';
+
   Future<void> _openDonateLink() async {
-    final uri = Uri.parse('https://belowthesurface.co.uk/donate');
+    final url = ContentSyncService().getDonationSetting(
+      'donate_url',
+      defaultValue: _fallbackDonateUrl,
+    );
+    final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }

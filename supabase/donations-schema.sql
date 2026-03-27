@@ -39,5 +39,5 @@ INSERT INTO donation_impacts (amount, emoji, impact_text, sort_order) VALUES
 (50, '🤝', 'Help fund a community wellbeing event for service members', 5);
 
 INSERT INTO donation_settings (key, value) VALUES
-('donate_url', 'https://belowthesurface.co.uk/donate'),
+('donate_url', 'https://www.gofundme.com/f/various-military-charities'),
 ('thank_you_message', 'Every penny goes to charity — not to us. Below the Surface connects you with organisations making a real difference for service members, veterans, and their families.');
