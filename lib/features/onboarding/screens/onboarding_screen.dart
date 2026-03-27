@@ -89,10 +89,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SafeArea(
             child: Column(
               children: [
-                // Progress indicator - hidden on first page for cleaner intro
-                AnimatedOpacity(
-                  opacity: _currentPage > 0 ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 400),
+                // Progress indicator — omit from layout on welcome page so content stays centred
+                Visibility(
+                  visible: _currentPage > 0,
+                  maintainSize: false,
+                  maintainState: false,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                     child: Row(
@@ -214,40 +215,47 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildWelcomePage() {
     final colours = context.colours;
     
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 48),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Spacer(flex: 3),
-          // Logo - clean, no border
-          _BelowTheSurfaceFullLogo(size: 100, showBorder: false),
-          const SizedBox(height: 48),
-          // Tagline - refined typography
-          Text(
-            'Life requires constant navigation.',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: colours.textBright,
-              height: 1.4,
-              letterSpacing: 0.2,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _BelowTheSurfaceFullLogo(size: 100, showBorder: false),
+                    const SizedBox(height: 48),
+                    Text(
+                      'Life requires constant navigation.',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: colours.textBright,
+                        height: 1.4,
+                        letterSpacing: 0.2,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Set your course and adjust when needed.',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        height: 1.6,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 18,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 20),
-          Text(
-            'Set your course and adjust when needed.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: colours.textMuted,
-              height: 1.6,
-              fontWeight: FontWeight.w400,
-              fontSize: 18,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const Spacer(flex: 4),
-        ],
-      ),
+        );
+      },
     );
   }
   
@@ -477,14 +485,15 @@ class _BelowTheSurfaceFullLogo extends StatelessWidget {
         // Wave icon
         _BelowTheSurfaceIcon(size: size, showBorder: showBorder),
         const SizedBox(height: 14),
-        // Text below - refined letter-spacing
         Text(
-          'BELOW THE SURFACE',
+          'BELOW THE\nSURFACE',
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w400,
             color: colours.textBright,
             letterSpacing: 4,
+            height: 1.4,
           ),
         ),
       ],
