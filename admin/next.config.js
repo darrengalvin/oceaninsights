@@ -13,8 +13,14 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    // Skip prerendering API routes during build
     skipTrailingSlashRedirect: true,
+  },
+  async rewrites() {
+    return [
+      { source: '/privacy', destination: '/privacy.html' },
+      { source: '/terms', destination: '/terms.html' },
+      { source: '/support', destination: '/support.html' },
+    ]
   },
   // Don't try to fetch data from API routes during build
   generateBuildId: async () => {
