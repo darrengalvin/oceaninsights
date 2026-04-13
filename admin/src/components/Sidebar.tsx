@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -18,11 +19,20 @@ import {
   Home,
   Target,
   Settings2,
+  LogOut,
 } from 'lucide-react'
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
   
   const isActive = (path: string) => {
     if (path === '/admin') {
@@ -137,6 +147,16 @@ export default function Sidebar() {
           <Settings2 className="w-5 h-5" />
           App Settings
         </Link>
+
+        <div className="my-2 border-t border-gray-200" />
+
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg w-full"
+        >
+          <LogOut className="w-5 h-5" />
+          Sign Out
+        </button>
       </nav>
     </>
   )
