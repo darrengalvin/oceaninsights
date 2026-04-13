@@ -20,6 +20,7 @@ import {
   Target,
   Settings2,
   LogOut,
+  ShieldCheck,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -130,6 +131,11 @@ export default function Sidebar() {
         </Link>
         
         <div className="my-2 border-t border-gray-200" />
+        
+        <Link href="/admin/audit" className={linkClass('/admin/audit')} onClick={closeMobileMenu}>
+          <ShieldCheck className="w-5 h-5" />
+          Content Audit
+        </Link>
         
         <Link href="/admin/analytics" className={linkClass('/admin/analytics')} onClick={closeMobileMenu}>
           <BarChart3 className="w-5 h-5" />
