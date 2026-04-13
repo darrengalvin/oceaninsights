@@ -535,8 +535,11 @@ function ResultsView({ run, areaSummary, previousScore, findings, citations, run
           </p>
         </div>
         <div className="flex gap-2">
-          <a href="/api/audit/export?format=summary" target="_blank" className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
-            Export Report
+          <a href="/api/audit/report" target="_blank" className="px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition">
+            Full Report
+          </a>
+          <a href="/api/audit/export?format=csv" target="_blank" className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
+            CSV Export
           </a>
           <button onClick={onNewAudit} className="px-4 py-2 bg-cyan-700 text-white rounded-xl text-sm font-semibold hover:bg-cyan-800 transition">
             Run New Audit
@@ -641,51 +644,118 @@ function AreasGrid({ areaSummary }: { areaSummary: Record<string, AreaSummary> }
 }
 
 function FindingsList({ findings, onUpdate }: { findings: AuditFinding[]; onUpdate: (id: string, status: string) => void }) {
-  const [filter, setFilter] = useState('open');
-  const filtered = filter === 'all' ? findings : findings.filter(f => f.status === filter);
-  const catLabel = (id: string) => AUDIT_CATEGORIES.find(c => c.id === id)?.label || id;
+  const [statusFilter, setStatusFilter] = useState('open');
+  const [groupBy, setGroupBy] = useState<'category' | 'area' | 'severity'>('category');
+
+  const filtered = statusFilter === 'all' ? findings : findings.filter(f => f.status === statusFilter);
+
+  const grouped: Record<string, AuditFinding[]> = {};
+  for (const f of filtered) {
+    let key: string;
+    if (groupBy === 'category') key = f.category_id;
+    else if (groupBy === 'area') key = f.content_area;
+    else {
+      const light = scoreToTrafficLight(f.score);
+      key = light === 'critical' ? '0-critical' : light === 'red' ? '1-red' : light === 'amber' ? '2-amber' : '3-green';
+    }
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(f);
+  }
+
+  const sortedGroups = Object.entries(grouped).sort((a, b) => {
+    if (groupBy === 'severity') return a[0].localeCompare(b[0]);
+    const avgA = a[1].reduce((s, f) => s + f.score, 0) / a[1].length;
+    const avgB = b[1].reduce((s, f) => s + f.score, 0) / b[1].length;
+    return avgA - avgB;
+  });
+
+  function groupLabel(key: string): { title: string; desc: string } {
+    if (groupBy === 'category') {
+      const cat = AUDIT_CATEGORIES.find(c => c.id === key);
+      return { title: cat?.label || key, desc: cat?.description || '' };
+    }
+    if (groupBy === 'area') {
+      const area = CONTENT_AREAS.find(a => a.id === key);
+      return { title: area?.label || key, desc: '' };
+    }
+    const labels: Record<string, { title: string; desc: string }> = {
+      '0-critical': { title: 'Immediate Action Required (0-49%)', desc: 'These findings pose a safety, legal, or reputational risk.' },
+      '1-red': { title: 'Action Required (50-69%)', desc: 'These findings must be fixed before external review.' },
+      '2-amber': { title: 'Review Recommended (70-89%)', desc: 'Minor issues that should be improved.' },
+      '3-green': { title: 'Minor Notes (90%+)', desc: 'Low-priority observations.' },
+    };
+    return labels[key] || { title: key, desc: '' };
+  }
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
-        {['open', 'all', 'acknowledged', 'resolved', 'wont_fix'].map(s => (
-          <button key={s} onClick={() => setFilter(s)} className={`px-3 py-1 text-xs rounded-full font-medium transition ${filter === s ? 'bg-cyan-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-            {s === 'wont_fix' ? "Won't Fix" : s.charAt(0).toUpperCase() + s.slice(1)} ({s === 'all' ? findings.length : findings.filter(f => f.status === s).length})
-          </button>
-        ))}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex gap-2">
+          {['open', 'all', 'acknowledged', 'resolved', 'wont_fix'].map(s => (
+            <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1 text-xs rounded-full font-medium transition ${statusFilter === s ? 'bg-cyan-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              {s === 'wont_fix' ? "Won't Fix" : s.charAt(0).toUpperCase() + s.slice(1)} ({s === 'all' ? findings.length : findings.filter(f => f.status === s).length})
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-1 text-xs">
+          <span className="text-gray-400 mr-1">Group:</span>
+          {(['category', 'area', 'severity'] as const).map(g => (
+            <button key={g} onClick={() => setGroupBy(g)} className={`px-2 py-1 rounded font-medium transition ${groupBy === g ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              {g.charAt(0).toUpperCase() + g.slice(1)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {filtered.length === 0 ? (
         <div className="text-gray-500 text-center py-12">No findings match this filter.</div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map(f => {
-            const light = scoreToTrafficLight(f.score);
+        <div className="space-y-6">
+          {sortedGroups.map(([key, items]) => {
+            const { title, desc } = groupLabel(key);
             return (
-              <div key={f.id} className="bg-white border border-gray-200 rounded-xl p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: trafficLightColor(light) }} />
-                      <span className="text-xs font-medium text-gray-500">{catLabel(f.category_id)}</span>
-                      <span className="text-xs font-bold" style={{ color: trafficLightColor(light) }}>{Math.round(f.score)}%</span>
-                    </div>
-                    <p className="text-sm text-gray-900 font-medium">{f.item_label}</p>
-                    <p className="text-sm text-gray-600 mt-0.5">{f.description}</p>
-                    {f.evidence && <p className="text-xs text-gray-400 mt-1 italic">"{f.evidence}"</p>}
-                    {f.suggested_action && <p className="text-xs text-cyan-700 mt-1">→ {f.suggested_action}</p>}
-                  </div>
-                  <div className="flex gap-1 ml-4 flex-shrink-0">
-                    {f.status === 'open' && (
-                      <>
-                        <button onClick={() => onUpdate(f.id, 'acknowledged')} className="text-xs px-2 py-1 bg-amber-50 text-amber-700 rounded hover:bg-amber-100">Ack</button>
-                        <button onClick={() => onUpdate(f.id, 'resolved')} className="text-xs px-2 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100">Resolve</button>
-                      </>
-                    )}
-                    {f.status === 'acknowledged' && (
-                      <button onClick={() => onUpdate(f.id, 'resolved')} className="text-xs px-2 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100">Resolve</button>
-                    )}
-                  </div>
+              <div key={key}>
+                <div className="mb-2">
+                  <h3 className="text-sm font-semibold text-gray-900">{title} <span className="text-gray-400 font-normal">({items.length})</span></h3>
+                  {desc && <p className="text-xs text-gray-500">{desc}</p>}
+                </div>
+                <div className="space-y-2">
+                  {items.sort((a, b) => a.score - b.score).map(f => {
+                    const light = scoreToTrafficLight(f.score);
+                    return (
+                      <div key={f.id} className="bg-white border border-gray-200 rounded-xl p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: trafficLightColor(light) }} />
+                              <span className="text-xs font-bold" style={{ color: trafficLightColor(light) }}>{Math.round(f.score)}%</span>
+                              <span className="text-xs text-gray-400">{f.sub_criterion}</span>
+                              {groupBy !== 'area' && <span className="text-xs text-gray-300">· {f.content_area}</span>}
+                            </div>
+                            <p className="text-sm text-gray-900 font-medium">{f.item_label}</p>
+                            <p className="text-sm text-gray-600 mt-0.5">{f.description}</p>
+                            {f.evidence && <p className="text-xs text-gray-400 mt-1 italic">"{f.evidence}"</p>}
+                            {f.suggested_action && (
+                              <div className="mt-2 text-xs text-cyan-800 bg-cyan-50 rounded-lg px-3 py-2">
+                                <span className="font-semibold">Suggested action:</span> {f.suggested_action}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex gap-1 ml-4 flex-shrink-0">
+                            {f.status === 'open' && (
+                              <>
+                                <button onClick={() => onUpdate(f.id, 'acknowledged')} className="text-xs px-2 py-1 bg-amber-50 text-amber-700 rounded hover:bg-amber-100">Ack</button>
+                                <button onClick={() => onUpdate(f.id, 'resolved')} className="text-xs px-2 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100">Resolve</button>
+                              </>
+                            )}
+                            {f.status === 'acknowledged' && (
+                              <button onClick={() => onUpdate(f.id, 'resolved')} className="text-xs px-2 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100">Resolve</button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
