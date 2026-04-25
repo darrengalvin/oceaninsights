@@ -7,7 +7,14 @@ import '../../../core/services/subscription_service.dart';
 /// Designed to be optional and unobtrusive: surfaced from the paywall and
 /// from settings as "I have an access code".
 class RedeemCodeScreen extends StatefulWidget {
-  const RedeemCodeScreen({super.key});
+  /// Pre-filled code (e.g. from a magic link / deep link).
+  final String? initialCode;
+
+  /// If true and [initialCode] is provided, redemption is attempted
+  /// automatically once the screen is shown.
+  final bool autoSubmit;
+
+  const RedeemCodeScreen({super.key, this.initialCode, this.autoSubmit = false});
 
   @override
   State<RedeemCodeScreen> createState() => _RedeemCodeScreenState();
@@ -25,6 +32,14 @@ class _RedeemCodeScreenState extends State<RedeemCodeScreen> {
   void initState() {
     super.initState();
     _service.addListener(_onChange);
+    if (widget.initialCode != null && widget.initialCode!.isNotEmpty) {
+      _controller.text = widget.initialCode!;
+      if (widget.autoSubmit && !_service.hasActiveCode) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _submit();
+        });
+      }
+    }
   }
 
   void _onChange() {
@@ -125,7 +140,9 @@ class _RedeemCodeScreenState extends State<RedeemCodeScreen> {
               _Header(hasCode: hasCode),
               const SizedBox(height: 32),
               if (hasCode) _activeCard() else _redeemCard(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              _privacyPromiseCard(),
+              const SizedBox(height: 16),
               _explainerCard(),
             ],
           ),
@@ -336,6 +353,61 @@ class _RedeemCodeScreenState extends State<RedeemCodeScreen> {
             child: const Text(
               'Remove access code',
               style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _privacyPromiseCard() {
+    final orgName = _service.organizationName;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF065F46).withOpacity(0.25),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF34D399).withOpacity(0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF34D399).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.lock_outline, color: Color(0xFF34D399), size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Your privacy is protected',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  orgName != null && orgName.isNotEmpty
+                      ? '$orgName paid for your access. They will never see what you do '
+                          'in this app - your moods, journal, conversations and '
+                          'activity stay private.'
+                      : 'Whoever sponsors your access will never see what you do in '
+                          'this app. Your moods, journal and activity stay private.',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.85),
+                    fontSize: 13,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

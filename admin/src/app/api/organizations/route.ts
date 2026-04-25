@@ -18,6 +18,8 @@ export async function GET() {
     const ids = (orgs ?? []).map((o) => o.id)
     let codeStats: Record<string, { total: number; redeemed: number; active_unredeemed: number }> = {}
 
+    const recipStats: Record<string, { total: number; redeemed: number }> = {}
+
     if (ids.length > 0) {
       const { data: codes, error: codesErr } = await supabaseAdmin
         .from('access_codes')
@@ -34,6 +36,19 @@ export async function GET() {
         if (c.redeemed_at) s.redeemed += 1
         else if (c.is_active) s.active_unredeemed += 1
       }
+
+      const { data: recips } = await supabaseAdmin
+        .from('recipients')
+        .select('organization_id, status')
+        .in('organization_id', ids)
+
+      for (const id of ids) recipStats[id] = { total: 0, redeemed: 0 }
+      for (const r of recips ?? []) {
+        const s = recipStats[r.organization_id]
+        if (!s) continue
+        s.total += 1
+        if (r.status === 'redeemed') s.redeemed += 1
+      }
     }
 
     const enriched = (orgs ?? []).map((o) => ({
@@ -41,6 +56,8 @@ export async function GET() {
       codes_total: codeStats[o.id]?.total ?? 0,
       codes_redeemed: codeStats[o.id]?.redeemed ?? 0,
       codes_active_unredeemed: codeStats[o.id]?.active_unredeemed ?? 0,
+      recipients_total: recipStats[o.id]?.total ?? 0,
+      recipients_redeemed: recipStats[o.id]?.redeemed ?? 0,
     }))
 
     return NextResponse.json(enriched)

@@ -1,5 +1,7 @@
 export type OrganizationType = 'military' | 'school' | 'charity' | 'corporate' | 'other'
 
+export type BillingMode = 'prepaid' | 'postpaid_quarterly'
+
 export interface Organization {
   id: string
   name: string
@@ -12,16 +14,75 @@ export interface Organization {
   contract_starts_on: string | null
   contract_ends_on: string | null
   seats_purchased: number
+  seats_redeemed: number
+  billing_mode: BillingMode
+  billing_batch_size: number
+  allow_reissue: boolean
+  max_reissues_per_recipient: number
+  privacy_promise_enabled: boolean
   is_active: boolean
   created_at: string
   updated_at: string
   created_by: string | null
 }
 
+export type RecipientStatus = 'invited' | 'redeemed' | 'revoked' | 'expired'
+
+export interface Recipient {
+  id: string
+  organization_id: string
+  unit_id: string | null
+  identifier: string
+  display_name: string | null
+  email: string | null
+  pseudonym: string | null
+  status: RecipientStatus
+  invited_at: string | null
+  email_sent_at: string | null
+  email_opened_at: string | null
+  redeemed_at: string | null
+  redeemed_by_device_id: string | null
+  reissue_count: number
+  notes: string | null
+  created_at: string
+  updated_at: string
+  active_code?: string | null
+}
+
+export interface RedemptionEvent {
+  id: string
+  organization_id: string | null
+  recipient_id: string | null
+  access_code_id: string | null
+  code_text: string | null
+  device_id: string | null
+  ip_address: string | null
+  user_agent: string | null
+  succeeded: boolean
+  failure_reason: string | null
+  occurred_at: string
+}
+
+export const RECIPIENT_STATUS_LABELS: Record<RecipientStatus, string> = {
+  invited: 'Invited',
+  redeemed: 'Redeemed',
+  revoked: 'Revoked',
+  expired: 'Expired',
+}
+
+export const RECIPIENT_STATUS_COLORS: Record<RecipientStatus, string> = {
+  invited: 'bg-blue-50 text-blue-700 border-blue-200',
+  redeemed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  revoked: 'bg-gray-100 text-gray-600 border-gray-200',
+  expired: 'bg-amber-50 text-amber-700 border-amber-200',
+}
+
 export interface OrganizationWithStats extends Organization {
   codes_total: number
   codes_redeemed: number
   codes_active_unredeemed: number
+  recipients_total: number
+  recipients_redeemed: number
 }
 
 export interface AccessCode {

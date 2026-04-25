@@ -50,6 +50,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       'contract_ends_on',
       'seats_purchased',
       'is_active',
+      'billing_mode',
+      'billing_batch_size',
+      'allow_reissue',
+      'max_reissues_per_recipient',
+      'privacy_promise_enabled',
     ]
     for (const key of allowed) {
       if (key in body) updates[key] = body[key]

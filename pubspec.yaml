@@ -52,6 +52,9 @@ dependencies:
   flutter_local_notifications: ^20.0.0
   timezone: ^0.10.0
 
+  # Universal Links / deep links - used for sponsorship invite redemption
+  app_links: ^6.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   ArrowLeft,
   Building2,
-  KeyRound,
+  Users,
   Plus,
   Save,
   Download,
@@ -18,46 +18,59 @@ import {
   Calendar,
   AlertCircle,
   Copy,
+  RefreshCw,
+  Send,
+  Settings as SettingsIcon,
+  Activity,
+  Upload,
+  KeyRound,
+  ShieldAlert,
 } from 'lucide-react'
 import {
   type Organization,
-  type AccessCode,
+  type Recipient,
+  type RedemptionEvent,
   type OrganizationType,
+  type BillingMode,
   ORG_TYPE_LABELS,
   ORG_TYPE_COLORS,
+  RECIPIENT_STATUS_COLORS,
+  RECIPIENT_STATUS_LABELS,
 } from '@/lib/sponsorship'
 
-interface OrgDetail extends Organization {
-  codes: AccessCode[]
-  stats: { total: number; redeemed: number; active_unredeemed: number }
-}
+type Tab = 'people' | 'billing' | 'activity' | 'details'
 
 export default function OrganizationDetailPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const id = params?.id
 
-  const [org, setOrg] = useState<OrgDetail | null>(null)
+  const [org, setOrg] = useState<Organization | null>(null)
+  const [recipients, setRecipients] = useState<Recipient[]>([])
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [tab, setTab] = useState<'codes' | 'details'>('codes')
-  const [showGenerator, setShowGenerator] = useState(false)
-  const [showOnlyUnredeemed, setShowOnlyUnredeemed] = useState(false)
+  const [tab, setTab] = useState<Tab>('people')
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    if (id) load()
+    if (id) loadAll()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
-  async function load() {
+  async function loadAll() {
     setLoading(true)
     try {
-      const res = await fetch(`/api/organizations/${id}`)
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to load')
-      setOrg(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
+      const [orgRes, recipRes] = await Promise.all([
+        fetch(`/api/organizations/${id}`),
+        fetch(`/api/organizations/${id}/recipients`),
+      ])
+      const orgData = await orgRes.json()
+      const recipData = await recipRes.json()
+      if (!orgRes.ok) throw new Error(orgData.error || 'Failed to load organisation')
+      setOrg(orgData)
+      setRecipients(Array.isArray(recipData) ? recipData : [])
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
     } finally {
       setLoading(false)
     }
@@ -75,9 +88,9 @@ export default function OrganizationDetailPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Save failed')
-      setOrg((prev) => (prev ? { ...prev, ...data } : prev))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
+      setOrg((p) => (p ? { ...p, ...data } : p))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
     } finally {
       setSaving(false)
     }
@@ -85,11 +98,7 @@ export default function OrganizationDetailPage() {
 
   async function deleteOrg() {
     if (!org) return
-    if (
-      !confirm(
-        `Delete "${org.name}"? This will permanently delete all ${org.codes.length} of their codes.`
-      )
-    )
+    if (!confirm(`Delete "${org.name}" and ALL their recipients and codes? This cannot be undone.`))
       return
     const res = await fetch(`/api/organizations/${org.id}`, { method: 'DELETE' })
     if (res.ok) router.push('/admin/sponsorship')
@@ -114,9 +123,16 @@ export default function OrganizationDetailPage() {
       </div>
     )
 
-  const visibleCodes = showOnlyUnredeemed
-    ? org.codes.filter((c) => !c.redeemed_at)
-    : org.codes
+  const stats = {
+    total: recipients.length,
+    redeemed: recipients.filter((r) => r.status === 'redeemed').length,
+    invited: recipients.filter((r) => r.status === 'invited').length,
+    revoked: recipients.filter((r) => r.status === 'revoked').length,
+  }
+
+  const seatsRemaining = Math.max(0, org.seats_purchased - org.seats_redeemed)
+  const seatsExhausted =
+    org.billing_mode === 'prepaid' && org.seats_purchased > 0 && seatsRemaining === 0
 
   return (
     <div className="p-8">
@@ -136,10 +152,8 @@ export default function OrganizationDetailPage() {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{org.name}</h2>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span
-                  className={`inline-block px-2 py-0.5 rounded-md text-xs font-medium border ${ORG_TYPE_COLORS[org.type]}`}
-                >
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                <span className={`inline-block px-2 py-0.5 rounded-md text-xs font-medium border ${ORG_TYPE_COLORS[org.type]}`}>
                   {ORG_TYPE_LABELS[org.type]}
                 </span>
                 {org.is_active ? (
@@ -153,6 +167,9 @@ export default function OrganizationDetailPage() {
                     Inactive
                   </span>
                 )}
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200">
+                  {org.billing_mode === 'prepaid' ? 'Prepaid' : 'Postpaid quarterly'}
+                </span>
               </div>
             </div>
           </div>
@@ -165,33 +182,43 @@ export default function OrganizationDetailPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        {seatsExhausted && (
+          <div className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <ShieldAlert className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <div className="font-semibold text-red-900">Prepaid seats exhausted</div>
+              <div className="text-sm text-red-700 mt-0.5">
+                {org.seats_redeemed} of {org.seats_purchased} prepaid seats have been used. New
+                redemptions will be blocked until you increase the seat count in Billing.
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <StatBox label="Recipients" value={stats.total} icon={Users} tint="bg-blue-50 text-blue-700" />
+          <StatBox label="Redeemed" value={stats.redeemed} icon={CheckCircle2} tint="bg-emerald-50 text-emerald-700" />
+          <StatBox label="Awaiting" value={stats.invited} icon={Send} tint="bg-amber-50 text-amber-700" />
           <StatBox
-            label="Codes Generated"
-            value={org.stats.total}
+            label={org.billing_mode === 'prepaid' ? 'Seats Left' : 'Billable Quarter'}
+            value={org.billing_mode === 'prepaid' ? seatsRemaining : org.seats_redeemed}
             icon={KeyRound}
-            tint="bg-blue-50 text-blue-700"
-          />
-          <StatBox
-            label="Redeemed"
-            value={org.stats.redeemed}
-            icon={CheckCircle2}
-            tint="bg-emerald-50 text-emerald-700"
-          />
-          <StatBox
-            label="Available"
-            value={org.stats.active_unredeemed}
-            icon={Plus}
-            tint="bg-amber-50 text-amber-700"
+            tint="bg-purple-50 text-purple-700"
           />
         </div>
 
         <div className="border-b border-gray-200 mb-6">
-          <div className="flex gap-6">
-            <TabButton active={tab === 'codes'} onClick={() => setTab('codes')}>
-              Access Codes ({org.codes.length})
+          <div className="flex gap-6 overflow-x-auto">
+            <TabButton active={tab === 'people'} onClick={() => setTab('people')} icon={Users}>
+              People ({recipients.length})
             </TabButton>
-            <TabButton active={tab === 'details'} onClick={() => setTab('details')}>
+            <TabButton active={tab === 'billing'} onClick={() => setTab('billing')} icon={SettingsIcon}>
+              Billing
+            </TabButton>
+            <TabButton active={tab === 'activity'} onClick={() => setTab('activity')} icon={Activity}>
+              Activity
+            </TabButton>
+            <TabButton active={tab === 'details'} onClick={() => setTab('details')} icon={Building2}>
               Details
             </TabButton>
           </div>
@@ -204,19 +231,16 @@ export default function OrganizationDetailPage() {
           </div>
         )}
 
-        {tab === 'codes' ? (
-          <CodesPanel
+        {tab === 'people' && (
+          <PeopleTab
             org={org}
-            codes={visibleCodes}
-            onReload={load}
-            showGenerator={showGenerator}
-            setShowGenerator={setShowGenerator}
-            showOnlyUnredeemed={showOnlyUnredeemed}
-            setShowOnlyUnredeemed={setShowOnlyUnredeemed}
+            recipients={recipients}
+            onChange={loadAll}
           />
-        ) : (
-          <DetailsPanel org={org} onSave={saveOrg} saving={saving} />
         )}
+        {tab === 'billing' && <BillingTab org={org} onSave={saveOrg} saving={saving} />}
+        {tab === 'activity' && <ActivityTab orgId={org.id} />}
+        {tab === 'details' && <DetailsTab org={org} onSave={saveOrg} saving={saving} />}
       </div>
     </div>
   )
@@ -229,7 +253,7 @@ function StatBox({
   tint,
 }: {
   label: string
-  value: number
+  value: number | string
   icon: React.ElementType
   tint: string
 }) {
@@ -249,137 +273,180 @@ function StatBox({
 function TabButton({
   active,
   onClick,
+  icon: Icon,
   children,
 }: {
   active: boolean
   onClick: () => void
+  icon: React.ElementType
   children: React.ReactNode
 }) {
   return (
     <button
       onClick={onClick}
-      className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
-        active
-          ? 'text-ocean-700 border-ocean-600'
-          : 'text-gray-500 border-transparent hover:text-gray-700'
+      className={`pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
+        active ? 'text-ocean-700 border-ocean-600' : 'text-gray-500 border-transparent hover:text-gray-700'
       }`}
     >
+      <Icon className="w-4 h-4" />
       {children}
     </button>
   )
 }
 
-function CodesPanel({
+// ─── People Tab ─────────────────────────────────────────────────────────────
+
+function PeopleTab({
   org,
-  codes,
-  onReload,
-  showGenerator,
-  setShowGenerator,
-  showOnlyUnredeemed,
-  setShowOnlyUnredeemed,
+  recipients,
+  onChange,
 }: {
-  org: OrgDetail
-  codes: AccessCode[]
-  onReload: () => void
-  showGenerator: boolean
-  setShowGenerator: (b: boolean) => void
-  showOnlyUnredeemed: boolean
-  setShowOnlyUnredeemed: (b: boolean) => void
+  org: Organization
+  recipients: Recipient[]
+  onChange: () => void
 }) {
-  function downloadCsv() {
-    const header = 'Code,Status,Batch,Created,Expires\n'
-    const rows = codes
-      .map((c) => {
-        const status = c.redeemed_at ? 'Redeemed' : c.is_active ? 'Available' : 'Deactivated'
-        return [
-          c.code,
-          status,
-          c.batch_label || '',
-          c.created_at?.slice(0, 10) || '',
-          c.expires_at?.slice(0, 10) || '',
-        ].join(',')
-      })
+  const [showInvite, setShowInvite] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+  const [filter, setFilter] = useState<'all' | 'invited' | 'redeemed' | 'revoked'>('all')
+  const [query, setQuery] = useState('')
+
+  const filtered = recipients.filter((r) => {
+    if (filter !== 'all' && r.status !== filter) return false
+    if (query) {
+      const q = query.toLowerCase()
+      return (
+        r.identifier.toLowerCase().includes(q) ||
+        r.display_name?.toLowerCase().includes(q) ||
+        r.email?.toLowerCase().includes(q)
+      )
+    }
+    return true
+  })
+
+  function exportCsv() {
+    const header = 'Identifier,Name,Email,Status,Code,Invited At,Redeemed At,Reissue Count\n'
+    const rows = recipients
+      .map((r) =>
+        [
+          r.identifier,
+          r.display_name || '',
+          r.email || '',
+          r.status,
+          r.active_code || '',
+          r.invited_at?.slice(0, 19).replace('T', ' ') || '',
+          r.redeemed_at?.slice(0, 19).replace('T', ' ') || '',
+          r.reissue_count,
+        ]
+          .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+          .join(',')
+      )
       .join('\n')
-    const blob = new Blob([header + rows], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${org.slug}-codes-${new Date().toISOString().slice(0, 10)}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    download(`${org.slug}-recipients-${new Date().toISOString().slice(0, 10)}.csv`, header + rows)
   }
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
-            onClick={() => setShowGenerator(!showGenerator)}
+            onClick={() => {
+              setShowInvite(true)
+              setShowImport(false)
+            }}
             className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-ocean-600 hover:bg-ocean-700 rounded-lg"
           >
             <Plus className="w-4 h-4" />
-            Generate Codes
+            Invite Person
           </button>
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              checked={showOnlyUnredeemed}
-              onChange={(e) => setShowOnlyUnredeemed(e.target.checked)}
-              className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
-            />
-            Only show unredeemed
-          </label>
-        </div>
-        {codes.length > 0 && (
           <button
-            onClick={downloadCsv}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+            onClick={() => {
+              setShowImport(true)
+              setShowInvite(false)
+            }}
+            className="flex items-center gap-2 px-4 py-2 text-sm text-ocean-700 border border-ocean-200 bg-ocean-50 hover:bg-ocean-100 rounded-lg"
           >
-            <Download className="w-4 h-4" />
-            Export CSV
+            <Upload className="w-4 h-4" />
+            Bulk Import
           </button>
-        )}
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by ID, name, email..."
+            className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
+          />
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value as 'all' | 'invited' | 'redeemed' | 'revoked')}
+            className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 outline-none"
+          >
+            <option value="all">All ({recipients.length})</option>
+            <option value="invited">Invited</option>
+            <option value="redeemed">Redeemed</option>
+            <option value="revoked">Revoked</option>
+          </select>
+          {recipients.length > 0 && (
+            <button
+              onClick={exportCsv}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+            >
+              <Download className="w-4 h-4" />
+              CSV
+            </button>
+          )}
+        </div>
       </div>
 
-      {showGenerator && (
-        <CodeGenerator
+      {showInvite && (
+        <InviteForm
           orgId={org.id}
+          onClose={() => setShowInvite(false)}
           onComplete={() => {
-            setShowGenerator(false)
-            onReload()
+            setShowInvite(false)
+            onChange()
           }}
         />
       )}
 
-      {codes.length === 0 ? (
+      {showImport && (
+        <BulkImportForm
+          orgId={org.id}
+          onClose={() => setShowImport(false)}
+          onComplete={() => {
+            setShowImport(false)
+            onChange()
+          }}
+        />
+      )}
+
+      {filtered.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
-          <KeyRound className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No codes yet</h3>
-          <p className="text-gray-500">Generate a batch of codes to share with this sponsor.</p>
+          <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            {recipients.length === 0 ? 'No recipients yet' : 'No matches'}
+          </h3>
+          <p className="text-gray-500">
+            {recipients.length === 0
+              ? 'Invite the first person or upload a CSV of your team to get started.'
+              : 'Try a different filter or search.'}
+          </p>
         </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Code
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Batch
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Created
-                </th>
-                <th />
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Identifier</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Name / Email</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Code</th>
+                <th className="text-right px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {codes.map((c) => (
-                <CodeRow key={c.id} code={c} onChange={onReload} />
+              {filtered.map((r) => (
+                <RecipientRow key={r.id} recipient={r} allowReissue={org.allow_reissue} onChange={onChange} />
               ))}
             </tbody>
           </table>
@@ -389,162 +456,406 @@ function CodesPanel({
   )
 }
 
-function CodeRow({ code, onChange }: { code: AccessCode; onChange: () => void }) {
+function RecipientRow({
+  recipient,
+  allowReissue,
+  onChange,
+}: {
+  recipient: Recipient
+  allowReissue: boolean
+  onChange: () => void
+}) {
+  const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  async function copy() {
-    await navigator.clipboard.writeText(code.code)
+  async function handleResend() {
+    setBusy(true)
+    try {
+      const res = await fetch(`/api/recipients/${recipient.id}/resend`, { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) alert(data.error || 'Failed to resend')
+      else alert('Invite email sent')
+      onChange()
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleReissue() {
+    if (!confirm(`Reissue code for ${recipient.identifier}? The previous code will be deactivated.`)) return
+    setBusy(true)
+    try {
+      const res = await fetch(`/api/recipients/${recipient.id}/reissue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (!res.ok) alert(data.error || 'Failed to reissue')
+      else if (data.email_error) alert(`Code reissued (${data.code.code}) but email failed: ${data.email_error}`)
+      onChange()
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleRevoke() {
+    if (!confirm(`Revoke access for ${recipient.identifier}? Their code will stop working.`)) return
+    setBusy(true)
+    try {
+      await fetch(`/api/recipients/${recipient.id}`, { method: 'DELETE' })
+      onChange()
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleCopy() {
+    if (!recipient.active_code) return
+    await navigator.clipboard.writeText(recipient.active_code)
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
-  }
-
-  async function toggleActive() {
-    await fetch(`/api/access-codes/${code.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ is_active: !code.is_active }),
-    })
-    onChange()
-  }
-
-  async function remove() {
-    if (!confirm(`Delete code ${code.code}?`)) return
-    await fetch(`/api/access-codes/${code.id}`, { method: 'DELETE' })
-    onChange()
   }
 
   return (
     <tr className="hover:bg-gray-50">
       <td className="px-4 py-3">
-        <div className="flex items-center gap-2">
-          <code className="font-mono text-sm font-medium text-gray-900">{code.code}</code>
-          <button
-            onClick={copy}
-            className="text-gray-400 hover:text-gray-700"
-            title="Copy code"
-          >
-            {copied ? (
-              <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
-            ) : (
-              <Copy className="w-3.5 h-3.5" />
-            )}
-          </button>
-        </div>
+        <code className="font-mono text-sm font-medium text-gray-900">{recipient.identifier}</code>
+        {recipient.reissue_count > 0 && (
+          <div className="text-xs text-amber-600 mt-0.5">Reissued {recipient.reissue_count}x</div>
+        )}
       </td>
-      <td className="px-4 py-3 text-sm text-gray-600">{code.batch_label || '-'}</td>
+      <td className="px-4 py-3 text-sm">
+        {recipient.display_name && <div className="text-gray-900">{recipient.display_name}</div>}
+        {recipient.email && <div className="text-gray-500 text-xs">{recipient.email}</div>}
+      </td>
       <td className="px-4 py-3">
-        {code.redeemed_at ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-            Redeemed
-          </span>
-        ) : code.is_active ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-            Available
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-            Deactivated
-          </span>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${RECIPIENT_STATUS_COLORS[recipient.status]}`}>
+          {RECIPIENT_STATUS_LABELS[recipient.status]}
+        </span>
+        {recipient.email_sent_at && recipient.status === 'invited' && (
+          <div className="text-xs text-gray-500 mt-0.5">Sent {timeAgo(recipient.email_sent_at)}</div>
         )}
-        {code.redeemed_at && (
-          <div className="text-xs text-gray-500 mt-0.5">
-            {new Date(code.redeemed_at).toLocaleDateString('en-GB')}
-          </div>
+        {recipient.redeemed_at && (
+          <div className="text-xs text-gray-500 mt-0.5">{timeAgo(recipient.redeemed_at)}</div>
         )}
       </td>
-      <td className="px-4 py-3 text-sm text-gray-600">
-        {code.created_at ? new Date(code.created_at).toLocaleDateString('en-GB') : '-'}
+      <td className="px-4 py-3 text-sm">
+        {recipient.active_code ? (
+          <div className="flex items-center gap-1.5">
+            <code className="font-mono text-xs text-gray-700">{recipient.active_code}</code>
+            <button onClick={handleCopy} className="text-gray-400 hover:text-gray-700">
+              {copied ? <CheckCircle2 className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+            </button>
+          </div>
+        ) : (
+          <span className="text-xs text-gray-400">No active code</span>
+        )}
       </td>
       <td className="px-4 py-3 text-right">
-        <div className="flex items-center justify-end gap-2">
-          {!code.redeemed_at && (
+        <div className="flex items-center justify-end gap-1">
+          {recipient.email && recipient.status === 'invited' && (
             <button
-              onClick={toggleActive}
-              className="px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded hover:bg-gray-50"
+              onClick={handleResend}
+              disabled={busy}
+              className="px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50"
+              title="Resend invite email"
             >
-              {code.is_active ? 'Deactivate' : 'Activate'}
+              <Send className="w-3.5 h-3.5" />
             </button>
           )}
-          <button onClick={remove} className="p-1 text-gray-400 hover:text-red-600">
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {allowReissue && recipient.status !== 'revoked' && (
+            <button
+              onClick={handleReissue}
+              disabled={busy}
+              className="px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50"
+              title="Reissue code (revoke and replace)"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {recipient.status !== 'revoked' && (
+            <button
+              onClick={handleRevoke}
+              disabled={busy}
+              className="px-2 py-1 text-xs text-red-600 border border-red-200 rounded hover:bg-red-50 disabled:opacity-50"
+              title="Revoke access"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </td>
     </tr>
   )
 }
 
-function CodeGenerator({ orgId, onComplete }: { orgId: string; onComplete: () => void }) {
-  const [quantity, setQuantity] = useState(50)
-  const [batchLabel, setBatchLabel] = useState('')
-  const [expiresAt, setExpiresAt] = useState('')
-  const [prefix, setPrefix] = useState('BTS')
-  const [generating, setGenerating] = useState(false)
-  const [generated, setGenerated] = useState<{ code: string }[] | null>(null)
+function InviteForm({
+  orgId,
+  onClose,
+  onComplete,
+}: {
+  orgId: string
+  onClose: () => void
+  onComplete: () => void
+}) {
+  const [identifier, setIdentifier] = useState('')
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
+  const [sendEmail, setSendEmail] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [created, setCreated] = useState<{ code: string; emailNote?: string } | null>(null)
 
-  async function generate() {
+  async function submit(e: React.FormEvent) {
+    e.preventDefault()
     setError(null)
-    setGenerating(true)
+    setSubmitting(true)
     try {
-      const res = await fetch('/api/access-codes/generate', {
+      const res = await fetch(`/api/organizations/${orgId}/recipients`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          organization_id: orgId,
-          quantity,
-          batch_label: batchLabel.trim() || null,
-          expires_at: expiresAt || null,
-          prefix,
+          identifier,
+          display_name: displayName || null,
+          email: email || null,
+          send_email: sendEmail,
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Generation failed')
-      setGenerated(data.codes)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
+      if (!res.ok) throw new Error(data.error || 'Failed to create')
+      setCreated({
+        code: data.code.code,
+        emailNote: data.email_status?.skipped
+          ? data.email_status.reason
+          : data.email_status?.ok === false
+            ? `Email send failed: ${data.email_status.reason}`
+            : undefined,
+      })
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
     } finally {
-      setGenerating(false)
+      setSubmitting(false)
     }
   }
 
-  function downloadGenerated() {
-    if (!generated) return
-    const csv = 'Code\n' + generated.map((c) => c.code).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `codes-${batchLabel || 'batch'}-${new Date().toISOString().slice(0, 10)}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-
-  if (generated) {
+  if (created) {
     return (
       <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 mb-4">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-2">
           <CheckCircle2 className="w-5 h-5 text-emerald-700" />
-          <h3 className="font-semibold text-emerald-900">
-            Generated {generated.length} codes
-          </h3>
+          <h3 className="font-semibold text-emerald-900">Recipient invited</h3>
         </div>
-        <div className="bg-white border border-emerald-200 rounded-lg p-3 max-h-48 overflow-y-auto font-mono text-xs">
-          {generated.map((c) => (
-            <div key={c.code}>{c.code}</div>
-          ))}
+        <div className="bg-white border border-emerald-200 rounded-lg p-3 mb-3">
+          <div className="text-xs text-emerald-700 mb-1">Their code:</div>
+          <code className="font-mono text-lg font-bold text-emerald-900">{created.code}</code>
         </div>
-        <div className="flex gap-2 mt-3">
+        {created.emailNote && (
+          <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-2 mb-3">
+            {created.emailNote}
+          </div>
+        )}
+        <div className="flex gap-2">
           <button
-            onClick={downloadGenerated}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg"
+            onClick={() => {
+              setCreated(null)
+              setIdentifier('')
+              setDisplayName('')
+              setEmail('')
+            }}
+            className="px-3 py-1.5 text-sm text-emerald-800 border border-emerald-300 rounded-lg hover:bg-emerald-100"
           >
-            <Download className="w-4 h-4" />
-            Download CSV
+            Invite Another
           </button>
           <button
             onClick={onComplete}
-            className="px-3 py-1.5 text-sm text-emerald-800 border border-emerald-300 rounded-lg hover:bg-emerald-100"
+            className="px-3 py-1.5 text-sm text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={submit} className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-gray-900">Invite a person</h3>
+        <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-700">
+          <XCircle className="w-5 h-5" />
+        </button>
+      </div>
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Identifier <span className="text-red-500">*</span>
+          </label>
+          <input
+            required
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            placeholder="e.g. service number"
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 outline-none font-mono"
+          />
+          <p className="text-xs text-gray-500 mt-1">Sponsor-side ID. Service number, employee ID, etc.</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Name (optional)</label>
+          <input
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="e.g. J. Smith"
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 outline-none"
+          />
+        </div>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Email (optional)</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="person@example.com"
+          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 outline-none"
+        />
+        <label className="flex items-center gap-2 mt-2 text-sm text-gray-600">
+          <input
+            type="checkbox"
+            checked={sendEmail}
+            onChange={(e) => setSendEmail(e.target.checked)}
+            className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
+            disabled={!email}
+          />
+          Send invite email automatically
+        </label>
+      </div>
+      {error && (
+        <div className="flex items-start gap-2 p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+      <button
+        type="submit"
+        disabled={submitting || !identifier}
+        className="px-4 py-2 text-sm text-white bg-ocean-600 hover:bg-ocean-700 disabled:bg-ocean-400 rounded-lg"
+      >
+        {submitting ? 'Inviting...' : 'Invite'}
+      </button>
+    </form>
+  )
+}
+
+function BulkImportForm({
+  orgId,
+  onClose,
+  onComplete,
+}: {
+  orgId: string
+  onClose: () => void
+  onComplete: () => void
+}) {
+  const [pasted, setPasted] = useState('')
+  const [sendEmail, setSendEmail] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [result, setResult] = useState<{
+    summary: { total: number; created: number; skipped: number; errors: number; emails_sent: number; emails_failed: number }
+    results: { identifier: string; status: string; reason?: string; code?: string; email_sent?: boolean; email_error?: string }[]
+  } | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  function parseRows(text: string): { identifier: string; email?: string; display_name?: string }[] {
+    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+    if (lines.length === 0) return []
+
+    const first = lines[0].toLowerCase()
+    const hasHeader = first.includes('identifier') || first.includes('email') || first.includes('id')
+    const data = hasHeader ? lines.slice(1) : lines
+
+    return data.map((line) => {
+      const cells = line.split(/[,\t]/).map((c) => c.trim().replace(/^"|"$/g, ''))
+      return {
+        identifier: cells[0] || '',
+        display_name: cells[1] || undefined,
+        email: cells[2] || undefined,
+      }
+    }).filter((r) => r.identifier)
+  }
+
+  async function submit() {
+    const rows = parseRows(pasted)
+    if (rows.length === 0) {
+      setError('No valid rows found. Paste CSV with columns: identifier, name, email')
+      return
+    }
+    setError(null)
+    setSubmitting(true)
+    try {
+      const res = await fetch(`/api/organizations/${orgId}/recipients/import`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows, send_email: sendEmail }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Import failed')
+      setResult(data)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (result) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-gray-900">Import complete</h3>
+          <button onClick={onComplete} className="text-gray-400 hover:text-gray-700">
+            <XCircle className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-emerald-700">{result.summary.created}</div>
+            <div className="text-xs text-emerald-700 uppercase tracking-wider">Created</div>
+          </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-amber-700">{result.summary.skipped}</div>
+            <div className="text-xs text-amber-700 uppercase tracking-wider">Skipped</div>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-red-700">{result.summary.errors}</div>
+            <div className="text-xs text-red-700 uppercase tracking-wider">Errors</div>
+          </div>
+        </div>
+        {(result.summary.emails_sent > 0 || result.summary.emails_failed > 0) && (
+          <div className="text-sm text-gray-600 mb-4">
+            Emails: <strong>{result.summary.emails_sent}</strong> sent
+            {result.summary.emails_failed > 0 && (
+              <span className="text-red-600">, {result.summary.emails_failed} failed</span>
+            )}
+          </div>
+        )}
+        {result.results.some((r) => r.status !== 'created') && (
+          <details className="text-sm text-gray-600">
+            <summary className="cursor-pointer">Show issues</summary>
+            <div className="mt-2 max-h-48 overflow-y-auto bg-gray-50 rounded p-2 font-mono text-xs">
+              {result.results
+                .filter((r) => r.status !== 'created')
+                .map((r, i) => (
+                  <div key={i}>
+                    {r.identifier}: {r.status} {r.reason ? `- ${r.reason}` : ''}
+                  </div>
+                ))}
+            </div>
+          </details>
+        )}
+        <div className="mt-4 flex gap-2">
+          <button
+            onClick={onComplete}
+            className="px-3 py-1.5 text-sm text-white bg-ocean-600 hover:bg-ocean-700 rounded-lg"
           >
             Done
           </button>
@@ -555,72 +866,393 @@ function CodeGenerator({ orgId, onComplete }: { orgId: string; onComplete: () =>
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
-      <h3 className="font-semibold text-gray-900 mb-4">Generate Code Batch</h3>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-          <input
-            type="number"
-            min={1}
-            max={1000}
-            value={quantity}
-            onChange={(e) => setQuantity(parseInt(e.target.value || '0', 10))}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Code prefix</label>
-          <input
-            value={prefix}
-            onChange={(e) => setPrefix(e.target.value.toUpperCase().slice(0, 8))}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none font-mono"
-            placeholder="BTS"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Batch label</label>
-          <input
-            value={batchLabel}
-            onChange={(e) => setBatchLabel(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
-            placeholder="e.g. Q2 2026"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Codes expire on</label>
-          <input
-            type="date"
-            value={expiresAt}
-            onChange={(e) => setExpiresAt(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
-          />
-        </div>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-gray-900">Bulk Import Recipients</h3>
+        <button onClick={onClose} className="text-gray-400 hover:text-gray-700">
+          <XCircle className="w-5 h-5" />
+        </button>
       </div>
 
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4 text-xs text-gray-600 font-mono">
+        identifier,name,email<br />
+        SVC123456,J. Smith,jsmith@example.com<br />
+        SVC123457,K. Jones,kjones@example.com
+      </div>
+      <p className="text-sm text-gray-600 mb-2">
+        Paste a CSV (or just IDs one per line). First column is the identifier (required).
+        Name and email are optional. Header row is optional.
+      </p>
+      <textarea
+        value={pasted}
+        onChange={(e) => setPasted(e.target.value)}
+        placeholder="Paste your CSV here..."
+        className="w-full min-h-[160px] px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-ocean-500 outline-none"
+      />
+      <label className="flex items-center gap-2 mt-3 text-sm text-gray-600">
+        <input
+          type="checkbox"
+          checked={sendEmail}
+          onChange={(e) => setSendEmail(e.target.checked)}
+          className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
+        />
+        Send invite email to recipients with email addresses
+      </label>
       {error && (
-        <div className="flex items-start gap-2 p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="flex items-start gap-2 p-3 mt-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
-
       <button
-        onClick={generate}
-        disabled={generating || quantity < 1}
-        className="px-4 py-2 text-sm text-white bg-ocean-600 hover:bg-ocean-700 disabled:bg-ocean-400 rounded-lg"
+        onClick={submit}
+        disabled={submitting || !pasted.trim()}
+        className="mt-4 px-4 py-2 text-sm text-white bg-ocean-600 hover:bg-ocean-700 disabled:bg-ocean-400 rounded-lg"
       >
-        {generating ? 'Generating...' : `Generate ${quantity} codes`}
+        {submitting ? 'Importing...' : 'Import & Generate Codes'}
       </button>
     </div>
   )
 }
 
-function DetailsPanel({
+// ─── Billing Tab ────────────────────────────────────────────────────────────
+
+function BillingTab({
   org,
   onSave,
   saving,
 }: {
-  org: OrgDetail
+  org: Organization
+  onSave: (updates: Partial<Organization>) => Promise<void>
+  saving: boolean
+}) {
+  const [form, setForm] = useState({
+    billing_mode: org.billing_mode,
+    billing_batch_size: org.billing_batch_size,
+    seats_purchased: org.seats_purchased,
+    allow_reissue: org.allow_reissue,
+    max_reissues_per_recipient: org.max_reissues_per_recipient,
+  })
+
+  function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [k]: v }))
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+        <div className="flex items-start gap-3">
+          <SettingsIcon className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <div className="font-semibold text-blue-900 mb-1">Billing model</div>
+            <div className="text-sm text-blue-800">
+              <strong>Recommended: Prepaid.</strong> Sponsor pays upfront for a number of seats.
+              When all are used, redemptions are blocked until they top up. If a sponsor pushes
+              back, switch to Postpaid Quarterly - you'll invoice them at the end of each
+              quarter based on actual redemptions.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          onSave(form)
+        }}
+        className="bg-white border border-gray-200 rounded-xl p-6 space-y-5"
+      >
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Billing mode</label>
+          <div className="grid grid-cols-2 gap-3">
+            <BillingOption
+              active={form.billing_mode === 'prepaid'}
+              onClick={() => set('billing_mode', 'prepaid')}
+              title="Prepaid"
+              recommended
+              description="Sponsor pays upfront. Redemptions blocked when seats run out."
+            />
+            <BillingOption
+              active={form.billing_mode === 'postpaid_quarterly'}
+              onClick={() => set('billing_mode', 'postpaid_quarterly')}
+              title="Postpaid Quarterly"
+              description="Sponsor invoiced at end of each quarter. Redemptions never blocked."
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {form.billing_mode === 'prepaid' ? 'Seats purchased' : 'Quarterly cap (display only)'}
+            </label>
+            <input
+              type="number"
+              min={0}
+              value={form.seats_purchased}
+              onChange={(e) => set('seats_purchased', parseInt(e.target.value || '0', 10))}
+              className={inputClass}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {form.billing_mode === 'prepaid'
+                ? `Currently used: ${org.seats_redeemed} / ${form.seats_purchased}`
+                : `Used this period: ${org.seats_redeemed}`}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Billing batch size</label>
+            <input
+              type="number"
+              min={1}
+              value={form.billing_batch_size}
+              onChange={(e) => set('billing_batch_size', parseInt(e.target.value || '1', 10))}
+              className={inputClass}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Contract pricing unit (e.g. "billed per 500 redemptions"). Display only.
+            </p>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-100 pt-5">
+          <h4 className="font-semibold text-gray-900 mb-3">Reissue policy</h4>
+          <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+            <input
+              type="checkbox"
+              checked={form.allow_reissue}
+              onChange={(e) => set('allow_reissue', e.target.checked)}
+              className="mt-0.5 rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
+            />
+            <div>
+              <div className="text-sm font-medium text-gray-900">
+                Allow welfare officers to reissue codes
+              </div>
+              <div className="text-xs text-gray-500 mt-0.5">
+                When enabled, the &ldquo;Reissue&rdquo; button next to each recipient revokes their
+                old code and issues a new one. Useful when someone changes phone.
+              </div>
+            </div>
+          </label>
+          {form.allow_reissue && (
+            <div className="mt-3 ml-7">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Max reissues per recipient
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={form.max_reissues_per_recipient}
+                onChange={(e) =>
+                  set('max_reissues_per_recipient', parseInt(e.target.value || '0', 10))
+                }
+                className={`${inputClass} w-32`}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                After this many reissues, further requests are blocked (anti-abuse).
+              </p>
+            </div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={saving}
+          className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-ocean-600 hover:bg-ocean-700 disabled:bg-ocean-400 rounded-lg"
+        >
+          <Save className="w-4 h-4" />
+          {saving ? 'Saving...' : 'Save Billing Settings'}
+        </button>
+      </form>
+    </div>
+  )
+}
+
+function BillingOption({
+  active,
+  onClick,
+  title,
+  description,
+  recommended,
+}: {
+  active: boolean
+  onClick: () => void
+  title: string
+  description: string
+  recommended?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-left p-4 border-2 rounded-lg transition ${
+        active ? 'border-ocean-600 bg-ocean-50' : 'border-gray-200 hover:border-gray-300'
+      }`}
+    >
+      <div className="flex items-center justify-between mb-1">
+        <div className="font-semibold text-gray-900">{title}</div>
+        {recommended && (
+          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded font-medium">
+            Recommended
+          </span>
+        )}
+      </div>
+      <div className="text-xs text-gray-600">{description}</div>
+    </button>
+  )
+}
+
+// ─── Activity Tab ───────────────────────────────────────────────────────────
+
+interface ActivityResponse {
+  events: RedemptionEvent[]
+  stats: { total: number; successful: number; failed: number }
+  alerts: { window_start: string; window_end: string; count: number }[]
+}
+
+function ActivityTab({ orgId }: { orgId: string }) {
+  const [data, setData] = useState<ActivityResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId])
+
+  async function load() {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/organizations/${orgId}/redemption-events`)
+      const json = await res.json()
+      setData(json)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function exportCsv() {
+    if (!data) return
+    const header = 'Occurred At,Code,Succeeded,Failure Reason,Device ID\n'
+    const rows = data.events
+      .map((e) =>
+        [
+          e.occurred_at,
+          e.code_text || '',
+          e.succeeded ? 'yes' : 'no',
+          e.failure_reason || '',
+          e.device_id || '',
+        ]
+          .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+          .join(',')
+      )
+      .join('\n')
+    download(`redemption-events-${new Date().toISOString().slice(0, 10)}.csv`, header + rows)
+  }
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-48">
+        <div className="w-6 h-6 border-4 border-ocean-200 border-t-ocean-600 rounded-full animate-spin" />
+      </div>
+    )
+
+  if (!data || data.events.length === 0)
+    return (
+      <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
+        <Activity className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">No activity yet</h3>
+        <p className="text-gray-500">Redemption attempts will appear here as they happen.</p>
+      </div>
+    )
+
+  return (
+    <div className="space-y-4">
+      {data.alerts.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <div className="font-semibold text-red-900 mb-1">Burst redemption detected</div>
+              <div className="text-sm text-red-700">
+                {data.alerts.length} suspicious window{data.alerts.length !== 1 ? 's' : ''} found
+                (10+ redemptions in 60 seconds). Investigate possible code sharing.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="text-2xl font-bold text-gray-900">{data.stats.total}</div>
+          <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">Total Events</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="text-2xl font-bold text-emerald-700">{data.stats.successful}</div>
+          <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">Successful</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="text-2xl font-bold text-red-600">{data.stats.failed}</div>
+          <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">Failed</div>
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          onClick={exportCsv}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+        >
+          <Download className="w-4 h-4" />
+          Export Events CSV
+        </button>
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">When</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Code</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Result</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {data.events.slice(0, 100).map((e) => (
+              <tr key={e.id} className="hover:bg-gray-50">
+                <td className="px-4 py-2 text-sm text-gray-600">
+                  {new Date(e.occurred_at).toLocaleString('en-GB')}
+                </td>
+                <td className="px-4 py-2 text-sm">
+                  <code className="font-mono text-xs text-gray-700">{e.code_text || '-'}</code>
+                </td>
+                <td className="px-4 py-2 text-sm">
+                  {e.succeeded ? (
+                    <span className="inline-flex items-center gap-1 text-emerald-700">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Redeemed
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-red-600">
+                      <XCircle className="w-3.5 h-3.5" />
+                      {e.failure_reason || 'Failed'}
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+// ─── Details Tab ────────────────────────────────────────────────────────────
+
+function DetailsTab({
+  org,
+  onSave,
+  saving,
+}: {
+  org: Organization
   onSave: (updates: Partial<Organization>) => Promise<void>
   saving: boolean
 }) {
@@ -632,13 +1264,12 @@ function DetailsPanel({
     contact_phone: org.contact_phone || '',
     contract_starts_on: org.contract_starts_on || '',
     contract_ends_on: org.contract_ends_on || '',
-    seats_purchased: org.seats_purchased,
     notes: org.notes || '',
     is_active: org.is_active,
   })
 
-  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
-    setForm((f) => ({ ...f, [key]: value }))
+  function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [k]: v }))
   }
 
   return (
@@ -652,11 +1283,7 @@ function DetailsPanel({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-          <input
-            value={form.name}
-            onChange={(e) => set('name', e.target.value)}
-            className={inputClass}
-          />
+          <input value={form.name} onChange={(e) => set('name', e.target.value)} className={inputClass} />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
@@ -673,7 +1300,10 @@ function DetailsPanel({
           </select>
         </div>
       </div>
-
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Contact name</label>
+        <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)} className={inputClass} />
+      </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -697,17 +1327,7 @@ function DetailsPanel({
           />
         </div>
       </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Contact name</label>
-        <input
-          value={form.contact_name}
-          onChange={(e) => set('contact_name', e.target.value)}
-          className={inputClass}
-        />
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             <Calendar className="w-3.5 h-3.5 inline mr-1" /> Contract starts
@@ -728,18 +1348,7 @@ function DetailsPanel({
             className={inputClass}
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Seats purchased</label>
-          <input
-            type="number"
-            min={0}
-            value={form.seats_purchased}
-            onChange={(e) => set('seats_purchased', parseInt(e.target.value || '0', 10))}
-            className={inputClass}
-          />
-        </div>
       </div>
-
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
         <textarea
@@ -748,7 +1357,6 @@ function DetailsPanel({
           className={`${inputClass} min-h-[80px]`}
         />
       </div>
-
       <label className="flex items-center gap-2 text-sm text-gray-700">
         <input
           type="checkbox"
@@ -756,9 +1364,8 @@ function DetailsPanel({
           onChange={(e) => set('is_active', e.target.checked)}
           className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
         />
-        Sponsor is active (uncheck to revoke all codes for this org)
+        Sponsor is active (uncheck to revoke all access at once)
       </label>
-
       <button
         type="submit"
         disabled={saving}
@@ -771,5 +1378,28 @@ function DetailsPanel({
   )
 }
 
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
 const inputClass =
   'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none'
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1) return 'just now'
+  if (m < 60) return `${m}m ago`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h ago`
+  const d = Math.floor(h / 24)
+  return `${d}d ago`
+}
+
+function download(filename: string, content: string) {
+  const blob = new Blob([content], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}

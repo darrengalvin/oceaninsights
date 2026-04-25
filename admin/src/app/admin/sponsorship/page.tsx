@@ -43,12 +43,12 @@ export default function SponsorshipPage() {
   const totals = orgs.reduce(
     (acc, o) => {
       acc.orgs += 1
-      acc.codes += o.codes_total
-      acc.redeemed += o.codes_redeemed
+      acc.recipients += o.recipients_total ?? 0
+      acc.redeemed += o.recipients_redeemed ?? 0
       acc.seats += o.seats_purchased
       return acc
     },
-    { orgs: 0, codes: 0, redeemed: 0, seats: 0 }
+    { orgs: 0, recipients: 0, redeemed: 0, seats: 0 }
   )
 
   const filtered = orgs.filter((o) => {
@@ -90,9 +90,9 @@ export default function SponsorshipPage() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard icon={Building2} label="Sponsors" value={totals.orgs} tint="ocean" />
-          <StatCard icon={Users} label="Seats Purchased" value={totals.seats} tint="emerald" />
-          <StatCard icon={KeyRound} label="Codes Generated" value={totals.codes} tint="blue" />
-          <StatCard icon={CheckCircle2} label="Codes Redeemed" value={totals.redeemed} tint="purple" />
+          <StatCard icon={KeyRound} label="Seats Purchased" value={totals.seats} tint="emerald" />
+          <StatCard icon={Users} label="People Invited" value={totals.recipients} tint="blue" />
+          <StatCard icon={CheckCircle2} label="People Active" value={totals.redeemed} tint="purple" />
         </div>
 
         <div className="mb-4">
@@ -128,7 +128,10 @@ export default function SponsorshipPage() {
                     Contract
                   </th>
                   <th className="text-right px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Codes
+                    People
+                  </th>
+                  <th className="text-right px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Billing
                   </th>
                   <th className="text-right px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Status
@@ -170,10 +173,18 @@ export default function SponsorshipPage() {
                     </td>
                     <td className="px-4 py-3 text-right text-sm">
                       <div className="font-medium text-gray-900">
-                        {o.codes_redeemed} / {o.codes_total}
+                        {o.recipients_redeemed} / {o.recipients_total}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {o.codes_active_unredeemed} unused
+                        {Math.max(0, (o.recipients_total ?? 0) - (o.recipients_redeemed ?? 0))} pending
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      <div className="text-xs text-gray-700">
+                        {o.billing_mode === 'prepaid' ? 'Prepaid' : 'Postpaid'}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {o.seats_redeemed} / {o.seats_purchased} seats
                       </div>
                     </td>
                     <td className="px-4 py-3 text-right">

@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "RV25U6848N.com.ocean.darrengalvin",
+          "6QLS3Z8W8Y.com.ocean.darrengalvin"
+        ],
+        "components": [
+          {
+            "/": "/r/*",
+            "comment": "Sponsorship invite redemption links"
+          }
+        ]
+      }
+    ]
+  }
+}
