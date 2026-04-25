@@ -21,6 +21,7 @@ import {
   Settings2,
   LogOut,
   ShieldCheck,
+  Building2,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -145,6 +146,11 @@ export default function Sidebar() {
         <Link href="/admin/subscriptions" className={linkClass('/admin/subscriptions')} onClick={closeMobileMenu}>
           <CreditCard className="w-5 h-5" />
           Subscriptions
+        </Link>
+
+        <Link href="/admin/sponsorship" className={linkClass('/admin/sponsorship')} onClick={closeMobileMenu}>
+          <Building2 className="w-5 h-5" />
+          Sponsorship
         </Link>
         
         <div className="my-2 border-t border-gray-200" />

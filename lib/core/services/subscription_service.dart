@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'access_code_service.dart';
 
 /// Subscription status for the app
 enum SubscriptionStatus {
@@ -46,10 +47,30 @@ class SubscriptionService extends ChangeNotifier {
   Box? _box;
   bool _developerOverride = false;
 
-  SubscriptionStatus get status => _developerOverride ? SubscriptionStatus.active : _status;
-  bool get isPremium => _developerOverride || _status == SubscriptionStatus.active;
+  final AccessCodeService _accessCodes = AccessCodeService();
+
+  bool get _hasSponsorAccess => _accessCodes.hasActiveCode;
+
+  SubscriptionStatus get status {
+    if (_developerOverride || _hasSponsorAccess) return SubscriptionStatus.active;
+    return _status;
+  }
+  bool get isPremium =>
+      _developerOverride || _hasSponsorAccess || _status == SubscriptionStatus.active;
   bool get isDeveloperMode => _developerOverride;
-  DateTime? get expiryDate => _expiryDate;
+
+  /// True when the active premium status is from a sponsor code (not IAP).
+  bool get isSponsoredAccess => !isDeveloperMode && _hasSponsorAccess;
+
+  /// Friendly name of the sponsoring organisation, when [isSponsoredAccess].
+  String? get sponsorName => _accessCodes.organizationName;
+
+  DateTime? get expiryDate {
+    if (_hasSponsorAccess && _accessCodes.expiresAt != null) {
+      return _accessCodes.expiresAt;
+    }
+    return _expiryDate;
+  }
   List<ProductDetails> get products => _products;
   bool get isAvailable => _isAvailable;
 
@@ -68,7 +89,13 @@ class SubscriptionService extends ChangeNotifier {
     
     // Load developer override
     _developerOverride = _box?.get(_keyDevOverride) ?? false;
-    
+
+    // Initialise access codes; relay changes so listeners see new status
+    await _accessCodes.initialize();
+    _accessCodes.addListener(notifyListeners);
+    // Re-validate the stored sponsor code in the background (non-blocking)
+    unawaited(_accessCodes.validateStored());
+
     // Load cached status first (for offline support)
     await _loadCachedStatus();
     
@@ -298,6 +325,7 @@ class SubscriptionService extends ChangeNotifier {
 
   void dispose() {
     _subscription?.cancel();
+    _accessCodes.removeListener(notifyListeners);
   }
 }
 

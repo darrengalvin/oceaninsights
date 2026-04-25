@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/services/subscription_service.dart';
 import '../../../core/theme/theme_options.dart';
+import '../../access_code/screens/redeem_code_screen.dart';
 
 /// The main paywall screen shown when users try to access premium features
 class PaywallScreen extends StatefulWidget {
@@ -312,6 +313,24 @@ class _PaywallScreenState extends State<PaywallScreen> {
                                 fontSize: 14,
                               ),
                             ),
+                    ),
+
+                    // Sponsor / institutional access code redemption
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const RedeemCodeScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'I have an access code',
+                        style: TextStyle(
+                          color: const Color(0xFF1A2332).withOpacity(0.55),
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
                   ],
                 ),
