@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -15,34 +15,31 @@ import {
   XCircle,
   Mail,
   Phone,
-  Calendar,
   AlertCircle,
   Copy,
   RefreshCw,
   Send,
-  Settings as SettingsIcon,
   Activity,
   Upload,
   KeyRound,
   ShieldAlert,
+  Lock,
 } from 'lucide-react'
 import {
   type Organization,
   type Recipient,
   type RedemptionEvent,
   type OrganizationType,
-  type BillingMode,
   ORG_TYPE_LABELS,
   ORG_TYPE_COLORS,
   RECIPIENT_STATUS_COLORS,
   RECIPIENT_STATUS_LABELS,
 } from '@/lib/sponsorship'
 
-type Tab = 'people' | 'billing' | 'activity' | 'details'
+type Tab = 'people' | 'activity' | 'profile'
 
 export default function OrganizationDetailPage() {
   const params = useParams<{ id: string }>()
-  const router = useRouter()
   const id = params?.id
 
   const [org, setOrg] = useState<Organization | null>(null)
@@ -96,14 +93,6 @@ export default function OrganizationDetailPage() {
     }
   }
 
-  async function deleteOrg() {
-    if (!org) return
-    if (!confirm(`Delete "${org.name}" and ALL their recipients and codes? This cannot be undone.`))
-      return
-    const res = await fetch(`/api/organizations/${org.id}`, { method: 'DELETE' })
-    if (res.ok) router.push('/admin/sponsorship')
-  }
-
   if (loading)
     return (
       <div className="flex items-center justify-center h-96">
@@ -131,8 +120,7 @@ export default function OrganizationDetailPage() {
   }
 
   const seatsRemaining = Math.max(0, org.seats_purchased - org.seats_redeemed)
-  const seatsExhausted =
-    org.billing_mode === 'prepaid' && org.seats_purchased > 0 && seatsRemaining === 0
+  const seatsExhausted = org.seats_purchased > 0 && seatsRemaining === 0
 
   return (
     <div className="p-8">
@@ -145,7 +133,7 @@ export default function OrganizationDetailPage() {
           Back to sponsors
         </Link>
 
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
           <div className="flex items-start gap-4">
             <div className="w-14 h-14 rounded-xl bg-ocean-50 flex items-center justify-center">
               <Building2 className="w-7 h-7 text-ocean-700" />
@@ -164,44 +152,42 @@ export default function OrganizationDetailPage() {
                 ) : (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
                     <XCircle className="w-3 h-3" />
-                    Inactive
+                    Paused
                   </span>
                 )}
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200">
-                  {org.billing_mode === 'prepaid' ? 'Prepaid' : 'Postpaid quarterly'}
-                </span>
               </div>
             </div>
           </div>
-          <button
-            onClick={deleteOrg}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
+          <Link
+            href={`/admin/sponsorship/${org.id}/billing`}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-amber-800 border border-amber-300 bg-amber-50 hover:bg-amber-100 rounded-lg"
+            title="Owner-only commercial settings"
           >
-            <Trash2 className="w-4 h-4" />
-            Delete
-          </button>
+            <Lock className="w-4 h-4" />
+            Owner Console
+          </Link>
         </div>
 
         {seatsExhausted && (
-          <div className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <ShieldAlert className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+          <div className="mb-6 flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+            <ShieldAlert className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
             <div>
-              <div className="font-semibold text-red-900">Prepaid seats exhausted</div>
-              <div className="text-sm text-red-700 mt-0.5">
-                {org.seats_redeemed} of {org.seats_purchased} prepaid seats have been used. New
-                redemptions will be blocked until you increase the seat count in Billing.
+              <div className="font-semibold text-amber-900">All allocated spots are in use</div>
+              <div className="text-sm text-amber-800 mt-0.5">
+                {org.seats_redeemed} of {org.seats_purchased} spots have been used. New
+                redemptions will be blocked until your administrator allocates more spots.
               </div>
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <StatBox label="Recipients" value={stats.total} icon={Users} tint="bg-blue-50 text-blue-700" />
-          <StatBox label="Redeemed" value={stats.redeemed} icon={CheckCircle2} tint="bg-emerald-50 text-emerald-700" />
+          <StatBox label="People Invited" value={stats.total} icon={Users} tint="bg-blue-50 text-blue-700" />
+          <StatBox label="Active" value={stats.redeemed} icon={CheckCircle2} tint="bg-emerald-50 text-emerald-700" />
           <StatBox label="Awaiting" value={stats.invited} icon={Send} tint="bg-amber-50 text-amber-700" />
           <StatBox
-            label={org.billing_mode === 'prepaid' ? 'Seats Left' : 'Billable Quarter'}
-            value={org.billing_mode === 'prepaid' ? seatsRemaining : org.seats_redeemed}
+            label="Spots Available"
+            value={org.seats_purchased > 0 ? seatsRemaining : '∞'}
             icon={KeyRound}
             tint="bg-purple-50 text-purple-700"
           />
@@ -212,14 +198,11 @@ export default function OrganizationDetailPage() {
             <TabButton active={tab === 'people'} onClick={() => setTab('people')} icon={Users}>
               People ({recipients.length})
             </TabButton>
-            <TabButton active={tab === 'billing'} onClick={() => setTab('billing')} icon={SettingsIcon}>
-              Billing
-            </TabButton>
             <TabButton active={tab === 'activity'} onClick={() => setTab('activity')} icon={Activity}>
               Activity
             </TabButton>
-            <TabButton active={tab === 'details'} onClick={() => setTab('details')} icon={Building2}>
-              Details
+            <TabButton active={tab === 'profile'} onClick={() => setTab('profile')} icon={Building2}>
+              Profile
             </TabButton>
           </div>
         </div>
@@ -238,9 +221,8 @@ export default function OrganizationDetailPage() {
             onChange={loadAll}
           />
         )}
-        {tab === 'billing' && <BillingTab org={org} onSave={saveOrg} saving={saving} />}
         {tab === 'activity' && <ActivityTab orgId={org.id} />}
-        {tab === 'details' && <DetailsTab org={org} onSave={saveOrg} saving={saving} />}
+        {tab === 'profile' && <ProfileTab org={org} onSave={saveOrg} saving={saving} />}
       </div>
     </div>
   )
@@ -914,192 +896,6 @@ function BulkImportForm({
   )
 }
 
-// ─── Billing Tab ────────────────────────────────────────────────────────────
-
-function BillingTab({
-  org,
-  onSave,
-  saving,
-}: {
-  org: Organization
-  onSave: (updates: Partial<Organization>) => Promise<void>
-  saving: boolean
-}) {
-  const [form, setForm] = useState({
-    billing_mode: org.billing_mode,
-    billing_batch_size: org.billing_batch_size,
-    seats_purchased: org.seats_purchased,
-    allow_reissue: org.allow_reissue,
-    max_reissues_per_recipient: org.max_reissues_per_recipient,
-  })
-
-  function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
-    setForm((f) => ({ ...f, [k]: v }))
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
-        <div className="flex items-start gap-3">
-          <SettingsIcon className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <div className="font-semibold text-blue-900 mb-1">Billing model</div>
-            <div className="text-sm text-blue-800">
-              <strong>Recommended: Prepaid.</strong> Sponsor pays upfront for a number of seats.
-              When all are used, redemptions are blocked until they top up. If a sponsor pushes
-              back, switch to Postpaid Quarterly - you'll invoice them at the end of each
-              quarter based on actual redemptions.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          onSave(form)
-        }}
-        className="bg-white border border-gray-200 rounded-xl p-6 space-y-5"
-      >
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Billing mode</label>
-          <div className="grid grid-cols-2 gap-3">
-            <BillingOption
-              active={form.billing_mode === 'prepaid'}
-              onClick={() => set('billing_mode', 'prepaid')}
-              title="Prepaid"
-              recommended
-              description="Sponsor pays upfront. Redemptions blocked when seats run out."
-            />
-            <BillingOption
-              active={form.billing_mode === 'postpaid_quarterly'}
-              onClick={() => set('billing_mode', 'postpaid_quarterly')}
-              title="Postpaid Quarterly"
-              description="Sponsor invoiced at end of each quarter. Redemptions never blocked."
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {form.billing_mode === 'prepaid' ? 'Seats purchased' : 'Quarterly cap (display only)'}
-            </label>
-            <input
-              type="number"
-              min={0}
-              value={form.seats_purchased}
-              onChange={(e) => set('seats_purchased', parseInt(e.target.value || '0', 10))}
-              className={inputClass}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              {form.billing_mode === 'prepaid'
-                ? `Currently used: ${org.seats_redeemed} / ${form.seats_purchased}`
-                : `Used this period: ${org.seats_redeemed}`}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Billing batch size</label>
-            <input
-              type="number"
-              min={1}
-              value={form.billing_batch_size}
-              onChange={(e) => set('billing_batch_size', parseInt(e.target.value || '1', 10))}
-              className={inputClass}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Contract pricing unit (e.g. "billed per 500 redemptions"). Display only.
-            </p>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-100 pt-5">
-          <h4 className="font-semibold text-gray-900 mb-3">Reissue policy</h4>
-          <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
-            <input
-              type="checkbox"
-              checked={form.allow_reissue}
-              onChange={(e) => set('allow_reissue', e.target.checked)}
-              className="mt-0.5 rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
-            />
-            <div>
-              <div className="text-sm font-medium text-gray-900">
-                Allow welfare officers to reissue codes
-              </div>
-              <div className="text-xs text-gray-500 mt-0.5">
-                When enabled, the &ldquo;Reissue&rdquo; button next to each recipient revokes their
-                old code and issues a new one. Useful when someone changes phone.
-              </div>
-            </div>
-          </label>
-          {form.allow_reissue && (
-            <div className="mt-3 ml-7">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Max reissues per recipient
-              </label>
-              <input
-                type="number"
-                min={0}
-                value={form.max_reissues_per_recipient}
-                onChange={(e) =>
-                  set('max_reissues_per_recipient', parseInt(e.target.value || '0', 10))
-                }
-                className={`${inputClass} w-32`}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                After this many reissues, further requests are blocked (anti-abuse).
-              </p>
-            </div>
-          )}
-        </div>
-
-        <button
-          type="submit"
-          disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-ocean-600 hover:bg-ocean-700 disabled:bg-ocean-400 rounded-lg"
-        >
-          <Save className="w-4 h-4" />
-          {saving ? 'Saving...' : 'Save Billing Settings'}
-        </button>
-      </form>
-    </div>
-  )
-}
-
-function BillingOption({
-  active,
-  onClick,
-  title,
-  description,
-  recommended,
-}: {
-  active: boolean
-  onClick: () => void
-  title: string
-  description: string
-  recommended?: boolean
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`text-left p-4 border-2 rounded-lg transition ${
-        active ? 'border-ocean-600 bg-ocean-50' : 'border-gray-200 hover:border-gray-300'
-      }`}
-    >
-      <div className="flex items-center justify-between mb-1">
-        <div className="font-semibold text-gray-900">{title}</div>
-        {recommended && (
-          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded font-medium">
-            Recommended
-          </span>
-        )}
-      </div>
-      <div className="text-xs text-gray-600">{description}</div>
-    </button>
-  )
-}
-
 // ─── Activity Tab ───────────────────────────────────────────────────────────
 
 interface ActivityResponse {
@@ -1245,9 +1041,13 @@ function ActivityTab({ orgId }: { orgId: string }) {
   )
 }
 
-// ─── Details Tab ────────────────────────────────────────────────────────────
+// ─── Profile Tab ────────────────────────────────────────────────────────────
+//
+// Identity and contact info only. Commercial fields (billing, contract dates,
+// seats purchased, reissue policy, deactivate, delete) live in the Owner
+// Console at /admin/sponsorship/[id]/billing - see header link.
 
-function DetailsTab({
+function ProfileTab({
   org,
   onSave,
   saving,
@@ -1262,10 +1062,7 @@ function DetailsTab({
     contact_name: org.contact_name || '',
     contact_email: org.contact_email || '',
     contact_phone: org.contact_phone || '',
-    contract_starts_on: org.contract_starts_on || '',
-    contract_ends_on: org.contract_ends_on || '',
     notes: org.notes || '',
-    is_active: org.is_active,
   })
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
@@ -1327,28 +1124,6 @@ function DetailsTab({
           />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <Calendar className="w-3.5 h-3.5 inline mr-1" /> Contract starts
-          </label>
-          <input
-            type="date"
-            value={form.contract_starts_on}
-            onChange={(e) => set('contract_starts_on', e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Contract ends</label>
-          <input
-            type="date"
-            value={form.contract_ends_on}
-            onChange={(e) => set('contract_ends_on', e.target.value)}
-            className={inputClass}
-          />
-        </div>
-      </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
         <textarea
@@ -1357,22 +1132,22 @@ function DetailsTab({
           className={`${inputClass} min-h-[80px]`}
         />
       </div>
-      <label className="flex items-center gap-2 text-sm text-gray-700">
-        <input
-          type="checkbox"
-          checked={form.is_active}
-          onChange={(e) => set('is_active', e.target.checked)}
-          className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
-        />
-        Sponsor is active (uncheck to revoke all access at once)
-      </label>
+
+      <div className="text-xs text-gray-500 border-t border-gray-100 pt-4">
+        Looking for billing, contract dates, or sponsor activation?{' '}
+        <Link href={`/admin/sponsorship/${org.id}/billing`} className="text-amber-700 hover:text-amber-800 inline-flex items-center gap-1">
+          <Lock className="w-3 h-3" />
+          Owner Console
+        </Link>
+      </div>
+
       <button
         type="submit"
         disabled={saving}
         className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-ocean-600 hover:bg-ocean-700 disabled:bg-ocean-400 rounded-lg"
       >
         <Save className="w-4 h-4" />
-        {saving ? 'Saving...' : 'Save Changes'}
+        {saving ? 'Saving...' : 'Save Profile'}
       </button>
     </form>
   )
