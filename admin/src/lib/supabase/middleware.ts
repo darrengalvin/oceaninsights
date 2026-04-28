@@ -4,6 +4,23 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
+  // Service-role bypass for backend-to-backend admin orchestration.
+  // The Supabase service-role key is already the most-privileged secret in
+  // this system (it grants full DB access via supabaseAdmin). Allowing it
+  // as a Bearer token on /api/* lets internal scripts drive the audit and
+  // benchmark pipelines without holding a browser session. The key lives
+  // only in Vercel env and is not present in any client bundle.
+  const authHeader = request.headers.get('authorization')
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (
+    authHeader &&
+    serviceKey &&
+    authHeader === `Bearer ${serviceKey}` &&
+    request.nextUrl.pathname.startsWith('/api/')
+  ) {
+    return supabaseResponse
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
