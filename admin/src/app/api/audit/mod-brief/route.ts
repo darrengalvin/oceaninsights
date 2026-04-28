@@ -77,7 +77,14 @@ export async function GET(_request: NextRequest) {
     });
 
     return new NextResponse(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        // Force a fresh DB read on every request — this brief is shown to
+        // officials and the numbers must reflect the moment the page is opened,
+        // not whatever Vercel last cached.
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+      },
     });
   } catch (error) {
     console.error('MOD brief generation failed:', error);
@@ -98,6 +105,32 @@ function fmtDate(iso: string | null | undefined): string {
   return new Date(iso).toLocaleDateString('en-GB', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
+}
+
+function fmtDateTime(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+    timeZone: 'Europe/London', timeZoneName: 'short',
+  });
+}
+
+function shortId(id: string | null | undefined): string {
+  if (!id) return '—';
+  return id.slice(0, 8);
+}
+
+function timeAgo(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const ms = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(ms / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m} min ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} hr ago`;
+  const d = Math.floor(h / 24);
+  return `${d} day${d === 1 ? '' : 's'} ago`;
 }
 
 function buildBriefHTML(data: BriefData): string {
@@ -340,7 +373,10 @@ function buildBriefHTML(data: BriefData): string {
 <div class="header">
   <h1>Content Governance Brief</h1>
   <p class="subtitle">"Below the Surface" — MOD-aligned mental wellness app for service personnel, veterans, families and young people aged 13+</p>
-  <p class="meta">Prepared ${fmtDate(new Date().toISOString())} · Live extract from the content audit system</p>
+  <p class="meta">
+    <strong style="color:#111827">Generated ${fmtDateTime(new Date().toISOString())}</strong>
+    ${run ? ` · Reflects audit run <span style="font-family:ui-monospace,monospace;background:#f3f4f6;padding:1px 4px;border-radius:3px">#${shortId(run.id)}</span>, completed ${fmtDateTime(run.completed_at || run.started_at)} (${timeAgo(run.completed_at || run.started_at)})` : ' · No completed audit run on file'}
+  </p>
 </div>
 
 <h2>1 · App positioning — what this is, and what it isn't</h2>
@@ -376,9 +412,45 @@ function buildBriefHTML(data: BriefData): string {
   </tbody>
 </table>
 
+<h3 style="margin-top:14px">What "weight" means &mdash; and why the 1.5× categories matter</h3>
+<p style="font-size:9.5pt; margin:4px 0 8px 0;">
+  Each category produces a 0&ndash;100 score. The item's overall grade is a <em>weighted</em> average across all categories &mdash; not a simple mean. A category with weight 1.5 contributes 50% more to the average than one weighted 1.0. In practice this means a single failure in a 1.5× category drags the overall score down sharply and is enough on its own to flag the item for review, even when every other category is perfect.
+</p>
+
+<table class="criteria" style="margin:6px 0;">
+  <thead>
+    <tr>
+      <th style="width:11%">Weight</th>
+      <th style="width:34%">Categories at this weight</th>
+      <th>What it means in plain English</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="weight-pill w15">1.5×</span></td>
+      <td><strong>${safetyCriticalCategories.map(c => c.label).join(', ')}</strong></td>
+      <td>Safety-critical. A failing score here, on its own, is treated as <em>immediate action required</em> regardless of how well the item scores elsewhere. ${safetyCriticalCategories.reduce((s, c) => s + c.sub_criteria.length, 0)} sub-criteria covering help-seeking pathways, diagnostic-language, vulnerable-user safety, crisis escalation, operational details, location references, personnel identification and pattern disclosure.</td>
+    </tr>
+    <tr>
+      <td><span class="weight-pill w12">1.2×</span></td>
+      <td><strong>${enhancedScrutinyCategories.map(c => c.label).join(', ')}</strong></td>
+      <td>Enhanced scrutiny &mdash; categories where errors damage user trust most quickly (wrong facts, wrong region, stale data).</td>
+    </tr>
+    <tr>
+      <td><span class="weight-pill w10">1.0×</span></td>
+      <td><strong>${AUDIT_CATEGORIES.filter(c => c.weight === 1.0).map(c => c.label).join(', ')}</strong></td>
+      <td>Standard editorial quality categories &mdash; baseline weight.</td>
+    </tr>
+    <tr>
+      <td><span class="weight-pill w08">0.8×</span></td>
+      <td><strong>${AUDIT_CATEGORIES.filter(c => c.weight === 0.8).map(c => c.label).join(', ')}</strong></td>
+      <td>Programme-level checks scored across the whole library rather than per-item, so they carry slightly less weight in any single item's grade.</td>
+    </tr>
+  </tbody>
+</table>
+
 <div class="callout">
-  <strong>Safety-critical at 1.5×:</strong> ${safetyCriticalCategories.map(c => c.label).join(', ')}.
-  These four categories together cover ${safetyCriticalCategories.reduce((s, c) => s + c.sub_criteria.length, 0)} sub-criteria including help-seeking pathways, diagnostic-language detection, vulnerable-user safety, crisis escalation, operational details, location references, personnel identification and pattern disclosure.
+  <strong>Worked example.</strong> Imagine an item that scores 100 on every category except OPSEC, where it scores 0 because it names a specific submarine. With equal weighting the overall score would be ~92% &mdash; a passing grade. With OPSEC at 1.5× the overall is ~88% <em>and</em> the OPSEC failure on its own is treated as a Critical finding requiring immediate action. The weighting exists precisely so that one safety failure cannot be hidden behind nine cosmetic wins.
 </div>
 
 <h2>3 · Scope — every content area is audited, nothing exempt</h2>
