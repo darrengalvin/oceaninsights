@@ -535,6 +535,9 @@ function ResultsView({ run, areaSummary, previousScore, findings, citations, run
           </p>
         </div>
         <div className="flex gap-2">
+          <a href="/api/audit/mod-brief" target="_blank" className="px-4 py-2 bg-blue-900 text-white rounded-xl text-sm font-semibold hover:bg-blue-950 transition">
+            MOD Brief
+          </a>
           <a href="/admin/audit/auto-fix" className="px-4 py-2 bg-emerald-700 text-white rounded-xl text-sm font-semibold hover:bg-emerald-800 transition">
             Auto-Fix
           </a>
