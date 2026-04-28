@@ -413,44 +413,101 @@ function buildBriefHTML(data: BriefData): string {
 </table>
 
 <h3 style="margin-top:14px">What "weight" means &mdash; and why the 1.5× categories matter</h3>
-<p style="font-size:9.5pt; margin:4px 0 8px 0;">
-  Each category produces a 0&ndash;100 score. The item's overall grade is a <em>weighted</em> average across all categories &mdash; not a simple mean. A category with weight 1.5 contributes 50% more to the average than one weighted 1.0. In practice this means a single failure in a 1.5× category drags the overall score down sharply and is enough on its own to flag the item for review, even when every other category is perfect.
-</p>
 
 <table class="criteria" style="margin:6px 0;">
   <thead>
     <tr>
-      <th style="width:11%">Weight</th>
-      <th style="width:34%">Categories at this weight</th>
-      <th>What it means in plain English</th>
+      <th style="width:9%">Weight</th>
+      <th style="width:8%">Cats</th>
+      <th style="width:30%">Categories at this weight</th>
+      <th>What this band means</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><span class="weight-pill w15">1.5×</span></td>
+      <td>${safetyCriticalCategories.length}</td>
       <td><strong>${safetyCriticalCategories.map(c => c.label).join(', ')}</strong></td>
-      <td>Safety-critical. A failing score here, on its own, is treated as <em>immediate action required</em> regardless of how well the item scores elsewhere. ${safetyCriticalCategories.reduce((s, c) => s + c.sub_criteria.length, 0)} sub-criteria covering help-seeking pathways, diagnostic-language, vulnerable-user safety, crisis escalation, operational details, location references, personnel identification and pattern disclosure.</td>
+      <td>Safety-critical. The MOD's primary concerns. ${safetyCriticalCategories.reduce((s, c) => s + c.sub_criteria.length, 0)} sub-criteria including help-seeking pathways, diagnostic-language, vulnerable-user safety, crisis escalation, operational details, location references, personnel identification and pattern disclosure.</td>
     </tr>
     <tr>
       <td><span class="weight-pill w12">1.2×</span></td>
+      <td>${enhancedScrutinyCategories.length}</td>
       <td><strong>${enhancedScrutinyCategories.map(c => c.label).join(', ')}</strong></td>
       <td>Enhanced scrutiny &mdash; categories where errors damage user trust most quickly (wrong facts, wrong region, stale data).</td>
     </tr>
     <tr>
       <td><span class="weight-pill w10">1.0×</span></td>
+      <td>${AUDIT_CATEGORIES.filter(c => c.weight === 1.0).length}</td>
       <td><strong>${AUDIT_CATEGORIES.filter(c => c.weight === 1.0).map(c => c.label).join(', ')}</strong></td>
-      <td>Standard editorial quality categories &mdash; baseline weight.</td>
+      <td>Standard editorial-quality categories &mdash; baseline weight.</td>
     </tr>
     <tr>
       <td><span class="weight-pill w08">0.8×</span></td>
+      <td>${AUDIT_CATEGORIES.filter(c => c.weight === 0.8).length}</td>
       <td><strong>${AUDIT_CATEGORIES.filter(c => c.weight === 0.8).map(c => c.label).join(', ')}</strong></td>
       <td>Programme-level checks scored across the whole library rather than per-item, so they carry slightly less weight in any single item's grade.</td>
     </tr>
   </tbody>
 </table>
 
-<div class="callout">
-  <strong>Worked example.</strong> Imagine an item that scores 100 on every category except OPSEC, where it scores 0 because it names a specific submarine. With equal weighting the overall score would be ~92% &mdash; a passing grade. With OPSEC at 1.5× the overall is ~88% <em>and</em> the OPSEC failure on its own is treated as a Critical finding requiring immediate action. The weighting exists precisely so that one safety failure cannot be hidden behind nine cosmetic wins.
+<h3 style="margin-top:12px">How the weighted average is calculated</h3>
+<p style="font-size:9.5pt; margin:4px 0 6px 0;">
+  Every content item is scored 0&ndash;100 on each of the ${AUDIT_CATEGORIES.length} categories that apply to it. The item's overall grade is a <em>weighted average</em>, not a plain average. The recipe is straightforward:
+</p>
+<ol style="font-size:9.5pt; margin:4px 0 8px 18px;">
+  <li>Multiply each category's score by its weight (e.g. an OPSEC score of 80 contributes 80 × 1.5 = 120).</li>
+  <li>Add all those weighted scores together.</li>
+  <li>Divide the total by the sum of the weights.</li>
+</ol>
+<p style="font-size:9.5pt; margin:4px 0 8px 0;">
+  Across the ${AUDIT_CATEGORIES.length} categories, the weights add up to <strong>16.2</strong> (4 × 1.5 + 3 × 1.2 + 5 × 1.0 + 2 × 0.8). This number determines each category's <em>share of the vote</em> on every item's grade:
+</p>
+<ul style="font-size:9.5pt; margin:4px 0 8px 18px;">
+  <li>The four <strong>1.5× safety-critical categories together control ${Math.round((6.0/16.2)*100)}%</strong> of every item's grade (6.0 ÷ 16.2). That is the central design choice of the framework: the MOD's priority concerns hold roughly four-tenths of the vote.</li>
+  <li>A single 1.5× category contributes ${Math.round((1.5/16.2)*100)}% of the grade (1.5 ÷ 16.2). A single 1.0× category contributes ${Math.round((1.0/16.2)*100)}% (1.0 ÷ 16.2). A 0.8× category contributes ${Math.round((0.8/16.2)*100)}%.</li>
+</ul>
+
+<h3 style="margin-top:12px">Worked examples (real numbers, not approximations)</h3>
+<table class="criteria">
+  <thead>
+    <tr>
+      <th style="width:38%">Scenario</th>
+      <th style="width:24%">Equal-weight average</th>
+      <th style="width:24%">Our weighted average</th>
+      <th>Traffic light &amp; consequence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Item scores 100 on all 14 categories</td>
+      <td>100.0%</td>
+      <td><strong>100.0%</strong></td>
+      <td><span style="color:#16a34a;font-weight:600">Green</span> — meets standard</td>
+    </tr>
+    <tr>
+      <td>Item scores 100 on 13 categories, 0 on OPSEC (e.g. names a specific ship)</td>
+      <td>92.9%<br><span style="font-size:8pt;color:#9ca3af">(13 × 100 ÷ 14)</span></td>
+      <td><strong>90.7%</strong><br><span style="font-size:8pt;color:#9ca3af">(1,470 ÷ 16.2)</span></td>
+      <td><span style="color:#16a34a;font-weight:600">Green at item level</span> &mdash; but the OPSEC sub-criterion failure independently generates an open Finding requiring explicit human disposition.</td>
+    </tr>
+    <tr>
+      <td>Item scores 100 on 12, 0 on OPSEC <em>and</em> 0 on Clinical Boundaries</td>
+      <td>85.7%<br><span style="font-size:8pt;color:#9ca3af">(12 × 100 ÷ 14)</span></td>
+      <td><strong>81.5%</strong><br><span style="font-size:8pt;color:#9ca3af">(1,320 ÷ 16.2)</span></td>
+      <td><span style="color:#d97706;font-weight:600">Amber</span> &mdash; review recommended. The weighting is what tipped the score from green into amber.</td>
+    </tr>
+    <tr>
+      <td>Item scores 100 on every category except all four safety-critical ones, which all score 0</td>
+      <td>71.4%<br><span style="font-size:8pt;color:#9ca3af">(10 × 100 ÷ 14)</span></td>
+      <td><strong>63.0%</strong><br><span style="font-size:8pt;color:#9ca3af">(1,020 ÷ 16.2)</span></td>
+      <td><span style="color:#dc2626;font-weight:600">Red</span> &mdash; action required. Without weighting it would still read amber.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout" style="margin-top:8px;">
+  <strong>Two systems, working together.</strong> The weighted score grades each item against the traffic-light bands &mdash; <span style="color:#16a34a;font-weight:600">≥90% green</span>, <span style="color:#d97706;font-weight:600">70&ndash;89% amber</span>, <span style="color:#dc2626;font-weight:600">50&ndash;69% red</span>, <span style="color:#991b1b;font-weight:600">below 50% critical</span>. Separately, every <em>individual</em> sub-criterion that scores below 90 generates an open Finding with documented evidence, a recommended action, and a workflow status &mdash; regardless of what the item's overall weighted score happens to be. So an OPSEC slip in an otherwise-perfect item still triggers a finding that must be acknowledged, fixed, or formally marked as won't-fix with a reason. The weighting tunes the headline grade; the per-finding workflow is what guarantees nothing falls through the cracks.
 </div>
 
 <h2>3 · Scope — every content area is audited, nothing exempt</h2>
