@@ -535,6 +535,9 @@ function ResultsView({ run, areaSummary, previousScore, findings, citations, run
           </p>
         </div>
         <div className="flex gap-2">
+          <a href="/admin/audit/benchmark" className="px-4 py-2 bg-purple-700 text-white rounded-xl text-sm font-semibold hover:bg-purple-800 transition">
+            Fix Benchmark
+          </a>
           <a href="/api/audit/report" target="_blank" className="px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition">
             Full Report
           </a>
@@ -736,8 +739,14 @@ function FindingsList({ findings, onUpdate }: { findings: AuditFinding[]; onUpda
                             <p className="text-sm text-gray-600 mt-0.5">{f.description}</p>
                             {f.evidence && <p className="text-xs text-gray-400 mt-1 italic">"{f.evidence}"</p>}
                             {f.suggested_action && (
-                              <div className="mt-2 text-xs text-cyan-800 bg-cyan-50 rounded-lg px-3 py-2">
-                                <span className="font-semibold">Suggested action:</span> {f.suggested_action}
+                              <div className="mt-2 text-xs text-cyan-800 bg-cyan-50 rounded-lg px-3 py-2 flex items-start justify-between gap-3">
+                                <div><span className="font-semibold">Suggested action:</span> {f.suggested_action}</div>
+                                <a
+                                  href={`/admin/audit/benchmark?finding=${f.id}`}
+                                  className="text-[11px] px-2 py-1 bg-purple-700 text-white rounded font-semibold hover:bg-purple-800 whitespace-nowrap"
+                                >
+                                  Fix it →
+                                </a>
                               </div>
                             )}
                           </div>
