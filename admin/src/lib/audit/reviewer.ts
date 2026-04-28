@@ -121,7 +121,11 @@ export async function reviewContentArea(
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 16000,
+      // Larger areas (navigate_content has 19 items, scenarios_v2 has 27)
+      // produce ~60K token JSON responses. The previous 16K cap caused
+      // mid-array truncation that surfaced as "Failed to parse Claude
+      // response as JSON". 64K is the model's maximum output.
+      max_tokens: 64000,
       thinking: {
         type: 'enabled',
         budget_tokens: 10000,

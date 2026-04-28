@@ -58,7 +58,7 @@ for AREA in $AREAS; do
 
   RESP=$(curl -sS -X POST "${BASE}/api/audit/run-area" \
     -H "$AUTH" -H "Content-Type: application/json" \
-    --max-time 130 \
+    --max-time 320 \
     -d "{\"run_id\":\"${RUN_ID}\",\"area_id\":\"${AREA}\",\"area_index\":${I},\"areas_total\":${AREAS_TOTAL}}" \
     || echo '{"error":"timeout"}')
 
