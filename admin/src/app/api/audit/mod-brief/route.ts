@@ -42,6 +42,13 @@ interface CitationRow {
 
 interface ApplyRow {
   id: string;
+  created_at: string;
+  reverted_at: string | null;
+}
+
+interface FindingStatusRow {
+  status: string;
+  score: number | null;
 }
 
 export async function GET(_request: NextRequest) {
@@ -56,16 +63,47 @@ export async function GET(_request: NextRequest) {
 
     const run = latestRun as RunRow | null;
 
-    const [{ data: citations }, { data: applies }, { data: completedRuns }] =
-      await Promise.all([
-        supabaseAdmin.from('audit_citations').select('claim_type, verification_status'),
-        supabaseAdmin.from('benchmark_applies').select('id'),
-        supabaseAdmin.from('audit_runs').select('id').eq('status', 'completed'),
-      ]);
+    // Pull workflow state for findings belonging to this run, plus the live
+    // total-applies log. The frozen `findings_*` columns on the audit_runs
+    // row are the numbers AT AUDIT TIME — they don't update as fixes are
+    // applied. Officials reading the brief need to see both: what the audit
+    // measured, and where things stand right now.
+    const [
+      { data: citations },
+      { data: applies },
+      { data: completedRuns },
+      { data: runFindings },
+    ] = await Promise.all([
+      supabaseAdmin.from('audit_citations').select('claim_type, verification_status'),
+      supabaseAdmin.from('benchmark_applies').select('id, created_at, reverted_at'),
+      supabaseAdmin.from('audit_runs').select('id').eq('status', 'completed'),
+      run
+        ? supabaseAdmin
+            .from('audit_findings')
+            .select('status, score')
+            .eq('run_id', run.id)
+        : Promise.resolve({ data: [] as FindingStatusRow[] }),
+    ]);
 
     const citationsByType: Record<string, number> = {};
     for (const c of (citations || []) as CitationRow[]) {
       citationsByType[c.claim_type] = (citationsByType[c.claim_type] || 0) + 1;
+    }
+
+    const findingStatusCounts = { open: 0, acknowledged: 0, resolved: 0, wont_fix: 0 };
+    for (const f of (runFindings || []) as FindingStatusRow[]) {
+      const key = (f.status || 'open') as keyof typeof findingStatusCounts;
+      if (key in findingStatusCounts) findingStatusCounts[key]++;
+    }
+
+    const appliesRows = ((applies || []) as ApplyRow[]).filter(a => !a.reverted_at);
+    const totalApplies = appliesRows.length;
+    let appliesSinceAudit = 0;
+    if (run?.completed_at) {
+      const cutoff = new Date(run.completed_at).getTime();
+      appliesSinceAudit = appliesRows.filter(
+        a => new Date(a.created_at).getTime() >= cutoff
+      ).length;
     }
 
     const html = buildBriefHTML({
@@ -73,7 +111,9 @@ export async function GET(_request: NextRequest) {
       totalCompletedRuns: (completedRuns || []).length,
       citationsByType,
       totalCitations: (citations || []).length,
-      totalApplies: ((applies || []) as ApplyRow[]).length,
+      totalApplies,
+      appliesSinceAudit,
+      findingStatusCounts,
     });
 
     return new NextResponse(html, {
@@ -98,6 +138,13 @@ interface BriefData {
   citationsByType: Record<string, number>;
   totalCitations: number;
   totalApplies: number;
+  appliesSinceAudit: number;
+  findingStatusCounts: {
+    open: number;
+    acknowledged: number;
+    resolved: number;
+    wont_fix: number;
+  };
 }
 
 function fmtDate(iso: string | null | undefined): string {
@@ -134,11 +181,17 @@ function timeAgo(iso: string | null | undefined): string {
 }
 
 function buildBriefHTML(data: BriefData): string {
-  const { run, totalCompletedRuns, citationsByType, totalCitations, totalApplies } = data;
+  const {
+    run, totalCompletedRuns, citationsByType, totalCitations,
+    totalApplies, appliesSinceAudit, findingStatusCounts,
+  } = data;
   const systemScore = run?.system_score ? Number(run.system_score) : null;
   const greenCount = run?.findings_green || 0;
   const totalFindings = run?.total_findings || 0;
   const itemsScored = run?.total_items_scored || 0;
+  const stillOpenFindings = findingStatusCounts.open + findingStatusCounts.acknowledged;
+  const resolvedFindings = findingStatusCounts.resolved;
+  const wontFixFindings = findingStatusCounts.wont_fix;
 
   const safetyCriticalCategories = AUDIT_CATEGORIES.filter(c => c.weight === 1.5);
   const enhancedScrutinyCategories = AUDIT_CATEGORIES.filter(c => c.weight === 1.2);
@@ -518,15 +571,19 @@ function buildBriefHTML(data: BriefData): string {
 
 <div class="page-break"></div>
 
-<h2>4 · Live snapshot — current compliance position</h2>
+<h2>4 · Compliance position — at audit time and right now</h2>
 ${
   run
     ? `
-<p>Latest completed audit: <strong>${fmtDate(run.completed_at || run.started_at)}</strong>. Numbers below are drawn live from the audit database.</p>
+<p style="font-size:9.5pt; margin:4px 0 8px 0;">
+  The headline grade comes from a complete re-audit. The most recent re-audit was <strong>${fmtDate(run.completed_at || run.started_at)}</strong>. Findings then move through a workflow as fixes are proposed and applied; that workflow updates continuously, independent of the audit run. Below shows both: the frozen snapshot the audit produced, and the current state of work since.
+</p>
+
+<h3 style="margin-top:8px;">As graded on ${fmtDate(run.completed_at || run.started_at)} — frozen audit snapshot</h3>
 <div class="stat-row">
   <div class="stat">
     <div class="stat-num">${systemScore !== null ? Math.round(systemScore) + '%' : '—'}</div>
-    <div class="stat-label">Overall system score</div>
+    <div class="stat-label">System score (weighted)</div>
   </div>
   <div class="stat">
     <div class="stat-num">${itemsScored}</div>
@@ -534,17 +591,47 @@ ${
   </div>
   <div class="stat">
     <div class="stat-num">${greenCount}</div>
-    <div class="stat-label">Items meeting standard (90%+)</div>
+    <div class="stat-label">Items at 90%+ then</div>
   </div>
   <div class="stat">
     <div class="stat-num">${totalFindings}</div>
-    <div class="stat-label">Open findings being worked</div>
+    <div class="stat-label">Findings raised</div>
   </div>
 </div>
-
-<p style="font-size:9.5pt; color:#4b5563;">
-  Of ${totalFindings} findings, <strong style="color:#991b1b">${run.findings_critical || 0}</strong> are critical (under 50%, immediate action), <strong style="color:#dc2626">${run.findings_red || 0}</strong> require action (50&ndash;69%), and <strong style="color:#d97706">${run.findings_amber || 0}</strong> are recommended for review (70&ndash;89%). Each finding has a documented evidence string, an auditor-suggested action, and a workflow status (open / acknowledged / resolved / won't fix). Nothing is closed silently.
+<p style="font-size:9pt; color:#6b7280; margin-top:4px;">
+  Of ${totalFindings} findings raised, <strong style="color:#991b1b">${run.findings_critical || 0}</strong> were critical (immediate action), <strong style="color:#dc2626">${run.findings_red || 0}</strong> required action, <strong style="color:#d97706">${run.findings_amber || 0}</strong> were recommended for review.
 </p>
+
+<h3 style="margin-top:14px;">Current state — where work has reached as of this brief</h3>
+<div class="stat-row">
+  <div class="stat" style="background:#f0fdf4; border-color:#bbf7d0;">
+    <div class="stat-num" style="color:#15803d;">${resolvedFindings}</div>
+    <div class="stat-label">Findings resolved by applied fix</div>
+  </div>
+  <div class="stat" style="background:#fffbeb; border-color:#fed7aa;">
+    <div class="stat-num" style="color:#b45309;">${stillOpenFindings}</div>
+    <div class="stat-label">Findings still open</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">${wontFixFindings}</div>
+    <div class="stat-label">Won't-fix (with reason)</div>
+  </div>
+  <div class="stat" style="background:#eff6ff; border-color:#bfdbfe;">
+    <div class="stat-num" style="color:#1d4ed8;">${appliesSinceAudit}</div>
+    <div class="stat-label">Fixes applied since audit</div>
+  </div>
+</div>
+<p style="font-size:9pt; color:#6b7280; margin-top:4px;">
+  ${
+    totalFindings > 0
+      ? `That is <strong>${Math.round((resolvedFindings / totalFindings) * 100)}% of the original findings already resolved</strong> via applied content edits, each one logged in the audit trail with the previous text retained for revert. ${appliesSinceAudit} fixes have been applied since this audit completed; the headline grade above will refresh when the next full re-audit runs.`
+      : `No findings raised by this audit run.`
+  }
+</p>
+
+<div class="callout" style="margin-top:8px;">
+  <strong>Why two panels?</strong> A grade is only meaningful if it reflects a fixed point in time &mdash; you cannot defensibly compare a moving target. So the audit run produces a frozen snapshot. Fixes then flow against that snapshot through an explicit workflow (open &rarr; resolved or won't-fix). To refresh the headline grade, a full re-audit is run, producing a new frozen snapshot. The current state above shows the work-in-flight; the next re-audit will produce a new system score that incorporates ${appliesSinceAudit} applied edit${appliesSinceAudit === 1 ? '' : 's'}.
+</div>
 `
     : `<p style="color:#9ca3af; font-style:italic;">No completed audit run on file. The framework is in place; an audit is scheduled.</p>`
 }
