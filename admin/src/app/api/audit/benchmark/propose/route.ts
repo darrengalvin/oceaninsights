@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { proposeFix } from '@/lib/audit/benchmark';
+import type { SourceRowFields } from '@/lib/audit/benchmark';
 import type { AuditFinding } from '@/lib/audit/types';
 
 export const dynamic = 'force-dynamic';
@@ -22,6 +23,67 @@ interface CandidateModelEntry {
   label: string;
   thinking_mode: string;
   anonymous_label: string;
+}
+
+// Columns to skip when surfacing "writable text fields" to the model. These are
+// either internal bookkeeping (timestamps, ids), foreign keys, or display-only
+// flags that can't reasonably be the offending content.
+const SKIP_COLUMNS = new Set([
+  'id', 'created_at', 'updated_at', 'sort_order', 'display_order',
+  'is_active', 'is_published', 'is_featured', 'view_count',
+  'icon', 'color', 'slug', 'audience', 'sensitivity', 'disclosure_level',
+]);
+
+function fieldLooksLikeFK(name: string): boolean {
+  return name.endsWith('_id') || name.endsWith('_at') || name.endsWith('_by');
+}
+
+// Pull the source row for a finding and shape it as the model expects:
+// only text-like columns, with a marker on whichever column currently holds
+// the offending evidence string. Returns null if the row can't be located —
+// the model then falls back to its best-guess behaviour.
+async function fetchSourceRow(finding: AuditFinding): Promise<SourceRowFields | null> {
+  if (!finding.item_id) return null;
+
+  // We need the source_table — it lives on the audit_item_scores row that
+  // produced this finding, not on the finding itself.
+  let sourceTable: string | null = null;
+  if (finding.item_score_id) {
+    const { data: itemScore } = await supabaseAdmin
+      .from('audit_item_scores')
+      .select('source_table')
+      .eq('id', finding.item_score_id)
+      .single();
+    sourceTable = (itemScore as { source_table?: string } | null)?.source_table || null;
+  }
+  if (!sourceTable) return null;
+
+  const { data: row, error } = await supabaseAdmin
+    .from(sourceTable)
+    .select('*')
+    .eq('id', finding.item_id)
+    .single();
+  if (error || !row) return null;
+
+  const evidence = (finding.evidence || '').trim();
+  const fields: SourceRowFields['fields'] = [];
+
+  for (const [name, value] of Object.entries(row as Record<string, unknown>)) {
+    if (SKIP_COLUMNS.has(name)) continue;
+    if (fieldLooksLikeFK(name)) continue;
+    if (value === null || value === undefined) continue;
+    if (typeof value !== 'string') continue;
+    if (value.length === 0) continue;
+
+    const stringValue = value;
+    fields.push({
+      name,
+      value: stringValue,
+      matches_evidence: evidence.length > 0 && stringValue.includes(evidence),
+    });
+  }
+
+  return { source_table: sourceTable, fields };
 }
 
 export async function POST(request: NextRequest) {
@@ -66,6 +128,11 @@ export async function POST(request: NextRequest) {
         .eq('id', benchmark_run_id);
     }
 
+    // Fetch the source row once per finding (not per-model) so the model
+    // sees the actual writable columns instead of guessing field names like
+    // "description" that may not exist on tables like user_type_items.
+    const sourceRow = await fetchSourceRow(finding as AuditFinding);
+
     // Fan out: every candidate model proposes for this finding in parallel.
     // We swallow per-model errors into per-row error_message so a single bad
     // model doesn't fail the whole finding.
@@ -73,7 +140,7 @@ export async function POST(request: NextRequest) {
       candidates.map(async (candidate) => {
         const startedAt = Date.now();
         try {
-          const { proposal, call } = await proposeFix(candidate.id, finding as AuditFinding);
+          const { proposal, call } = await proposeFix(candidate.id, finding as AuditFinding, sourceRow);
           return {
             ok: true as const,
             candidate,

@@ -73,6 +73,14 @@ export interface FixProposal {
   changed: boolean;
 }
 
+// A snapshot of the actual source row: column name -> current value, restricted
+// to text-like columns that could plausibly hold the offending content. We
+// pass these to the model so it picks from a real schema, not a guess.
+export interface SourceRowFields {
+  source_table: string;
+  fields: Array<{ name: string; value: string; matches_evidence: boolean }>;
+}
+
 function describeFinding(finding: AuditFinding): string {
   const cat = CATEGORY_MAP[finding.category_id];
   const catLabel = cat?.label || finding.category_id;
@@ -89,10 +97,23 @@ function describeFinding(finding: AuditFinding): string {
   ].filter(Boolean).join('\n');
 }
 
-function buildFixUserPrompt(finding: AuditFinding): string {
+function describeSourceRow(row: SourceRowFields | null): string {
+  if (!row || row.fields.length === 0) {
+    return '## Source row\n(unavailable — pick the source field as a best guess)';
+  }
+  const sorted = [...row.fields].sort((a, b) => Number(b.matches_evidence) - Number(a.matches_evidence));
+  const lines = sorted.map(f =>
+    `  - ${f.name}${f.matches_evidence ? ' [contains the offending text]' : ''}: "${f.value.length > 200 ? f.value.slice(0, 200) + '…' : f.value}"`
+  );
+  return `## Source row in table \`${row.source_table}\`\nThe row's text columns and their current values:\n${lines.join('\n')}\n\nThe \`source_field\` you return MUST be the exact name of one of the columns above. Pick the column whose current value matches the offending text (marked above when known).`;
+}
+
+function buildFixUserPrompt(finding: AuditFinding, sourceRow: SourceRowFields | null): string {
   return `# Audit finding to fix
 
 ${describeFinding(finding)}
+
+${describeSourceRow(sourceRow)}
 
 # Task
 
@@ -108,7 +129,7 @@ Propose a corrected version of the offending text. The fix must:
 {
   "proposed_text": "the rewritten text, ready to drop into the source field",
   "rationale": "1-3 sentences explaining what you changed and why it resolves the finding",
-  "source_field": "best guess at which field this text belongs to (e.g. 'description', 'body', 'microcopy')",
+  "source_field": "the EXACT name of a column listed above whose value should be replaced",
   "changed": true
 }
 
@@ -116,7 +137,7 @@ If you genuinely believe the original text already meets the criterion and no ch
 {
   "proposed_text": "<the original text unchanged>",
   "rationale": "Explain why you believe no change is required.",
-  "source_field": "<best guess>",
+  "source_field": "<exact column name from the list>",
   "changed": false
 }
 
@@ -137,11 +158,12 @@ const FIX_RESPONSE_SCHEMA = {
 
 export async function proposeFix(
   modelId: string,
-  finding: AuditFinding
+  finding: AuditFinding,
+  sourceRow: SourceRowFields | null = null
 ): Promise<{ proposal: FixProposal; call: LlmCallResult }> {
   const call = await callModel(modelId, {
     systemPrompt: FIX_SYSTEM_PROMPT,
-    userPrompt: buildFixUserPrompt(finding),
+    userPrompt: buildFixUserPrompt(finding, sourceRow),
     responseSchema: FIX_RESPONSE_SCHEMA,
     maxOutputTokens: 4000,
   });

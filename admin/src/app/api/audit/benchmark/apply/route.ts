@@ -102,22 +102,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Read current value (the "before" half of the diff).
-    // Supabase types `select(column)` against a known schema; here the
-    // table + field are both dynamic so we route through `unknown` to read
-    // the column generically without faking a typed schema.
+    // Read the entire current row so we can both diff and (on missing-column
+    // errors) surface every available text column to the caller. The UI
+    // turns that list into a dropdown so the admin can re-route a fix
+    // whose suggested field doesn't exist on the actual table.
     const { data: currentRow, error: readErr } = await supabaseAdmin
       .from(sourceTable)
-      .select(fieldToUpdate)
+      .select('*')
       .eq('id', findingRow.item_id)
       .single();
-    if (readErr) {
+    if (readErr || !currentRow) {
       return NextResponse.json(
-        { error: `Failed to read ${sourceTable}.${fieldToUpdate}: ${readErr.message}` },
+        { error: `Failed to read ${sourceTable} row ${findingRow.item_id}: ${readErr?.message || 'not found'}` },
         { status: 400 }
       );
     }
-    const beforeValue = (currentRow as unknown as Record<string, unknown> | null)?.[fieldToUpdate];
+
+    const rowAsRecord = currentRow as unknown as Record<string, unknown>;
+
+    // Validate the requested field exists on the row. If it doesn't, return
+    // the full list of text-bearing columns so the UI can offer a picker.
+    if (!Object.prototype.hasOwnProperty.call(rowAsRecord, fieldToUpdate)) {
+      const availableFields = Object.entries(rowAsRecord)
+        .filter(([name, value]) =>
+          typeof value === 'string' &&
+          !['id', 'created_at', 'updated_at', 'slug'].includes(name)
+        )
+        .map(([name, value]) => ({
+          name,
+          value: typeof value === 'string' ? value : '',
+        }));
+      return NextResponse.json(
+        {
+          error: `Column "${fieldToUpdate}" does not exist on ${sourceTable}. Pick a real column.`,
+          missing_field: true,
+          available_fields: availableFields,
+          source_table: sourceTable,
+        },
+        { status: 400 }
+      );
+    }
+
+    const beforeValue = rowAsRecord[fieldToUpdate];
 
     if (dry_run) {
       return NextResponse.json({

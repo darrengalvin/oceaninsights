@@ -7,12 +7,19 @@
 // regional findings, so silent auto-apply is too risky for compliance content.
 
 import { useState, useEffect, useCallback } from 'react';
+// useEffect is also used in FixCard below to auto-pick the best field when
+// the API returns a list of available columns.
 import { scoreToTrafficLight, trafficLightColor } from '@/lib/audit/types';
 import type { AuditFinding } from '@/lib/audit/types';
 import type { BenchmarkModel } from '@/lib/audit/models';
 
 type View = 'setup' | 'running' | 'review';
-type ApplyState = 'pending' | 'applying' | 'applied' | 'rejected' | 'failed';
+type ApplyState = 'pending' | 'applying' | 'applied' | 'rejected' | 'failed' | 'needs_field';
+
+interface AvailableField {
+  name: string;
+  value: string;
+}
 
 interface AutoFixRun {
   id: string;
@@ -56,6 +63,9 @@ export default function AutoFixPage() {
   const [activeRunId, setActiveRunId] = useState<string | null>(null);
   const [fixes, setFixes] = useState<ProposedFix[]>([]);
   const [applyStates, setApplyStates] = useState<Record<string, ApplyState>>({});
+  // When apply fails because the model picked a non-existent column, the API
+  // returns the row's actual writable columns so we can show a dropdown.
+  const [availableFieldsByFix, setAvailableFieldsByFix] = useState<Record<string, AvailableField[]>>({});
 
   const loadInitial = useCallback(async () => {
     setLoading(true);
@@ -185,6 +195,14 @@ export default function AutoFixPage() {
       });
       const data = await res.json();
       if (!res.ok) {
+        // Special-case: model guessed a column that doesn't exist. The API
+        // returns the actual columns; surface them as a dropdown rather
+        // than just showing an error toast.
+        if (data.missing_field && Array.isArray(data.available_fields)) {
+          setApplyStates(prev => ({ ...prev, [fix.id]: 'needs_field' }));
+          setAvailableFieldsByFix(prev => ({ ...prev, [fix.id]: data.available_fields }));
+          return false;
+        }
         setApplyStates(prev => ({ ...prev, [fix.id]: 'failed' }));
         setError(`Apply ${fix.id.slice(0, 6)}…: ${data.error}`);
         return false;
@@ -241,6 +259,7 @@ export default function AutoFixPage() {
         <ReviewView
           fixes={fixes}
           applyStates={applyStates}
+          availableFieldsByFix={availableFieldsByFix}
           onApply={applyOne}
           onReject={fixId => setApplyStates(prev => ({ ...prev, [fixId]: 'rejected' }))}
           onReset={() => {
@@ -248,6 +267,7 @@ export default function AutoFixPage() {
             setActiveRunId(null);
             setFixes([]);
             setApplyStates({});
+            setAvailableFieldsByFix({});
             loadInitial();
           }}
         />
@@ -477,15 +497,16 @@ function RunningView({
 // ============================================================
 
 function ReviewView({
-  fixes, applyStates, onApply, onReject, onReset,
+  fixes, applyStates, availableFieldsByFix, onApply, onReject, onReset,
 }: {
   fixes: ProposedFix[];
   applyStates: Record<string, ApplyState>;
+  availableFieldsByFix: Record<string, AvailableField[]>;
   onApply: (fix: ProposedFix, sourceField: string) => Promise<boolean>;
   onReject: (fixId: string) => void;
   onReset: () => void;
 }) {
-  const [filter, setFilter] = useState<'all' | 'pending' | 'applied' | 'failed' | 'flagged'>('pending');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'applied' | 'failed' | 'flagged' | 'needs_field'>('pending');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const completed = fixes.filter(f => f.status === 'completed');
@@ -508,6 +529,7 @@ function ReviewView({
     if (filter === 'failed') return failed;
     if (filter === 'flagged') return completed.filter(isFlagged);
     if (filter === 'applied') return completed.filter(f => applyStates[f.id] === 'applied');
+    if (filter === 'needs_field') return completed.filter(f => applyStates[f.id] === 'needs_field');
     if (filter === 'pending') {
       return completed.filter(f => {
         const state = applyStates[f.id];
@@ -519,6 +541,7 @@ function ReviewView({
 
   const allSelected = filtered.length > 0 && filtered.every(f => selectedIds.has(f.id));
   const appliedCount = Object.values(applyStates).filter(s => s === 'applied').length;
+  const needsFieldCount = Object.values(applyStates).filter(s => s === 'needs_field').length;
   const flaggedCount = completed.filter(isFlagged).length;
 
   function toggleAll() {
@@ -565,14 +588,15 @@ function ReviewView({
       </div>
 
       <div className="flex items-center gap-2 mb-4 flex-wrap">
-        {(['pending', 'flagged', 'failed', 'applied', 'all'] as const).map(f => (
+        {(['pending', 'needs_field', 'flagged', 'failed', 'applied', 'all'] as const).map(f => (
           <button
             key={f}
             onClick={() => { setFilter(f); setSelectedIds(new Set()); }}
-            className={`px-3 py-1 text-xs rounded-full font-medium transition ${filter === f ? 'bg-cyan-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            className={`px-3 py-1 text-xs rounded-full font-medium transition ${filter === f ? 'bg-cyan-700 text-white' : f === 'needs_field' && needsFieldCount > 0 ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)} ({
+            {f === 'needs_field' ? 'Needs field' : f.charAt(0).toUpperCase() + f.slice(1)} ({
               f === 'pending' ? completed.filter(c => !applyStates[c.id] || applyStates[c.id] === 'pending').length :
+              f === 'needs_field' ? needsFieldCount :
               f === 'flagged' ? flaggedCount :
               f === 'failed' ? failed.length :
               f === 'applied' ? appliedCount :
@@ -604,6 +628,7 @@ function ReviewView({
         <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center text-gray-500">
           {filter === 'pending' ? 'No pending fixes — everything in this filter has been processed.' :
            filter === 'flagged' ? 'Nothing flagged for unusual length deltas. Good sign.' :
+           filter === 'needs_field' ? 'No fixes are blocked on field selection.' :
            'No fixes match this filter.'}
         </div>
       ) : (
@@ -614,6 +639,7 @@ function ReviewView({
               fix={fix}
               flagged={isFlagged(fix)}
               applyState={applyStates[fix.id] || 'pending'}
+              availableFields={availableFieldsByFix[fix.id] || null}
               selected={selectedIds.has(fix.id)}
               onToggleSelect={() => toggleOne(fix.id)}
               onApply={field => onApply(fix, field)}
@@ -627,11 +653,12 @@ function ReviewView({
 }
 
 function FixCard({
-  fix, flagged, applyState, selected, onToggleSelect, onApply, onReject,
+  fix, flagged, applyState, availableFields, selected, onToggleSelect, onApply, onReject,
 }: {
   fix: ProposedFix;
   flagged: boolean;
   applyState: ApplyState;
+  availableFields: AvailableField[] | null;
   selected: boolean;
   onToggleSelect: () => void;
   onApply: (field: string) => Promise<boolean>;
@@ -641,8 +668,20 @@ function FixCard({
   const [expanded, setExpanded] = useState(false);
   const finding = fix.finding;
 
+  // When the API tells us the model picked a non-existent column, prefer the
+  // column whose value matches the offending evidence string.
+  useEffect(() => {
+    if (!availableFields || availableFields.length === 0) return;
+    const evidence = (finding?.evidence || '').trim();
+    const match = evidence
+      ? availableFields.find(f => typeof f.value === 'string' && f.value.includes(evidence))
+      : null;
+    setSourceField(match?.name || availableFields[0].name);
+  }, [availableFields, finding?.evidence]);
+
   const cardBorder =
     applyState === 'applied' ? 'border-green-300 bg-green-50/40' :
+    applyState === 'needs_field' ? 'border-amber-400 bg-amber-50/40' :
     applyState === 'rejected' ? 'border-gray-200 opacity-60' :
     flagged ? 'border-amber-300 bg-amber-50/30' :
     'border-gray-200';
@@ -731,16 +770,42 @@ function FixCard({
             <div className="text-xs text-gray-600 italic mt-1">{fix.rationale}</div>
           )}
 
-          <div className="flex items-center gap-3 mt-3">
+          {applyState === 'needs_field' && availableFields && availableFields.length > 0 && (
+            <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="text-xs font-semibold text-amber-900 mb-1">
+                The model picked a column that doesn't exist on this table. Choose the right one:
+              </div>
+              <div className="text-[11px] text-amber-700">
+                Fields with values that contain the offending text are pre-selected.
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-3 mt-3 flex-wrap">
             <label className="text-xs text-gray-500 flex items-center gap-1">
               Field:
-              <input
-                type="text"
-                value={sourceField}
-                onChange={e => setSourceField(e.target.value)}
-                disabled={applyState === 'applied'}
-                className="px-2 py-1 border border-gray-200 rounded text-xs font-mono w-32 disabled:bg-gray-50"
-              />
+              {availableFields && availableFields.length > 0 ? (
+                <select
+                  value={sourceField}
+                  onChange={e => setSourceField(e.target.value)}
+                  disabled={applyState === 'applied'}
+                  className="px-2 py-1 border border-gray-200 rounded text-xs font-mono disabled:bg-gray-50 max-w-[260px]"
+                >
+                  {availableFields.map(f => (
+                    <option key={f.name} value={f.name}>
+                      {f.name} — &quot;{(f.value || '').slice(0, 40)}{(f.value || '').length > 40 ? '…' : ''}&quot;
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={sourceField}
+                  onChange={e => setSourceField(e.target.value)}
+                  disabled={applyState === 'applied'}
+                  className="px-2 py-1 border border-gray-200 rounded text-xs font-mono w-40 disabled:bg-gray-50"
+                />
+              )}
             </label>
 
             <div className="ml-auto flex items-center gap-2">
@@ -766,7 +831,7 @@ function FixCard({
                   disabled={!sourceField}
                   className="text-xs px-4 py-1.5 bg-cyan-700 text-white rounded-lg font-semibold hover:bg-cyan-800 disabled:bg-gray-300"
                 >
-                  Apply this fix
+                  {applyState === 'needs_field' ? 'Retry apply' : 'Apply this fix'}
                 </button>
               )}
             </div>
