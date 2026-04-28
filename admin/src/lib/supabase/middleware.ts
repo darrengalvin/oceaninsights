@@ -11,11 +11,12 @@ export async function updateSession(request: NextRequest) {
   // benchmark pipelines without holding a browser session. The key lives
   // only in Vercel env and is not present in any client bundle.
   const authHeader = request.headers.get('authorization')
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+  const headerKey = authHeader?.replace(/^Bearer\s+/i, '').trim()
   if (
-    authHeader &&
+    headerKey &&
     serviceKey &&
-    authHeader === `Bearer ${serviceKey}` &&
+    headerKey === serviceKey &&
     request.nextUrl.pathname.startsWith('/api/')
   ) {
     return supabaseResponse
