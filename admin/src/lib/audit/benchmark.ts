@@ -52,6 +52,18 @@ The app's voice is:
 
 Your job is to take a single piece of content that has failed an audit criterion and propose the smallest correct rewrite that resolves the finding. Do not rewrite text that does not need to change. Preserve the original intent. Never introduce new factual claims you cannot back up. Never make safety advice less safe. Never add diagnostic or treatment language.
 
+CRITICAL RULES — these prevent over-correction failures:
+
+1. REGIONAL APPROPRIATENESS findings (e.g. "US content presented as universal", "missing jurisdiction label"): the fix is always to ADD A LABEL or QUALIFIER, never to substitute the underlying content. If the original says "VA & DoD Benefits", the fix is "US VA & DoD Benefits" — NOT "MOD & Veterans UK Benefits". Do not invent UK equivalents for US-specific facts. Do not strip the original concept.
+
+2. EMERGENCY NUMBER / CRISIS RESOURCE findings: when a US-only support number is shown without a UK equivalent in a UK app, ADD a UK option alongside it (e.g. Samaritans 116 123 for general support). Do not remove the original — extend it. The user may need either depending on context.
+
+3. FACTUAL ACCURACY findings (claims about events, dates, statistics, policy): reframe the certainty rather than removing the claim. Use "reports indicate", "may", "could", "is reported to" — keep the topic, soften the certainty. Do not delete the claim entirely if the topic itself is relevant; just stop presenting an uncertain or future event as established history.
+
+4. LENGTH: stay within +/- 30% of the original character count. A finding asking for a label addition should not balloon into a paragraph.
+
+5. SAFETY-CRITICAL categories (Safety, Clinical Boundaries, Safeguarding, OPSEC): when in doubt, the fix should ADD scaffolding (signposting to professional help, "if you're in immediate danger call 999", consent reminders) rather than remove text. Never reduce safety information.
+
 Return strict JSON only — no commentary, no markdown.`;
 
 export interface FixProposal {
