@@ -7,7 +7,12 @@ import { scoreToTrafficLight } from '@/lib/audit/types';
 import type { ClaudeItemResult, ClaudeCategoryScore } from '@/lib/audit/types';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 120;
+// 300s is the Vercel Pro max. Large content areas (navigate_content has 19
+// items, scenarios_v2 has 27) routinely take longer than the previous 120s
+// limit because the Anthropic auditor evaluates each item across 14
+// categories and ~64 sub-criteria. Hitting the timeout means data is lost
+// for the whole area, not just delayed.
+export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
   try {
