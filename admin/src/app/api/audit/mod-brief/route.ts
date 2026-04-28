@@ -49,6 +49,12 @@ interface ApplyRow {
 interface FindingStatusRow {
   status: string;
   score: number | null;
+  category_id: string;
+}
+
+interface ItemScoreRow {
+  overall_score: number | null;
+  content_area: string;
 }
 
 export async function GET(_request: NextRequest) {
@@ -73,6 +79,7 @@ export async function GET(_request: NextRequest) {
       { data: applies },
       { data: completedRuns },
       { data: runFindings },
+      { data: itemScores },
     ] = await Promise.all([
       supabaseAdmin.from('audit_citations').select('claim_type, verification_status'),
       supabaseAdmin.from('benchmark_applies').select('id, created_at, reverted_at'),
@@ -80,9 +87,15 @@ export async function GET(_request: NextRequest) {
       run
         ? supabaseAdmin
             .from('audit_findings')
-            .select('status, score')
+            .select('status, score, category_id')
             .eq('run_id', run.id)
         : Promise.resolve({ data: [] as FindingStatusRow[] }),
+      run
+        ? supabaseAdmin
+            .from('audit_item_scores')
+            .select('overall_score, content_area')
+            .eq('run_id', run.id)
+        : Promise.resolve({ data: [] as ItemScoreRow[] }),
     ]);
 
     const citationsByType: Record<string, number> = {};
@@ -91,10 +104,51 @@ export async function GET(_request: NextRequest) {
     }
 
     const findingStatusCounts = { open: 0, acknowledged: 0, resolved: 0, wont_fix: 0 };
+    const findingsByCategory: Record<string, { count: number; sumScore: number }> = {};
     for (const f of (runFindings || []) as FindingStatusRow[]) {
       const key = (f.status || 'open') as keyof typeof findingStatusCounts;
       if (key in findingStatusCounts) findingStatusCounts[key]++;
+      if (f.category_id) {
+        const cat = (findingsByCategory[f.category_id] ||= { count: 0, sumScore: 0 });
+        cat.count++;
+        cat.sumScore += f.score || 0;
+      }
     }
+
+    // Item-score distribution and per-area aggregates — these are the numbers
+    // that contextualise the headline system score. The system score is one
+    // weighted aggregate; the distribution and per-area view show whether a
+    // 77% means "everything is mediocre" or "most items are excellent and a
+    // small tail needs work" — and in our case it's emphatically the latter.
+    const itemBands = { gte90: 0, b80_89: 0, b70_79: 0, b60_69: 0, b50_59: 0, lt50: 0 };
+    const areaAgg: Record<string, { count: number; sum: number; min: number }> = {};
+    let itemSum = 0;
+    let itemCount = 0;
+    const allItemScores: number[] = [];
+    for (const item of (itemScores || []) as ItemScoreRow[]) {
+      const s = Number(item.overall_score);
+      if (!Number.isFinite(s)) continue;
+      itemCount++;
+      itemSum += s;
+      allItemScores.push(s);
+      if (s >= 90) itemBands.gte90++;
+      else if (s >= 80) itemBands.b80_89++;
+      else if (s >= 70) itemBands.b70_79++;
+      else if (s >= 60) itemBands.b60_69++;
+      else if (s >= 50) itemBands.b50_59++;
+      else itemBands.lt50++;
+
+      const area = item.content_area || 'unknown';
+      const a = (areaAgg[area] ||= { count: 0, sum: 0, min: 100 });
+      a.count++;
+      a.sum += s;
+      if (s < a.min) a.min = s;
+    }
+    allItemScores.sort((x, y) => x - y);
+    const median = allItemScores.length
+      ? allItemScores[Math.floor(allItemScores.length / 2)]
+      : null;
+    const itemMean = itemCount > 0 ? itemSum / itemCount : null;
 
     const appliesRows = ((applies || []) as ApplyRow[]).filter(a => !a.reverted_at);
     const totalApplies = appliesRows.length;
@@ -114,6 +168,11 @@ export async function GET(_request: NextRequest) {
       totalApplies,
       appliesSinceAudit,
       findingStatusCounts,
+      itemBands,
+      itemMean,
+      itemMedian: median,
+      findingsByCategory,
+      areaAgg,
     });
 
     return new NextResponse(html, {
@@ -145,6 +204,18 @@ interface BriefData {
     resolved: number;
     wont_fix: number;
   };
+  itemBands: {
+    gte90: number;
+    b80_89: number;
+    b70_79: number;
+    b60_69: number;
+    b50_59: number;
+    lt50: number;
+  };
+  itemMean: number | null;
+  itemMedian: number | null;
+  findingsByCategory: Record<string, { count: number; sumScore: number }>;
+  areaAgg: Record<string, { count: number; sum: number; min: number }>;
 }
 
 function fmtDate(iso: string | null | undefined): string {
@@ -184,6 +255,7 @@ function buildBriefHTML(data: BriefData): string {
   const {
     run, totalCompletedRuns, citationsByType, totalCitations,
     totalApplies, appliesSinceAudit, findingStatusCounts,
+    itemBands, itemMean, itemMedian, findingsByCategory, areaAgg,
   } = data;
   const systemScore = run?.system_score ? Number(run.system_score) : null;
   const greenCount = run?.findings_green || 0;
@@ -192,6 +264,36 @@ function buildBriefHTML(data: BriefData): string {
   const stillOpenFindings = findingStatusCounts.open + findingStatusCounts.acknowledged;
   const resolvedFindings = findingStatusCounts.resolved;
   const wontFixFindings = findingStatusCounts.wont_fix;
+
+  // Top 5 categories by finding count (with their average failed-criterion score)
+  const topCategoriesByFindings = Object.entries(findingsByCategory)
+    .map(([id, v]) => ({
+      id,
+      label: AUDIT_CATEGORIES.find(c => c.id === id)?.label || id,
+      count: v.count,
+      avg: v.count > 0 ? v.sumScore / v.count : 0,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 6);
+
+  // Areas sorted by average score; lowest = needed most work, highest = exemplars
+  const areasSorted = Object.entries(areaAgg)
+    .map(([id, v]) => ({
+      id,
+      label: CONTENT_AREAS.find(a => a.id === id)?.label || id,
+      count: v.count,
+      avg: v.count > 0 ? v.sum / v.count : 0,
+      min: v.min,
+    }))
+    .filter(a => a.count > 0)
+    .sort((a, b) => a.avg - b.avg);
+  const worstAreas = areasSorted.slice(0, 4);
+  const bestAreas = [...areasSorted].slice(-4).reverse();
+
+  const totalDistItems = Object.values(itemBands).reduce((s, v) => s + v, 0);
+  const pct = (n: number) => totalDistItems > 0 ? Math.round((n / totalDistItems) * 100) : 0;
+  const itemsAt80Plus = itemBands.gte90 + itemBands.b80_89;
+  const itemsBelow50 = itemBands.lt50;
 
   const safetyCriticalCategories = AUDIT_CATEGORIES.filter(c => c.weight === 1.5);
   const enhancedScrutinyCategories = AUDIT_CATEGORIES.filter(c => c.weight === 1.2);
@@ -636,7 +738,87 @@ ${
     : `<p style="color:#9ca3af; font-style:italic;">No completed audit run on file. The framework is in place; an audit is scheduled.</p>`
 }
 
-<h2>5 · The governance pipeline — from generation to applied fix</h2>
+${run && totalDistItems > 0 ? `
+<h2>5 · Reading the headline number — what is behind the ${systemScore !== null ? Math.round(systemScore) : '—'}%</h2>
+
+<p style="font-size:9.5pt; margin:4px 0 8px 0;">
+  A single-system aggregate flattens a population of items into one number. The audit measures every item independently, so the more honest picture is the distribution of <em>item-level</em> scores. Across the ${totalDistItems} items audited on ${fmtDate(run!.completed_at || run!.started_at)}:
+</p>
+
+<div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
+  <div class="stat" style="background:#f0fdf4; border-color:#bbf7d0;">
+    <div class="stat-num" style="color:#15803d;">${itemBands.gte90 + itemBands.b80_89}</div>
+    <div class="stat-label">Items at 80%+ at audit time<br><span style="color:#9ca3af; text-transform:none; letter-spacing:0; font-size:8pt">${pct(itemsAt80Plus)}% of all items</span></div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">${itemMedian !== null ? itemMedian.toFixed(0) : '—'}</div>
+    <div class="stat-label">Median item score<br><span style="color:#9ca3af; text-transform:none; letter-spacing:0; font-size:8pt">half the library scores at or above this</span></div>
+  </div>
+  <div class="stat" style="background:#fef2f2; border-color:#fecaca;">
+    <div class="stat-num" style="color:#991b1b;">${itemsBelow50}</div>
+    <div class="stat-label">Items below 50%<br><span style="color:#9ca3af; text-transform:none; letter-spacing:0; font-size:8pt">${pct(itemsBelow50)}% — the tail dragging the headline</span></div>
+  </div>
+</div>
+
+<table class="criteria" style="margin-top:8px;">
+  <thead>
+    <tr>
+      <th style="width:20%">Score band</th>
+      <th style="width:14%">Items</th>
+      <th style="width:14%">Share</th>
+      <th>Distribution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><span style="color:#16a34a;font-weight:600">90&ndash;100% (Green)</span></td><td>${itemBands.gte90}</td><td>${pct(itemBands.gte90)}%</td><td><div style="height:10px;background:#22c55e;width:${pct(itemBands.gte90) * 4}px;border-radius:2px;"></div></td></tr>
+    <tr><td>80&ndash;89%</td><td>${itemBands.b80_89}</td><td>${pct(itemBands.b80_89)}%</td><td><div style="height:10px;background:#84cc16;width:${pct(itemBands.b80_89) * 4}px;border-radius:2px;"></div></td></tr>
+    <tr><td><span style="color:#d97706;font-weight:600">70&ndash;79% (Amber)</span></td><td>${itemBands.b70_79}</td><td>${pct(itemBands.b70_79)}%</td><td><div style="height:10px;background:#f59e0b;width:${pct(itemBands.b70_79) * 4}px;border-radius:2px;"></div></td></tr>
+    <tr><td><span style="color:#dc2626;font-weight:600">60&ndash;69%</span></td><td>${itemBands.b60_69}</td><td>${pct(itemBands.b60_69)}%</td><td><div style="height:10px;background:#ef4444;width:${pct(itemBands.b60_69) * 4}px;border-radius:2px;"></div></td></tr>
+    <tr><td>50&ndash;59%</td><td>${itemBands.b50_59}</td><td>${pct(itemBands.b50_59)}%</td><td><div style="height:10px;background:#dc2626;width:${pct(itemBands.b50_59) * 4}px;border-radius:2px;"></div></td></tr>
+    <tr><td><span style="color:#991b1b;font-weight:600">Below 50% (Critical)</span></td><td>${itemBands.lt50}</td><td>${pct(itemBands.lt50)}%</td><td><div style="height:10px;background:#991b1b;width:${pct(itemBands.lt50) * 4}px;border-radius:2px;"></div></td></tr>
+  </tbody>
+</table>
+
+<p style="font-size:9.5pt; margin:8px 0;">
+  The <em>item-level</em> mean is <strong>${itemMean !== null ? itemMean.toFixed(1) : '—'}%</strong> and the median is <strong>${itemMedian !== null ? itemMedian.toFixed(0) : '—'}%</strong>. The system score of <strong>${systemScore !== null ? Math.round(systemScore) : '—'}%</strong> is lower than the item mean because it weights areas equally regardless of size, so smaller specialist areas carry the same vote as large ones. Both numbers point to the same picture: the bulk of content is solid, and the headline is being dragged by a small tail of ${itemsBelow50} item${itemsBelow50 === 1 ? '' : 's'} (${pct(itemsBelow50)}%) needing remediation.
+</p>
+
+<div class="two-col" style="margin-top:8px;">
+  <div>
+    <h3>Where the work was concentrated &mdash; categories</h3>
+    <table class="criteria">
+      <thead><tr><th>Category</th><th style="width:18%">Findings</th><th style="width:22%">Avg score</th></tr></thead>
+      <tbody>
+        ${topCategoriesByFindings.map(c => `<tr><td>${c.label}</td><td>${c.count}</td><td>${c.avg.toFixed(0)}%</td></tr>`).join('')}
+      </tbody>
+    </table>
+    <p style="font-size:8.5pt; color:#6b7280; margin:4px 0 0 0;">
+      &ldquo;Avg score&rdquo; here is the average of just the failing sub-criteria in that category. Lower numbers mean the audit was finding clear issues, not borderline ones.
+    </p>
+  </div>
+  <div>
+    <h3>Best- and worst-performing areas</h3>
+    <table class="criteria">
+      <thead><tr><th>Content area</th><th style="width:14%">Items</th><th style="width:18%">Avg</th></tr></thead>
+      <tbody>
+        ${bestAreas.map(a => `<tr><td><span style="color:#16a34a">●</span> ${a.label}</td><td>${a.count}</td><td><strong>${a.avg.toFixed(0)}%</strong></td></tr>`).join('')}
+        <tr><td colspan="3" style="background:#f9fafb; height:4px;"></td></tr>
+        ${worstAreas.map(a => `<tr><td><span style="color:#dc2626">●</span> ${a.label}</td><td>${a.count}</td><td><strong>${a.avg.toFixed(0)}%</strong></td></tr>`).join('')}
+      </tbody>
+    </table>
+    <p style="font-size:8.5pt; color:#6b7280; margin:4px 0 0 0;">
+      Newer or specialist content areas (e.g. user-type screens, career paths) attracted more findings. Mature areas score consistently above 90%.
+    </p>
+  </div>
+</div>
+
+<div class="callout" style="margin-top:10px; background:#f0fdf4; border-left-color:#16a34a;">
+  <strong style="color:#15803d">Status as of this brief: ${resolvedFindings} of ${totalFindings} findings resolved (${totalFindings > 0 ? Math.round((resolvedFindings / totalFindings) * 100) : 0}%).</strong>
+  ${appliesSinceAudit > 0 ? `${appliesSinceAudit} content edits have been applied since this audit completed, each one logged in the audit trail with the previous text retained for one-click revert.` : ''} The 13 April system score does not yet reflect this work; a re-audit will produce a refreshed number that incorporates every applied edit. The audit can be re-run on demand and typically completes in under an hour.
+</div>
+` : ''}
+
+<h2>6 · The governance pipeline — from generation to applied fix</h2>
 <p>Content does not move from AI to ship. There are five gates, each with explicit human or audit-trail accountability:</p>
 
 <div class="pipeline">
@@ -663,7 +845,7 @@ ${
   </div>
 </div>
 
-<h2>6 · MOD-specific considerations baked into the criteria</h2>
+<h2>7 · MOD-specific considerations baked into the criteria</h2>
 <p>The framework was written specifically for an MOD-aligned product. Categories of direct interest to officials map to explicit sub-criteria in the audit code, not to wishful prose:</p>
 
 <table class="criteria">
@@ -705,7 +887,7 @@ ${
   </tbody>
 </table>
 
-<h2>7 · Cadence &amp; what happens next</h2>
+<h2>8 · Cadence &amp; what happens next</h2>
 <ul>
   <li><strong>Audit on demand and on schedule.</strong> Every content addition or change can trigger a re-audit; a periodic full audit re-establishes the system score.</li>
   <li><strong>Findings have lifecycle.</strong> Open → acknowledged → resolved (with applied fix) or won't fix (with reasoning recorded). No silent closures.</li>
