@@ -93,10 +93,31 @@ done
 echo ""
 echo "[3/3] Finalising run..."
 
-# Compute system score from area averages stored on items in DB
+# Compute system score from per-area averages stored on items in DB.
+# Each area's score is the mean of its item scores; the system score is the
+# mean of area scores (matches the dashboard's calculation).
+SYSTEM_SCORE=$(curl -sS "https://vecclmzkzrwsrtokkclr.supabase.co/rest/v1/audit_item_scores?run_id=eq.${RUN_ID}&select=overall_score,content_area" \
+  -H "apikey: ${KEY}" -H "Authorization: Bearer ${KEY}" | python3 -c "
+import json,sys,collections
+data=json.load(sys.stdin)
+areas=collections.defaultdict(list)
+for row in data:
+    if row.get('overall_score') is not None:
+        areas[row['content_area']].append(row['overall_score'])
+if not areas:
+    print('null')
+else:
+    area_means=[sum(s)/len(s) for s in areas.values()]
+    system=sum(area_means)/len(area_means)
+    print(f'{system:.2f}')
+")
+
+echo "  Computed system score: ${SYSTEM_SCORE}%"
+
+PATCH_BODY=$(printf '{"run_id":"%s","status":"completed","system_score":%s}' "$RUN_ID" "$SYSTEM_SCORE")
 PATCH_RESP=$(curl -sS -X PATCH "${BASE}/api/audit/run" \
   -H "$AUTH" -H "Content-Type: application/json" \
-  -d "{\"run_id\":\"${RUN_ID}\",\"status\":\"completed\"}")
+  -d "$PATCH_BODY")
 
 TOTAL_DUR=$(( $(date +%s) - START_TIME ))
 echo ""
