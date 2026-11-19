@@ -91,9 +91,6 @@ class ContentSyncService {
   static const String _keyBrainBiasOptions = 'content_brain_bias_options';
   static const String _keyBrainExperiments = 'content_brain_experiments';
   static const String _keyBrainExperimentSteps = 'content_brain_experiment_steps';
-  // Donations
-  static const String _keyDonationImpacts = 'content_donation_impacts';
-  static const String _keyDonationSettings = 'content_donation_settings';
   // LGBTQ+ Support
   static const String _keyLgbtqTimeline = 'content_lgbtq_timeline';
   static const String _keyLgbtqMyths = 'content_lgbtq_myths';
@@ -173,7 +170,6 @@ class ContentSyncService {
         _syncServiceCulture(),
         _syncMilitaryPerks(),
         _syncBrainScience(),
-        _syncDonations(),
         _syncLgbtqSupport(),
         WhatsNewService().syncReleases(),
       ]);
@@ -1873,40 +1869,6 @@ class ContentSyncService {
       final steps = stepsData != null ? List<Map<String, dynamic>>.from(jsonDecode(stepsData)) : <Map<String, dynamic>>[];
       return exps.map((e) => {...e, 'steps': steps.where((s) => s['experiment_id'] == e['id']).toList()}).toList();
     } catch (e) { return []; }
-  }
-
-  // ============================================================
-  // DONATIONS SYNC
-  // ============================================================
-
-  Future<void> _syncDonations() async {
-    try {
-      final impactsRes = await _supabase.from('donation_impacts').select().eq('is_active', true).order('sort_order');
-      await _prefs?.setString(_keyDonationImpacts, jsonEncode(impactsRes));
-
-      final settingsRes = await _supabase.from('donation_settings').select();
-      await _prefs?.setString(_keyDonationSettings, jsonEncode(settingsRes));
-
-      debugPrint('Synced donations content');
-    } catch (e) {
-      debugPrint('Failed to sync donations: $e');
-    }
-  }
-
-  List<Map<String, dynamic>> getDonationImpacts() {
-    final data = _prefs?.getString(_keyDonationImpacts);
-    if (data == null) return [];
-    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
-  }
-
-  String getDonationSetting(String key, {String defaultValue = ''}) {
-    final data = _prefs?.getString(_keyDonationSettings);
-    if (data == null) return defaultValue;
-    try {
-      final settings = List<Map<String, dynamic>>.from(jsonDecode(data));
-      final match = settings.firstWhere((s) => s['key'] == key, orElse: () => {});
-      return (match['value'] as String?) ?? defaultValue;
-    } catch (e) { return defaultValue; }
   }
 
   // ============================================================

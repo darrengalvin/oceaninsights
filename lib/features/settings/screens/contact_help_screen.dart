@@ -133,6 +133,14 @@ class ContactHelpScreen extends StatelessWidget {
             
             _buildContactCard(
               context,
+              'NHS 111, option 2',
+              'Urgent mental health crisis support. A trained mental health professional will listen and help you get the right support, for yourself or someone else',
+              'Call 111, select option 2',
+              'Free, 24/7',
+            ),
+            
+            _buildContactCard(
+              context,
               'Samaritans',
               '24/7 support for anyone struggling',
               '116 123',
@@ -153,6 +161,30 @@ class ContactHelpScreen extends StatelessWidget {
               'Armed Forces charity',
               '0800 731 4880',
               'Mon-Fri 9am-5pm',
+            ),
+            
+            _buildContactCard(
+              context,
+              'SSAFA Forcesline',
+              'Free, confidential helpline for serving personnel, veterans and their families. Independent of the chain of command',
+              '0800 260 6780',
+              'Mon-Thu 9am-5pm, Fri 9am-4pm',
+            ),
+            
+            _buildContactCard(
+              context,
+              'Help for Heroes',
+              'Physical and mental health support for veterans, reservists and their families',
+              '0300 303 9888',
+              'Mon-Fri 9am-5pm',
+            ),
+            
+            _buildContactCard(
+              context,
+              'Royal British Legion',
+              'Financial, social and emotional support for serving and ex-serving personnel and their families',
+              '0808 802 8080\nOverseas: +44 20 3376 8080',
+              '8am-8pm, 7 days',
             ),
             
             _buildContactCard(
