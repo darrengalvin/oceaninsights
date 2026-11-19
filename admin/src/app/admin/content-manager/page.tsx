@@ -44,7 +44,6 @@ export default function ContentManagerPage() {
     { table: 'culture_values', label: 'Service Culture (C2 Drill)', icon: '🎖️', href: '/admin/content-manager/service-culture', color: 'bg-white border-gray-200' },
     { table: 'perks_facts', label: 'Military Perks', icon: '💪', href: '/admin/content-manager/military-perks', color: 'bg-white border-gray-200' },
     { table: 'brain_myths', label: 'Brain Science & Psychology', icon: '🧠', href: '/admin/content-manager/brain-science', color: 'bg-white border-gray-200' },
-    { table: 'donation_impacts', label: 'Donations', icon: '💛', href: '/admin/content-manager/donations', color: 'bg-white border-gray-200' },
     { table: 'lgbtq_timeline', label: 'LGBTQ+ Support', icon: '🏳️‍🌈', href: '/admin/content-manager/lgbtq-support', color: 'bg-white border-gray-200' },
   ];
 

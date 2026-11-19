@@ -1506,7 +1506,6 @@ const _keyFactTopics = [
         'Despite what you might hear, there is no "right" time to become sexually active:\n\n'
         '• Many young people wait, and that\'s completely normal\n'
         '• Virginity is not something to "lose" — it\'s a personal choice\n'
-        '• People who wait often report more positive first experiences\n'
         '• There\'s no rush. You have your whole life\n'
         '• Anyone who pressures you is NOT respecting you\n'
         '• Being curious is normal — acting on curiosity should only happen when YOU are ready\n\n'

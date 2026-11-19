@@ -37,10 +37,6 @@ class _MilitaryPerksScreenState extends State<MilitaryPerksScreen>
                     recordTeaseAction();
                     return checkTeaseAndContinue();
                   }),
-                  _RegretStoriesTab(onSwipe: () {
-                    recordTeaseAction();
-                    return checkTeaseAndContinue();
-                  }),
                 ],
               ),
             ),
@@ -75,7 +71,7 @@ class _MilitaryPerksScreenState extends State<MilitaryPerksScreen>
 
   Widget _buildTabBar(BuildContext context) {
     final colours = context.colours;
-    final tabs = ['Calculator', 'Did You Know?', 'Regret Stories'];
+    final tabs = ['Calculator', 'Did You Know?'];
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
@@ -92,7 +88,7 @@ class _MilitaryPerksScreenState extends State<MilitaryPerksScreen>
                 duration: const Duration(milliseconds: 250),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 margin: EdgeInsets.only(
-                    right: i < 2 ? 4 : 0, left: i > 0 ? 4 : 0),
+                    right: i < tabs.length - 1 ? 4 : 0, left: i > 0 ? 4 : 0),
                 decoration: BoxDecoration(
                   color: selected
                       ? colours.accent.withOpacity(0.15)
@@ -366,11 +362,11 @@ class _DidYouKnowTabState extends State<_DidYouKnowTab> {
     {'emoji': '🚗', 'title': 'GYH(T) — Get You Home Travel', 'detail': 'If you own a home, the military pays you 25p per mile to travel home every month. That adds up fast — someone living 200 miles from base gets around £600 a year just for going home.'},
     {'emoji': '⚓', 'title': 'GYH(S) — Get You Home Seagoers', 'detail': 'Submariners and seagoers get 10 warrants per year to travel home and see their families. The military pays for you to get home — because they know how hard time away is.'},
     {'emoji': '💰', 'title': 'Pension Value', 'detail': 'Your military pension is worth hundreds of thousands over a lifetime. Most civilian employers don\'t offer anything close to this defined-benefit scheme.'},
-    {'emoji': '🏥', 'title': 'Healthcare', 'detail': 'You get priority NHS treatment, military medical facilities, and dental care — all free. A family health plan privately costs £3,000+ per year.'},
+    {'emoji': '🏥', 'title': 'Healthcare', 'detail': 'While you serve, Defence Medical Services provide your healthcare and dental care free of charge.'},
     {'emoji': '🎓', 'title': 'Education', 'detail': 'Enhanced Learning Credits give you up to £2,000 per year for qualifications. Many service members leave with degrees paid for entirely.'},
     {'emoji': '🏠', 'title': 'Subsidised Housing', 'detail': 'Service Family Accommodation is heavily subsidised. The equivalent rent in many areas would be £800–£1,200 per month. And with FHTB, getting on the property ladder is within reach.'},
     {'emoji': '💪', 'title': 'Fitness', 'detail': 'Free gym access, sports facilities, and paid time to exercise. A civilian gym membership alone costs £40–£80 per month.'},
-    {'emoji': '🌴', 'title': 'Leave', 'detail': 'You get 38 days leave per year — far more than the UK average of 28 days (including bank holidays).'},
+    {'emoji': '🌴', 'title': 'Leave', 'detail': 'You get 38 days of leave a year. By law, most full-time workers are entitled to at least 28 days (including bank holidays).'},
     {'emoji': '🛡️', 'title': 'Job Security', 'detail': 'In uncertain economic times, military careers offer a level of job security that most industries simply cannot match.'},
     {'emoji': '📈', 'title': 'Career Progression', 'detail': 'Clear, structured promotion pathways. You know exactly what you need to do to progress — no office politics.'},
     {'emoji': '🤝', 'title': 'Community', 'detail': 'A built-in support network wherever you go. The friendships and bonds formed in service last a lifetime.'},
@@ -450,130 +446,6 @@ class _DidYouKnowTabState extends State<_DidYouKnowTab> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
                 _facts.length,
-                (i) => AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: i == _currentPage ? 20 : 6,
-                      height: 6,
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      decoration: BoxDecoration(
-                        color: i == _currentPage
-                            ? colours.accent
-                            : colours.border.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    )),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// Tab 3 — Regret Stories
-// ═══════════════════════════════════════════════════════════════════
-
-class _RegretStoriesTab extends StatefulWidget {
-  final bool Function() onSwipe;
-  const _RegretStoriesTab({required this.onSwipe});
-
-  @override
-  State<_RegretStoriesTab> createState() => _RegretStoriesTabState();
-}
-
-class _RegretStoriesTabState extends State<_RegretStoriesTab> {
-  final PageController _pageController = PageController(viewportFraction: 0.88);
-  int _currentPage = 0;
-  int _viewedCount = 0;
-
-  static const List<Map<String, String>> _stories = [
-    {'quote': 'I left after 12 years thinking civilian life would be easier. Within 6 months I realised nobody cares about you the way the military does. No structure, no purpose, no mates around the corner.', 'branch': 'Army', 'years': '12 years'},
-    {'quote': 'The pension I walked away from haunts me. I\'d have been set by 40. Instead I\'m starting again at 35 with nothing saved.', 'branch': 'Royal Navy', 'years': '8 years'},
-    {'quote': 'I thought I\'d find better opportunities outside. What I found was loneliness. The camaraderie you have in service doesn\'t exist in civvy street.', 'branch': 'RAF', 'years': '10 years'},
-    {'quote': 'My biggest regret is not appreciating what I had. Free gym, free healthcare, guaranteed housing. Now I\'m paying £1,500 a month rent for a flat half the size of my quarter.', 'branch': 'Royal Marines', 'years': '6 years'},
-    {'quote': 'I left because I thought the grass was greener. It\'s not. It\'s just different grass, and nobody mows it for you.', 'branch': 'Army', 'years': '9 years'},
-    {'quote': 'People said "you\'ll walk into a job with your military experience." That\'s not how it works. I spent 8 months unemployed and lost all my confidence.', 'branch': 'RAF', 'years': '14 years'},
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final colours = context.colours;
-    return Column(
-      children: [
-        const SizedBox(height: 12),
-        Text('Anonymous stories from those who left',
-            style: TextStyle(color: colours.textMuted, fontSize: 13)),
-        const SizedBox(height: 12),
-        Expanded(
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: _stories.length,
-            onPageChanged: (i) {
-              setState(() => _currentPage = i);
-              _viewedCount++;
-              if (_viewedCount > 1) widget.onSwipe();
-            },
-            itemBuilder: (context, i) {
-              final story = _stories[i];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(28),
-                  decoration: BoxDecoration(
-                    color: colours.card,
-                    borderRadius: BorderRadius.circular(24),
-                    border:
-                        Border.all(color: colours.border.withOpacity(0.3)),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.format_quote_rounded,
-                          color: colours.accent.withOpacity(0.3), size: 40),
-                      const SizedBox(height: 20),
-                      Text('"${story['quote']!}"',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: colours.textBright,
-                              fontStyle: FontStyle.italic,
-                              height: 1.5,
-                              fontSize: 16)),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: colours.accent.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(story['branch']!,
-                                style: TextStyle(
-                                    color: colours.accent,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          const SizedBox(width: 8),
-                          Text('${story['years']!} served',
-                              style: TextStyle(
-                                  color: colours.textMuted, fontSize: 12)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-                _stories.length,
                 (i) => AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       width: i == _currentPage ? 20 : 6,

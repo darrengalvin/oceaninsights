@@ -189,7 +189,7 @@ class YoungPersonScreen extends StatelessWidget {
                 ),
                 _YouthItem(
                   title: 'Ask for Help',
-                  subtitle: 'How to talk to teachers, counselors, and parents',
+                  subtitle: 'How to talk to teachers, school staff, and parents',
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => TipCardsScreen(
@@ -216,8 +216,8 @@ class YoungPersonScreen extends StatelessWidget {
                           ],
                         ),
                         TipCard(
-                          title: 'School Counselors',
-                          content: 'Counselors are trained to help with academic, social, and emotional issues. Everything is confidential.',
+                          title: 'School Staff Who Can Help',
+                          content: 'Your form tutor, head of year or school counsellor can help with school, friendship and emotional worries. What you say is kept private, unless they are worried you or someone else may be at risk of harm. Then they may need to tell someone who can help keep you safe.',
                           keyPoints: [
                             'You can ask to see them anytime',
                             'They can help with stress, friends, family',
@@ -255,33 +255,33 @@ class YoungPersonScreen extends StatelessWidget {
                   ),
                 ),
                 _YouthItem(
-                  title: 'College vs Trades',
+                  title: 'University vs Apprenticeships',
                   subtitle: 'Understand your options early',
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => TipCardsScreen(
-                      title: 'College vs Trades',
+                      title: 'University vs Apprenticeships',
                       subtitle: 'Both paths can lead to great careers',
                       icon: Icons.compare_arrows_outlined,
                       tips: const [
                         TipCard(
-                          title: 'College Path',
-                          content: 'College gives you broad education, time to explore, and is required for some careers like medicine or law.',
+                          title: 'University Path',
+                          content: 'University gives you a broad education, time to explore, and is required for some careers like medicine or law.',
                           keyPoints: [
-                            '4+ years of study',
+                            'Usually 3+ years of study',
                             'Broader career options',
                             'More student debt typically',
                             'Required for some professions',
                           ],
                         ),
                         TipCard(
-                          title: 'Trade School Path',
-                          content: 'Trade schools teach specific skills quickly. You can start earning sooner in high-demand fields.',
+                          title: 'Apprenticeship Path',
+                          content: 'Apprenticeships let you learn a skilled trade or profession while you earn a wage. You can start earning sooner in high-demand fields.',
                           keyPoints: [
-                            '6 months to 2 years typically',
+                            'Paid while you train',
                             'Hands-on learning',
-                            'Less debt, faster income',
-                            'High demand: plumbing, electrical, HVAC',
+                            'No tuition fees',
+                            'High demand: plumbing, electrical, engineering',
                           ],
                         ),
                         TipCard(
@@ -410,7 +410,7 @@ class YoungPersonScreen extends StatelessWidget {
                             categories: const [
                               ResourceCategory(title: 'At School', icon: Icons.school_outlined, resources: [
                                 ResourceItem(title: 'Sports Teams', subtitle: 'Athletics & fitness', icon: Icons.sports_basketball, description: 'Join a school sports team to stay active and make friends.', details: ['Check with PE department', 'Tryouts are usually at start of season', 'JV teams often welcome beginners']),
-                                ResourceItem(title: 'Clubs & Activities', subtitle: 'Academic & interest groups', icon: Icons.interests, description: 'From debate club to robotics, there\'s something for everyone.', details: ['Ask your counselor for a list', 'Start your own club if needed', 'Leadership opportunities available']),
+                                ResourceItem(title: 'Clubs & Activities', subtitle: 'Academic & interest groups', icon: Icons.interests, description: 'From debate club to robotics, there\'s something for everyone.', details: ['Ask your school for a list', 'Start your own club if needed', 'Leadership opportunities available']),
                               ]),
                               ResourceCategory(title: 'Online', icon: Icons.computer_outlined, resources: [
                                 ResourceItem(title: 'Discord Communities', subtitle: 'Chat & connect', icon: Icons.chat, description: 'Find servers for your interests - gaming, art, music, coding.', details: ['Search for communities you like', 'Stay safe - don\'t share personal info', 'Find moderated, positive spaces']),
@@ -509,9 +509,9 @@ class YoungPersonScreen extends StatelessWidget {
                       subtitle: 'You\'re not alone in your journey',
                       icon: Icons.auto_stories_outlined,
                       tips: const [
-                        TipCard(title: 'From Failing to Top of Class', content: 'Marcus was failing math in 9th grade. He asked for help, found a study group, and by 11th grade was tutoring others.', keyPoints: ['Asked for help', 'Found study partners', 'Turned weakness into strength']),
+                        TipCard(title: 'From Failing to Top of Class', content: 'Marcus was failing maths in Year 9. He asked for help, found a study group, and by Year 11 was helping others revise.', keyPoints: ['Asked for help', 'Found study partners', 'Turned weakness into strength']),
                         TipCard(title: 'Finding My Voice', content: 'Sofia was terrified of public speaking. She joined drama club on a dare and discovered she loved performing.', keyPoints: ['Tried something scary', 'Found hidden talent', 'Now leads school events']),
-                        TipCard(title: 'Different Path, Same Success', content: 'Jamal skipped college for trade school. Now he runs his own electrical business and earns more than many of his college friends.', keyPoints: ['Chose his own path', 'Learned practical skills', 'Built his own business']),
+                        TipCard(title: 'Different Path, Same Success', content: 'Jamal chose an apprenticeship instead of university. Now he runs his own electrical business.', keyPoints: ['Chose his own path', 'Learned practical skills', 'Built his own business']),
                       ],
                     )),
                   ),
@@ -527,7 +527,7 @@ class YoungPersonScreen extends StatelessWidget {
                       icon: Icons.supervisor_account_outlined,
                       categories: const [
                         ResourceCategory(title: 'At School', icon: Icons.school_outlined, resources: [
-                          ResourceItem(title: 'Peer Mentoring', subtitle: 'Older students', icon: Icons.people, description: 'Many schools have peer mentoring programs where upperclassmen help younger students.', details: ['Ask your counselor', 'Often paired by interest', 'Great for college advice']),
+                          ResourceItem(title: 'Peer Mentoring', subtitle: 'Older students', icon: Icons.people, description: 'Many schools have peer mentoring schemes where older students help younger ones.', details: ['Ask your school', 'Often paired by interest', 'Great for advice on options']),
                           ResourceItem(title: 'Teacher Mentors', subtitle: 'Faculty guidance', icon: Icons.person, description: 'Teachers can be great mentors. Find one whose class you enjoy and ask to chat.', details: ['Visit office hours', 'Ask about their career path', 'Seek advice on your interests']),
                         ]),
                         ResourceCategory(title: 'Programs', icon: Icons.groups_outlined, resources: [

@@ -1459,7 +1459,7 @@ const _contraceptionMethods = [
     effectiveness: 'Over 99% effective',
     duration: 'Lasts up to 3 years',
     serviceNotes:
-        'Very popular in the military — fit and forget. No daily routine needed. Your Medical Officer can arrange fitting. Works well with deployments as nothing to carry or remember.',
+        'Fit and forget. No daily routine needed. Your Medical Officer can arrange fitting. Works well with deployments as nothing to carry or remember.',
     sideEffects: [
       'Irregular periods',
       'Periods may stop',

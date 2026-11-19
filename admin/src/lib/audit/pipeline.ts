@@ -1,13 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { extractContentArea, CONTENT_AREAS } from './extractor';
 import { reviewContentArea } from './reviewer';
-import { calculateWeightedScore } from './criteria';
-import {
-  ClaudeAuditResponse,
-  ClaudeItemResult,
-  ClaudeCategoryScore,
-  scoreToTrafficLight,
-} from './types';
+import { storeAreaResults } from './store';
 
 interface PipelineOptions {
   supabase: SupabaseClient;
@@ -81,7 +75,7 @@ export async function runAuditPipeline(options: PipelineOptions): Promise<string
         current_phase: 'storing',
       }).eq('id', runId);
 
-      const areaScores = await storeResults(supabase, runId, response);
+      const areaScores = await storeAreaResults(supabase, runId, area, response);
       totalItems += areaScores.itemCount;
       totalFindings += areaScores.findingCount;
       findingsCritical += areaScores.critical;
@@ -132,143 +126,4 @@ export async function runAuditPipeline(options: PipelineOptions): Promise<string
     .eq('id', runId);
 
   return runId;
-}
-
-interface AreaScoreSummary {
-  itemCount: number;
-  findingCount: number;
-  critical: number;
-  red: number;
-  amber: number;
-  green: number;
-  avgScore: number | null;
-}
-
-async function storeResults(
-  supabase: SupabaseClient,
-  runId: string,
-  response: ClaudeAuditResponse
-): Promise<AreaScoreSummary> {
-  let findingCount = 0;
-  let critical = 0;
-  let red = 0;
-  let amber = 0;
-  let green = 0;
-  const itemScores: number[] = [];
-
-  for (const item of response.items) {
-    const categoryScoresMap: Record<string, { score: number; applicable: boolean; reasoning: string; sub_scores: unknown[] }> = {};
-
-    for (const cs of item.category_scores) {
-      categoryScoresMap[cs.category_id] = {
-        score: cs.score,
-        applicable: cs.applicable,
-        reasoning: cs.reasoning,
-        sub_scores: cs.sub_scores,
-      };
-    }
-
-    const overallScore = item.overall_score ?? calculateWeightedScore(
-      Object.fromEntries(
-        Object.entries(categoryScoresMap).map(([k, v]) => [k, { score: v.score, applicable: v.applicable }])
-      )
-    );
-
-    itemScores.push(overallScore);
-
-    const light = scoreToTrafficLight(overallScore);
-    if (light === 'critical') critical++;
-    else if (light === 'red') red++;
-    else if (light === 'amber') amber++;
-    else green++;
-
-    const { data: scoreRow } = await supabase
-      .from('audit_item_scores')
-      .insert({
-        run_id: runId,
-        content_area: response.content_area,
-        item_id: item.item_id,
-        item_label: item.item_label,
-        source_table: item.source_table,
-        overall_score: overallScore,
-        category_scores: categoryScoresMap,
-      })
-      .select('id')
-      .single();
-
-    const scoreId = scoreRow?.id;
-
-    for (const cs of item.category_scores) {
-      for (const sub of cs.sub_scores) {
-        if (sub.score < 90 && sub.finding) {
-          findingCount++;
-          await supabase.from('audit_findings').insert({
-            run_id: runId,
-            item_score_id: scoreId,
-            content_area: response.content_area,
-            item_id: item.item_id,
-            item_label: item.item_label,
-            category_id: cs.category_id,
-            sub_criterion: sub.sub_criterion,
-            score: sub.score,
-            description: sub.finding,
-            evidence: sub.evidence,
-            suggested_action: sub.suggested_action,
-            status: 'open',
-          });
-        }
-      }
-
-      await upsertCitations(supabase, runId, response.content_area, item, cs);
-    }
-  }
-
-  return {
-    itemCount: response.items.length,
-    findingCount,
-    critical,
-    red,
-    amber,
-    green,
-    avgScore: itemScores.length > 0
-      ? Math.round(itemScores.reduce((a, b) => a + b, 0) / itemScores.length * 100) / 100
-      : null,
-  };
-}
-
-async function upsertCitations(
-  supabase: SupabaseClient,
-  runId: string,
-  contentArea: string,
-  item: ClaudeItemResult,
-  cs: ClaudeCategoryScore
-): Promise<void> {
-  for (const citation of cs.citations) {
-    const { data: existing } = await supabase
-      .from('audit_citations')
-      .select('id')
-      .eq('claim_text', citation.claim_text)
-      .eq('content_area', contentArea)
-      .limit(1);
-
-    if (existing && existing.length > 0) {
-      await supabase
-        .from('audit_citations')
-        .update({ last_seen_run_id: runId, updated_at: new Date().toISOString() })
-        .eq('id', existing[0].id);
-    } else {
-      await supabase.from('audit_citations').insert({
-        claim_text: citation.claim_text,
-        claim_type: citation.claim_type,
-        content_area: contentArea,
-        source_table: item.source_table,
-        source_field: null,
-        source_row_id: item.item_id,
-        verification_status: 'unverified',
-        source_url: citation.suggested_source,
-        first_detected_run_id: runId,
-        last_seen_run_id: runId,
-      });
-    }
-  }
 }

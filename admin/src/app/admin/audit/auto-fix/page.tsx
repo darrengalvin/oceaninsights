@@ -55,7 +55,7 @@ export default function AutoFixPage() {
   const [models, setModels] = useState<BenchmarkModel[]>([]);
   const [openFindings, setOpenFindings] = useState<AuditFinding[]>([]);
   const [recentRuns, setRecentRuns] = useState<RecentRun[]>([]);
-  const [chosenModelId, setChosenModelId] = useState<string>('claude-opus-4-7-xhigh');
+  const [chosenModelId, setChosenModelId] = useState<string>('claude-opus-5-5-xhigh');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 

@@ -91,9 +91,6 @@ class ContentSyncService {
   static const String _keyBrainBiasOptions = 'content_brain_bias_options';
   static const String _keyBrainExperiments = 'content_brain_experiments';
   static const String _keyBrainExperimentSteps = 'content_brain_experiment_steps';
-  // Donations
-  static const String _keyDonationImpacts = 'content_donation_impacts';
-  static const String _keyDonationSettings = 'content_donation_settings';
   // LGBTQ+ Support
   static const String _keyLgbtqTimeline = 'content_lgbtq_timeline';
   static const String _keyLgbtqMyths = 'content_lgbtq_myths';
@@ -173,7 +170,6 @@ class ContentSyncService {
         _syncServiceCulture(),
         _syncMilitaryPerks(),
         _syncBrainScience(),
-        _syncDonations(),
         _syncLgbtqSupport(),
         WhatsNewService().syncReleases(),
       ]);
@@ -1436,7 +1432,7 @@ class ContentSyncService {
       HarassmentGuidanceCard(id: '1', title: 'You are not alone', message: 'What you are experiencing is not your fault, and you do not have to deal with it alone.', guidanceType: 'info', priority: 100, matchTags: [], isUniversal: true),
       HarassmentGuidanceCard(id: '2', title: 'Your rights', message: 'Under the Armed Forces Act and the Equality Act 2010, you are protected from harassment, bullying, and discrimination.', guidanceType: 'rights', priority: 90, matchTags: [], isUniversal: true),
       HarassmentGuidanceCard(id: '3', title: 'Formal complaint process', message: 'You have the right to make a formal Service Complaint. Contact your Unit Welfare Officer to begin the process.', guidanceType: 'action_formal', priority: 70, matchTags: [], isUniversal: true),
-      HarassmentGuidanceCard(id: '4', title: 'Informal options', message: 'Not ready for a formal complaint? Speak to a trusted colleague, contact SSAFA, or use the Confidential Support Line.', guidanceType: 'action_informal', priority: 65, matchTags: [], isUniversal: true),
+      HarassmentGuidanceCard(id: '4', title: 'Informal options', message: 'Not ready for a formal complaint? Speak to a trusted colleague, contact SSAFA, or call SSAFA Forcesline on 0800 260 6767.', guidanceType: 'action_informal', priority: 65, matchTags: [], isUniversal: true),
     ];
   }
 
@@ -1458,7 +1454,7 @@ class ContentSyncService {
       HarassmentContact(id: '1', name: 'Local Emergency Services', description: 'If you are in immediate danger, call your local emergency number. UK: 999. International: 112. On base: contact the Guardroom or Duty Officer.', isEmergency: true),
       HarassmentContact(id: '2', name: 'Your Unit Welfare Officer', description: 'Your first point of contact for confidential support within your unit.', availability: 'During working hours or via Duty Officer', isEmergency: false),
       HarassmentContact(id: '3', name: 'Unit Padre / Chaplain', description: 'Completely confidential support. Conversations with a Padre are privileged.', availability: 'Available at all times', isEmergency: false),
-      HarassmentContact(id: '4', name: 'SSAFA', description: 'Forces charity providing confidential support worldwide.', website: 'https://www.ssafa.org.uk', availability: 'Online support available worldwide', isEmergency: false),
+      HarassmentContact(id: '4', name: 'SSAFA Forcesline', description: 'Free, confidential helpline for serving personnel, veterans and families, independent of the chain of command. Call 0800 260 6767.', website: 'https://www.ssafa.org.uk', availability: 'Mon-Thu 9am-5pm, Fri 9am-4pm', isEmergency: false),
     ];
   }
 
@@ -1873,40 +1869,6 @@ class ContentSyncService {
       final steps = stepsData != null ? List<Map<String, dynamic>>.from(jsonDecode(stepsData)) : <Map<String, dynamic>>[];
       return exps.map((e) => {...e, 'steps': steps.where((s) => s['experiment_id'] == e['id']).toList()}).toList();
     } catch (e) { return []; }
-  }
-
-  // ============================================================
-  // DONATIONS SYNC
-  // ============================================================
-
-  Future<void> _syncDonations() async {
-    try {
-      final impactsRes = await _supabase.from('donation_impacts').select().eq('is_active', true).order('sort_order');
-      await _prefs?.setString(_keyDonationImpacts, jsonEncode(impactsRes));
-
-      final settingsRes = await _supabase.from('donation_settings').select();
-      await _prefs?.setString(_keyDonationSettings, jsonEncode(settingsRes));
-
-      debugPrint('Synced donations content');
-    } catch (e) {
-      debugPrint('Failed to sync donations: $e');
-    }
-  }
-
-  List<Map<String, dynamic>> getDonationImpacts() {
-    final data = _prefs?.getString(_keyDonationImpacts);
-    if (data == null) return [];
-    try { return List<Map<String, dynamic>>.from(jsonDecode(data)); } catch (e) { return []; }
-  }
-
-  String getDonationSetting(String key, {String defaultValue = ''}) {
-    final data = _prefs?.getString(_keyDonationSettings);
-    if (data == null) return defaultValue;
-    try {
-      final settings = List<Map<String, dynamic>>.from(jsonDecode(data));
-      final match = settings.firstWhere((s) => s['key'] == key, orElse: () => {});
-      return (match['value'] as String?) ?? defaultValue;
-    } catch (e) { return defaultValue; }
   }
 
   // ============================================================

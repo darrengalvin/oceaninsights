@@ -36,7 +36,7 @@ export default function CareersContentPage() {
 
   async function fetchCareers() {
     setLoading(true);
-    const { data } = await supabase
+    const { data } = await supabaseAdmin
       .from('career_paths')
       .select('*')
       .order('sort_order');

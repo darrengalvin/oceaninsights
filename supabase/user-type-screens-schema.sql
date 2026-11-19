@@ -81,7 +81,7 @@ BEGIN
     INSERT INTO user_type_items (section_id, title, subtitle, action_type, action_data, sort_order) VALUES
     (section_id, 'Fitness & Nutrition', 'Vet-tailored workout & diet plans', 'tip_cards', 'fitness-nutrition', 1),
     (section_id, 'Health Routine Tracker', 'Simple app to keep your health on point', 'checklist', 'health-tracker', 2),
-    (section_id, 'Whole Health VA', 'Integrated approach to mind and body care', 'resources', 'whole-health-va', 3);
+    (section_id, 'Whole Health', 'Looking after mind and body together', 'resources', 'whole-health-va', 3);
 
     -- Finances & Benefits
     INSERT INTO user_type_sections (screen_id, title, icon, sort_order) 
@@ -89,8 +89,8 @@ BEGIN
     
     INSERT INTO user_type_items (section_id, title, subtitle, action_type, action_data, sort_order) VALUES
     (section_id, 'Financial Maximizer', 'Vet-specific advice to optimize your finances', 'tip_cards', 'financial-maximizer', 1),
-    (section_id, 'VA & DoD Benefits', 'Tools to stay current and maximize your benefits', 'resources', 'va-benefits', 2),
-    (section_id, 'Retirement Resources', 'Pension options, TSP, and estate planning', 'resources', 'retirement', 3);
+    (section_id, 'Veterans'' Support', 'Help with health, housing, money and work', 'resources', 'va-benefits', 2),
+    (section_id, 'Retirement Resources', 'Pension options and planning ahead', 'resources', 'retirement', 3);
 
     -- Veteran Events & Activities
     INSERT INTO user_type_sections (screen_id, title, icon, sort_order) 
@@ -142,7 +142,7 @@ BEGIN
     
     INSERT INTO user_type_items (section_id, title, subtitle, action_type, action_data, sort_order) VALUES
     (section_id, 'When You''re Not OK', 'Clear, calm support pathways', 'contact_help', 'crisis', 1),
-    (section_id, 'Veterans Crisis Line', 'Immediate support: 988 Press 1', 'contact_help', 'crisis-line', 2);
+    (section_id, 'Urgent Help', 'Call 999, NHS 111 (mental health option) or Samaritans 116 123', 'contact_help', 'crisis-line', 2);
 
     -- ============================================================
     -- MILITARY SECTIONS & ITEMS (Active Duty Mode)
@@ -211,7 +211,7 @@ BEGIN
     INSERT INTO user_type_items (section_id, title, subtitle, action_type, action_data, sort_order) VALUES
     (section_id, 'Study Smarter', 'Learning styles, focus tools, revision tips', 'study_smarter', NULL, 1),
     (section_id, 'Subject Explorer', 'What different subjects can lead to', 'tip_cards', 'subject-explorer', 2),
-    (section_id, 'Ask for Help', 'How to talk to teachers, counselors, and parents', 'tip_cards', 'ask-for-help', 3);
+    (section_id, 'Ask for Help', 'How to talk to teachers, school staff, and parents', 'tip_cards', 'ask-for-help', 3);
 
     -- Future Pathways
     INSERT INTO user_type_sections (screen_id, title, icon, sort_order) 
@@ -219,7 +219,7 @@ BEGIN
     
     INSERT INTO user_type_items (section_id, title, subtitle, action_type, action_data, sort_order) VALUES
     (section_id, 'Career Sampler', 'Short previews of different jobs', 'career_sampler', NULL, 1),
-    (section_id, 'College vs Trades', 'Understand your options early', 'tip_cards', 'college-vs-trades', 2),
+    (section_id, 'University vs Apprenticeships', 'Understand your options early', 'tip_cards', 'college-vs-trades', 2),
     (section_id, 'Goal Setting', 'Plan short-term and long-term goals', 'goals', NULL, 3);
 
     -- Mental Health & Emotions

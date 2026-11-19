@@ -76,7 +76,7 @@ export default function ObjectivesPage() {
   }
 
   async function updateObjective(id: string, updates: Partial<Objective>) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('mission_objectives')
       .update(updates)
       .eq('id', id);
@@ -90,7 +90,7 @@ export default function ObjectivesPage() {
   async function deleteObjective(id: string) {
     if (!confirm('Are you sure you want to delete this objective?')) return;
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('mission_objectives')
       .delete()
       .eq('id', id);
