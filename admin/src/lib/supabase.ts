@@ -1,4 +1,19 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
+
+const isBrowser = typeof window !== 'undefined'
+
+// In the browser the service-role key is never available, so the old code
+// fell back to a bare anon-key client with no session. Every table the
+// Content Manager edits only allows writes for the `authenticated` role, so
+// those saves were rejected by row-level security. The cookie-based browser
+// client from @supabase/ssr carries the signed-in admin's session, which is
+// what the RLS policies expect.
+const getBrowserClient = () =>
+  createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  ) as unknown as SupabaseClient
 
 let _supabase: SupabaseClient | null = null
 let _supabaseAdmin: SupabaseClient | null = null
@@ -6,6 +21,7 @@ let _supabaseAdmin: SupabaseClient | null = null
 // Client-side Supabase client (uses anon key) - lazy initialization
 export const getSupabase = () => {
   if (!_supabase) {
+    if (isBrowser) return (_supabase = getBrowserClient())
     _supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -17,6 +33,7 @@ export const getSupabase = () => {
 // Server-side Supabase client with service role (full access) - lazy initialization
 export const getSupabaseAdmin = () => {
   if (!_supabaseAdmin) {
+    if (isBrowser) return (_supabaseAdmin = getBrowserClient())
     _supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

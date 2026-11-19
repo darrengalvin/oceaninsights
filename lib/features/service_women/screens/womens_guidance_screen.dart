@@ -846,7 +846,7 @@ class _SymptomCheckerScreenState extends State<_SymptomCheckerScreen> {
                     const SizedBox(height: 8),
                     Text(
                       _selected.length >= 5
-                          ? 'This pattern is consistent with perimenopause. Consider speaking to your GP or MO.'
+                          ? 'Several of these symptoms can happen around perimenopause. This is worth discussing with your GP or MO, who can look at the full picture.'
                           : _selected.length >= 3
                               ? 'Some of these symptoms could be hormonal changes. Worth monitoring and discussing with your doctor.'
                               : 'A few symptoms alone don\'t confirm anything, but awareness is valuable. Keep tracking.',
@@ -1037,10 +1037,10 @@ class _PMDDQuizScreenState extends State<_PMDDQuizScreen> {
               const SizedBox(height: 8),
               Text(
                 high
-                    ? 'This pattern is strongly consistent with PMDD. Please speak to your doctor.'
+                    ? 'These answers are worth discussing with your GP or MO. Keep a diary of your symptoms for at least 2 cycles to take with you; a doctor makes any diagnosis.'
                     : moderate
                         ? 'Some patterns match. Track your mood against your cycle for 2-3 months and show your doctor.'
-                        : 'This doesn\'t strongly suggest PMDD, but awareness is always valuable.',
+                        : 'Your answers don\'t point to a strong pattern, but speak to your GP or MO if anything worries you.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: colours.textBright, fontSize: 15, height: 1.5),
               ),
@@ -1283,7 +1283,7 @@ class _PainAssessmentScreenState extends State<_PainAssessmentScreen> {
               const SizedBox(height: 12),
               Text(
                 severity > 0.6
-                    ? 'This level of pain is NOT normal. You deserve investigation. Ask your MO for a gynaecology referral and mention endometriosis specifically.'
+                    ? 'Pain at this level is worth discussing with your GP or MO. Keep a pain diary to take with you. They can decide whether you need further tests or a referral.'
                     : severity > 0.3
                         ? 'Some of your experiences go beyond typical period pain. Consider keeping a pain diary and discussing with your doctor.'
                         : 'Your symptoms are within a common range, but any pain that concerns you is worth mentioning to your doctor.',
@@ -1479,7 +1479,7 @@ class _IronCheckerScreenState extends State<_IronCheckerScreen> {
               const SizedBox(height: 8),
               Text(
                 count >= 5
-                    ? 'Multiple signs of possible iron deficiency. Ask your doctor for a ferritin blood test — not just haemoglobin.'
+                    ? 'Several of these signs can be linked to low iron. This is worth discussing with your GP or MO, who can arrange a blood test if needed.'
                     : count >= 3
                         ? 'Some signs worth investigating. Mention these to your doctor at your next appointment.'
                         : 'Few signs currently, but stay aware — especially if you have heavy periods.',

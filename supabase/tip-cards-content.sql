@@ -35,8 +35,8 @@ FROM tip_categories WHERE slug = 'new-passions';
 
 INSERT INTO tips (category_id, title, content, key_points, sort_order) 
 SELECT id, 'Learning & Growth', 
-'Take classes in anything that interests you. Languages, cooking, technology, finance - education benefits may cover some.',
-ARRAY['Community colleges', 'Online courses', 'Veteran discounts common'], 4
+'Take classes in anything that interests you. Languages, cooking, technology, finance - learning credits from your service may cover some.',
+ARRAY['Local colleges and adult learning', 'Online courses', 'Check your learning credits'], 4
 FROM tip_categories WHERE slug = 'new-passions';
 
 -- Family Lifeskills
@@ -417,7 +417,7 @@ FROM tip_categories WHERE slug = 'digital-life';
 
 -- College vs Trades
 INSERT INTO tip_categories (slug, title, subtitle, icon, target_audience, sort_order) VALUES
-('college-vs-trades', 'College vs Trades', 'Both paths can lead to great careers', 'compare_arrows', 'youth', 16);
+('college-vs-trades', 'University vs Apprenticeships', 'Both paths can lead to great careers', 'compare_arrows', 'youth', 16);
 
 INSERT INTO tips (category_id, title, content, key_points, sort_order) 
 SELECT id, 'University Path', 
@@ -426,9 +426,9 @@ ARRAY['3-4+ years of study', 'Broader career options', 'More student debt typica
 FROM tip_categories WHERE slug = 'college-vs-trades';
 
 INSERT INTO tips (category_id, title, content, key_points, sort_order) 
-SELECT id, 'Trade School Path', 
-'Trade schools teach specific skills quickly. You can start earning sooner in high-demand fields.',
-ARRAY['6 months to 2 years typically', 'Hands-on learning', 'Less debt, faster income', 'High demand: plumbing, electrical, HVAC'], 2
+SELECT id, 'Vocational Courses', 
+'College vocational courses teach specific skills quickly. You can start earning sooner in high-demand fields.',
+ARRAY['Often 1 to 2 years', 'Hands-on learning', 'Lower cost, faster income', 'High demand: plumbing, electrical, engineering'], 2
 FROM tip_categories WHERE slug = 'college-vs-trades';
 
 INSERT INTO tips (category_id, title, content, key_points, sort_order) 
@@ -460,8 +460,8 @@ ARRAY['Say: "I want to talk about something"', 'Use "I feel" statements', 'Be pa
 FROM tip_categories WHERE slug = 'ask-for-help';
 
 INSERT INTO tips (category_id, title, content, key_points, sort_order) 
-SELECT id, 'School Counselors', 
-'Counselors are trained to help with academic, social, and emotional issues. Everything is confidential.',
+SELECT id, 'School Staff Who Can Help', 
+'Your form tutor, head of year or school counsellor can help with school, friendship and emotional worries. What you say is kept private, unless they are worried you or someone else may be at risk of harm. Then they may need to tell someone who can help keep you safe.',
 ARRAY['You can ask to see them anytime', 'They can help with stress, friends, family', 'They won''t judge you'], 3
 FROM tip_categories WHERE slug = 'ask-for-help';
 

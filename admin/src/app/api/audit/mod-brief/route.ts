@@ -18,6 +18,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { AUDIT_CATEGORIES } from '@/lib/audit/criteria';
 import { CONTENT_AREAS } from '@/lib/audit/areas';
+import { scoreToTrafficLight } from '@/lib/audit/types';
+import { AUDIT_MODEL_LABEL } from '@/lib/audit/claude';
+import { CURRENT_BENCHMARK_MODELS } from '@/lib/audit/models';
 
 export const dynamic = 'force-dynamic';
 
@@ -298,6 +301,29 @@ function buildBriefHTML(data: BriefData): string {
   const safetyCriticalCategories = AUDIT_CATEGORIES.filter(c => c.weight === 1.5);
   const enhancedScrutinyCategories = AUDIT_CATEGORIES.filter(c => c.weight === 1.2);
   const totalSubCriteria = AUDIT_CATEGORIES.reduce((sum, c) => sum + c.sub_criteria.length, 0);
+
+  // Weight arithmetic for section 2, computed from the live category list so
+  // the brief stays correct when categories change.
+  const nCats = AUDIT_CATEGORIES.length;
+  const totalWeight = Math.round(AUDIT_CATEGORIES.reduce((s, c) => s + c.weight, 0) * 10) / 10;
+  const safetyWeight = Math.round(safetyCriticalCategories.reduce((s, c) => s + c.weight, 0) * 10) / 10;
+  const weightShare = (w: number) => Math.round((w / totalWeight) * 100);
+  const weightBreakdown = Array.from(new Set(AUDIT_CATEGORIES.map(c => c.weight)))
+    .sort((a, b) => b - a)
+    .map(w => `${AUDIT_CATEGORIES.filter(c => c.weight === w).length} × ${w.toFixed(1)}`)
+    .join(' + ');
+  const one = (n: number) => (Math.round(n * 10) / 10).toFixed(1);
+  const fmt = (n: number) => Math.round(n).toLocaleString('en-GB');
+  const lightText = (score: number) => {
+    const l = scoreToTrafficLight(score);
+    return l === 'green' ? '<span style="color:#16a34a;font-weight:600">Green</span>'
+      : l === 'amber' ? '<span style="color:#d97706;font-weight:600">Amber</span>'
+      : l === 'red' ? '<span style="color:#dc2626;font-weight:600">Red</span>'
+      : '<span style="color:#991b1b;font-weight:600">Critical</span>';
+  };
+  const ex2 = ((totalWeight - 1.5) * 100) / totalWeight;
+  const ex3 = ((totalWeight - 3) * 100) / totalWeight;
+  const ex4 = ((totalWeight - safetyWeight) * 100) / totalWeight;
 
   return `<!DOCTYPE html>
 <html lang="en-GB">
@@ -616,14 +642,14 @@ function buildBriefHTML(data: BriefData): string {
   <li>Divide the total by the sum of the weights.</li>
 </ol>
 <p style="font-size:9.5pt; margin:4px 0 8px 0;">
-  Across the ${AUDIT_CATEGORIES.length} categories, the weights add up to <strong>16.2</strong> (4 × 1.5 + 3 × 1.2 + 5 × 1.0 + 2 × 0.8). This number determines each category's <em>share of the vote</em> on every item's grade:
+  Across the ${nCats} categories, the weights add up to <strong>${one(totalWeight)}</strong> (${weightBreakdown}). This number determines each category's <em>share of the vote</em> on every item's grade:
 </p>
 <ul style="font-size:9.5pt; margin:4px 0 8px 18px;">
-  <li>The four <strong>1.5× safety-critical categories together control ${Math.round((6.0/16.2)*100)}%</strong> of every item's grade (6.0 ÷ 16.2). That is the central design choice of the framework: the MOD's priority concerns hold roughly four-tenths of the vote.</li>
-  <li>A single 1.5× category contributes ${Math.round((1.5/16.2)*100)}% of the grade (1.5 ÷ 16.2). A single 1.0× category contributes ${Math.round((1.0/16.2)*100)}% (1.0 ÷ 16.2). A 0.8× category contributes ${Math.round((0.8/16.2)*100)}%.</li>
+  <li>The ${safetyCriticalCategories.length} <strong>1.5× categories together control ${weightShare(safetyWeight)}%</strong> of every item's grade (${one(safetyWeight)} ÷ ${one(totalWeight)}). That is the central design choice of the framework: safety, safeguarding, clinical boundaries, OPSEC and trusted-source evidence hold the largest share of the vote.</li>
+  <li>A single 1.5× category contributes ${weightShare(1.5)}% of the grade (1.5 ÷ ${one(totalWeight)}). A single 1.0× category contributes ${weightShare(1.0)}% (1.0 ÷ ${one(totalWeight)}). A 0.8× category contributes ${weightShare(0.8)}%.</li>
 </ul>
 
-<h3 style="margin-top:12px">Worked examples (real numbers, not approximations)</h3>
+<h3 style="margin-top:12px">Worked examples (calculated from the current weights)</h3>
 <table class="criteria">
   <thead>
     <tr>
@@ -635,28 +661,28 @@ function buildBriefHTML(data: BriefData): string {
   </thead>
   <tbody>
     <tr>
-      <td>Item scores 100 on all 14 categories</td>
+      <td>Item scores 100 on all ${nCats} categories</td>
       <td>100.0%</td>
       <td><strong>100.0%</strong></td>
-      <td><span style="color:#16a34a;font-weight:600">Green</span> — meets standard</td>
+      <td>${lightText(100)} — meets standard</td>
     </tr>
     <tr>
-      <td>Item scores 100 on 13 categories, 0 on OPSEC (e.g. names a specific ship)</td>
-      <td>92.9%<br><span style="font-size:8pt;color:#9ca3af">(13 × 100 ÷ 14)</span></td>
-      <td><strong>90.7%</strong><br><span style="font-size:8pt;color:#9ca3af">(1,470 ÷ 16.2)</span></td>
-      <td><span style="color:#16a34a;font-weight:600">Green at item level</span> &mdash; but the OPSEC sub-criterion failure independently generates an open Finding requiring explicit human disposition.</td>
+      <td>Item scores 100 on ${nCats - 1} categories, 0 on OPSEC (e.g. names a specific ship)</td>
+      <td>${one(((nCats - 1) * 100) / nCats)}%<br><span style="font-size:8pt;color:#9ca3af">(${nCats - 1} × 100 ÷ ${nCats})</span></td>
+      <td><strong>${one(ex2)}%</strong><br><span style="font-size:8pt;color:#9ca3af">(${fmt((totalWeight - 1.5) * 100)} ÷ ${one(totalWeight)})</span></td>
+      <td>${lightText(ex2)} at item level &mdash; but the OPSEC sub-criterion failure independently generates an open Finding requiring explicit human disposition.</td>
     </tr>
     <tr>
-      <td>Item scores 100 on 12, 0 on OPSEC <em>and</em> 0 on Clinical Boundaries</td>
-      <td>85.7%<br><span style="font-size:8pt;color:#9ca3af">(12 × 100 ÷ 14)</span></td>
-      <td><strong>81.5%</strong><br><span style="font-size:8pt;color:#9ca3af">(1,320 ÷ 16.2)</span></td>
-      <td><span style="color:#d97706;font-weight:600">Amber</span> &mdash; review recommended. The weighting is what tipped the score from green into amber.</td>
+      <td>Item scores 100 on ${nCats - 2}, 0 on OPSEC <em>and</em> 0 on Clinical Boundaries</td>
+      <td>${one(((nCats - 2) * 100) / nCats)}%<br><span style="font-size:8pt;color:#9ca3af">(${nCats - 2} × 100 ÷ ${nCats})</span></td>
+      <td><strong>${one(ex3)}%</strong><br><span style="font-size:8pt;color:#9ca3af">(${fmt((totalWeight - 3) * 100)} ÷ ${one(totalWeight)})</span></td>
+      <td>${lightText(ex3)} &mdash; the weighting pulls the grade down further than a plain average would.</td>
     </tr>
     <tr>
-      <td>Item scores 100 on every category except all four safety-critical ones, which all score 0</td>
-      <td>71.4%<br><span style="font-size:8pt;color:#9ca3af">(10 × 100 ÷ 14)</span></td>
-      <td><strong>63.0%</strong><br><span style="font-size:8pt;color:#9ca3af">(1,020 ÷ 16.2)</span></td>
-      <td><span style="color:#dc2626;font-weight:600">Red</span> &mdash; action required. Without weighting it would still read amber.</td>
+      <td>Item scores 100 on every category except all ${safetyCriticalCategories.length} of the 1.5× ones, which all score 0</td>
+      <td>${one(((nCats - safetyCriticalCategories.length) * 100) / nCats)}%<br><span style="font-size:8pt;color:#9ca3af">(${nCats - safetyCriticalCategories.length} × 100 ÷ ${nCats})</span></td>
+      <td><strong>${one(ex4)}%</strong><br><span style="font-size:8pt;color:#9ca3af">(${fmt((totalWeight - safetyWeight) * 100)} ÷ ${one(totalWeight)})</span></td>
+      <td>${lightText(ex4)} &mdash; action required.</td>
     </tr>
   </tbody>
 </table>
@@ -823,7 +849,7 @@ ${run && totalDistItems > 0 ? `
 
 <div class="pipeline">
   <div class="stage"><strong>1. Generate</strong>Content drafted with brand and safety prompts<span class="stage-arrow">→</span></div>
-  <div class="stage"><strong>2. AI audit</strong>Claude scores every item against the ${AUDIT_CATEGORIES.length}-category rubric<span class="stage-arrow">→</span></div>
+  <div class="stage"><strong>2. Audit</strong>${AUDIT_MODEL_LABEL} scores every item against the rubric; fixed evidence checks verify helplines, links and UK applicability with no AI<span class="stage-arrow">→</span></div>
   <div class="stage"><strong>3. Triage</strong>Human reviewer triages findings by severity<span class="stage-arrow">→</span></div>
   <div class="stage"><strong>4. Multi-model fix</strong>Frontier models propose fixes; cross-judged anonymously<span class="stage-arrow">→</span></div>
   <div class="stage"><strong>5. Human apply</strong>Each change requires explicit admin click. Old &amp; new value logged.</div>
@@ -832,7 +858,7 @@ ${run && totalDistItems > 0 ? `
 <div class="two-col">
   <div>
     <h3>Why two AI stages, not one</h3>
-    <p style="font-size:9.5pt;">An AI that drafts content cannot also be its own quality gate &mdash; that's what 'AI slop' looks like. The auditing model is a different model from the generating model, with extended reasoning enabled. For the fix step, a panel of frontier models (Claude Opus 4.7 with adaptive thinking, GPT-5.5 Pro, GPT-5.5, Sonnet 4.6) propose alternatives. Every fix is then judged anonymously by every other model on a five-axis rubric: <em>resolves the finding, preserves safety, matches voice, conciseness, faithfulness</em>. Self-votes are excluded from the headline score so a model cannot promote its own work.</p>
+    <p style="font-size:9.5pt;">An AI that drafts content cannot also be its own quality gate &mdash; that's what 'AI slop' looks like. The auditing model (${AUDIT_MODEL_LABEL}, with adaptive thinking) is a different model from the generating model, and its scores sit alongside deterministic evidence checks that need no AI at all. For the fix step, a panel of frontier models (${CURRENT_BENCHMARK_MODELS.map(m => m.label).join(', ')}) propose alternatives. Every fix is then judged anonymously by every other model on a five-axis rubric: <em>resolves the finding, preserves safety, matches voice, conciseness, faithfulness</em>. Self-votes are excluded from the headline score so a model cannot promote its own work.</p>
   </div>
   <div>
     <h3>Audit trail &amp; accountability</h3>

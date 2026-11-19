@@ -8,9 +8,9 @@ import '../../../core/services/subscription_service.dart';
 
 /// Breathing exercise types
 enum BreathingExercise {
+  nhsCalming,
   boxBreathing,
   relaxingBreath,
-  energising,
   calming478,
 }
 
@@ -21,8 +21,8 @@ extension BreathingExerciseExtension on BreathingExercise {
         return 'Box Breathing';
       case BreathingExercise.relaxingBreath:
         return 'Relaxing Breath';
-      case BreathingExercise.energising:
-        return 'Energising';
+      case BreathingExercise.nhsCalming:
+        return 'NHS Calming Breath';
       case BreathingExercise.calming478:
         return '4-7-8 Calming';
     }
@@ -31,11 +31,11 @@ extension BreathingExerciseExtension on BreathingExercise {
   String get description {
     switch (this) {
       case BreathingExercise.boxBreathing:
-        return 'Used by Navy SEALs to stay calm under pressure. Equal inhale, hold, exhale, hold.';
+        return 'Equal counts: breathe in, hold, breathe out, hold.';
       case BreathingExercise.relaxingBreath:
         return 'A simple technique to slow your heart rate and reduce stress.';
-      case BreathingExercise.energising:
-        return 'Quick breaths to increase alertness and energy levels.';
+      case BreathingExercise.nhsCalming:
+        return 'The NHS breathing exercise for stress, anxiety and panic.';
       case BreathingExercise.calming478:
         return 'The 4-7-8 technique helps reduce anxiety and promote sleep.';
     }
@@ -46,14 +46,12 @@ extension BreathingExerciseExtension on BreathingExercise {
     switch (this) {
       case BreathingExercise.boxBreathing:
         return ExerciseInfo(
-          whatIsIt: 'Box breathing, also known as square breathing or 4-4-4-4 breathing, is a powerful stress-relief technique. The name comes from its four equal phases that form a "box" pattern when visualised.',
-          whyItHelps: 'This technique activates your parasympathetic nervous system, reducing cortisol levels and lowering blood pressure. It\'s used by Navy SEALs, first responders, and athletes to maintain calm under extreme pressure.',
+          whatIsIt: 'Box breathing, also known as square breathing or 4-4-4-4 breathing. The name comes from its four equal phases that form a "box" pattern when visualised.',
+          whyItHelps: 'Slow, steady breathing can help you feel calmer. Counting gives your mind something simple to focus on. If holding your breath feels uncomfortable, use the NHS Calming Breath instead, which has no holds.',
           benefits: [
-            'Reduces stress and anxiety',
-            'Improves focus and concentration',
-            'Helps manage panic attacks',
-            'Lowers blood pressure',
-            'Improves sleep quality',
+            'A simple pattern to focus on',
+            'Can help you feel calmer',
+            'Can be done anywhere',
           ],
           howToUse: 'Find a comfortable position, sitting or lying down. Breathe through your nose if possible. Follow the visual guide: breathe in for 4 seconds, hold for 4 seconds, breathe out for 4 seconds, hold for 4 seconds. Repeat for 4 cycles.',
           frequency: 'Practice 2-3 times daily, or whenever you feel stressed. It\'s particularly effective before important meetings, during moments of anxiety, or as part of your morning/evening routine.',
@@ -61,42 +59,38 @@ extension BreathingExerciseExtension on BreathingExercise {
       case BreathingExercise.relaxingBreath:
         return ExerciseInfo(
           whatIsIt: 'A gentle breathing pattern with a longer exhale than inhale. This simple ratio shift tells your body it\'s safe to relax.',
-          whyItHelps: 'Extended exhales stimulate the vagus nerve, activating your "rest and digest" response. This naturally slows your heart rate and calms your mind.',
+          whyItHelps: 'Breathing out slowly and gently can help you relax. Many people find it a simple way to unwind.',
           benefits: [
-            'Quickly reduces heart rate',
-            'Eases tension and stress',
-            'Helps with sleep preparation',
+            'Can ease tension',
+            'Useful before sleep',
             'Simple and easy to remember',
           ],
           howToUse: 'Breathe in slowly for 4 seconds, then breathe out even more slowly for 6 seconds. Focus on making your exhale smooth and controlled.',
           frequency: 'Use anytime you need to quickly calm down. Ideal before sleep or during stressful moments. Can be practised anywhere, anytime.',
         );
-      case BreathingExercise.energising:
+      case BreathingExercise.nhsCalming:
         return ExerciseInfo(
-          whatIsIt: 'A quick, rhythmic breathing pattern designed to invigorate your body and sharpen your mind through increased oxygen flow.',
-          whyItHelps: 'Faster breathing increases oxygen levels and slightly raises your heart rate, triggering alertness. It\'s like a natural caffeine boost.',
+          whatIsIt: 'The calming breathing technique recommended by the NHS for stress, anxiety and panic. It takes just a few minutes and can be done anywhere.',
+          whyItHelps: 'The NHS says this exercise can help with stress, anxiety and panic. It uses gentle, regular breaths with no holding, so it is comfortable for most people. Source: NHS, breathing exercises for stress.',
           benefits: [
-            'Increases energy and alertness',
-            'Improves mental clarity',
-            'Wakes you up naturally',
-            'Great pre-workout warm-up',
+            'Recommended by the NHS',
+            'No breath holding',
+            'Can be done standing, sitting or lying down',
           ],
-          howToUse: 'Take quick, controlled breaths - 2 seconds in, 2 seconds out. Keep your breathing rhythmic and steady. Stop if you feel lightheaded.',
-          frequency: 'Use in the morning, before exercise, or when you need a quick energy boost. Avoid before bedtime as it can make sleep difficult.',
+          howToUse: 'Let your breath flow as deep into your belly as is comfortable, without forcing it. Breathe in through your nose and out through your mouth. Breathe in gently, counting from 1 to 5. Then let it flow out gently, counting from 1 to 5. You may not reach 5 at first, and that is fine.',
+          frequency: 'Keep going for at least 5 minutes. You will get the most benefit if you do it regularly, as part of your daily routine.',
         );
       case BreathingExercise.calming478:
         return ExerciseInfo(
-          whatIsIt: 'The 4-7-8 technique was developed by Dr. Andrew Weil, based on ancient yogic breathing practices. It\'s often called a "natural tranquilliser for the nervous system".',
-          whyItHelps: 'The extended hold and exhale force your body to replenish oxygen and slow down. With regular practice, it becomes increasingly effective at inducing calm.',
+          whatIsIt: 'The 4-7-8 technique is a popular relaxation exercise based on yogic breathing. It is not an NHS technique.',
+          whyItHelps: 'Some people find the slow count and long out-breath relaxing, especially at bedtime. If holding your breath feels uncomfortable, use the NHS Calming Breath instead.',
           benefits: [
-            'Powerful anxiety reducer',
-            'Promotes faster sleep onset',
-            'Reduces cravings and impulses',
-            'Helps control emotional responses',
-            'Improves with regular practice',
+            'A slow, steady rhythm',
+            'Some people find it helps them wind down',
+            'Can be used at bedtime',
           ],
           howToUse: 'Inhale quietly through your nose for 4 seconds. Hold your breath for 7 seconds. Exhale completely through your mouth for 8 seconds. The exhale should make a gentle "whoosh" sound.',
-          frequency: 'Practice twice daily for best results. Use at bedtime to help fall asleep. After 4-6 weeks of regular practice, the calming effect becomes stronger.',
+          frequency: 'Try it when you want to wind down, for example at bedtime. Stop if you feel light-headed.',
         );
     }
   }
@@ -115,10 +109,10 @@ extension BreathingExerciseExtension on BreathingExercise {
           BreathingPhase('Breathe In', 4),
           BreathingPhase('Breathe Out', 6),
         ];
-      case BreathingExercise.energising:
+      case BreathingExercise.nhsCalming:
         return [
-          BreathingPhase('Breathe In', 2),
-          BreathingPhase('Breathe Out', 2),
+          BreathingPhase('Breathe In', 5),
+          BreathingPhase('Breathe Out', 5),
         ];
       case BreathingExercise.calming478:
         return [
@@ -129,7 +123,8 @@ extension BreathingExerciseExtension on BreathingExercise {
     }
   }
   
-  int get recommendedCycles => 4;
+  // The NHS exercise runs for at least 5 minutes (30 breaths of 10 seconds).
+  int get recommendedCycles => this == BreathingExercise.nhsCalming ? 30 : 4;
 }
 
 class BreathingPhase {
@@ -213,8 +208,9 @@ class _BreathingScreenState extends State<BreathingScreen>
   }
   
   void _startExercise(BreathingExercise exercise) async {
-    // Box Breathing is free, others require subscription
-    if (exercise != BreathingExercise.boxBreathing) {
+    // The NHS exercise and Box Breathing are free, others require subscription
+    if (exercise != BreathingExercise.boxBreathing &&
+        exercise != BreathingExercise.nhsCalming) {
       final subscriptionService = SubscriptionService();
       if (!subscriptionService.isPremium) {
         final unlocked = await checkPremiumAccess(context, featureName: exercise.name);
@@ -238,24 +234,12 @@ class _BreathingScreenState extends State<BreathingScreen>
   
   Future<void> _startExerciseAudio(BreathingExercise exercise) async {
     switch (exercise) {
+      case BreathingExercise.nhsCalming:
       case BreathingExercise.boxBreathing:
       case BreathingExercise.relaxingBreath:
       case BreathingExercise.calming478:
-        // These use phase-specific audio
+        // All exercises use phase-specific audio
         _playPhaseAudio(exercise.phases[0].instruction);
-        break;
-      case BreathingExercise.energising:
-        // Energising uses looping combined breath audio - load just in time
-        try {
-          debugPrint('🎵 Loading and playing energising audio');
-          await _energisingPlayer.setAsset('assets/audio/breath-in-and-out-38694.mp3');
-          await _energisingPlayer.setLoopMode(LoopMode.one);
-          await _energisingPlayer.setVolume(0.6);
-          await _energisingPlayer.play();
-          debugPrint('✅ Energising audio playing');
-        } catch (e) {
-          debugPrint('❌ Error starting energising audio: $e');
-        }
         break;
     }
   }
@@ -356,12 +340,7 @@ class _BreathingScreenState extends State<BreathingScreen>
     _updateAnimation();
     
     // Play phase audio for exercises that use phase-specific sounds
-    if (exercise == BreathingExercise.boxBreathing ||
-        exercise == BreathingExercise.relaxingBreath ||
-        exercise == BreathingExercise.calming478) {
-      _playPhaseAudio(exercise.phases[nextIndex].instruction);
-    }
-    // Energising continues looping its audio, no action needed
+    _playPhaseAudio(exercise.phases[nextIndex].instruction);
   }
   
   void _updateAnimation() {

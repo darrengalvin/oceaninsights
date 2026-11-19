@@ -6,9 +6,13 @@
     "dev": "next dev -p 3002",
     "build": "next build",
     "start": "next start -p 3002",
-    "lint": "next lint"
+    "lint": "next lint",
+    "audit:snapshot": "node scripts/snapshot-app-content.mjs",
+    "audit:evidence": "node scripts/evidence-scan.mjs",
+    "audit:recall": "node scripts/evidence-scan.mjs --recall"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.10.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "dotenv": "^17.2.3",

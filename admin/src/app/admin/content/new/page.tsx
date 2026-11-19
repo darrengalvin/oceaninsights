@@ -78,12 +78,13 @@ export default function NewContentPage() {
       })
 
       if (!res.ok) {
-        throw new Error('Failed to save content')
+        const body = await res.json().catch(() => null)
+        throw new Error(body?.error || `Server responded ${res.status}`)
       }
 
-      router.push('/content')
-    } catch (err) {
-      setError('Failed to save content. Please try again.')
+      router.push('/admin/content')
+    } catch (err: any) {
+      setError(`Failed to save content: ${err?.message || 'unknown error'}`)
     } finally {
       setSaving(false)
     }

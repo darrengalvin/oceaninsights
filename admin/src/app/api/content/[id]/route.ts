@@ -103,15 +103,22 @@ export async function PUT(
         when_to_seek_help,
         affirmation,
         updated_at: new Date().toISOString(),
+      }, {
+        // content_details is keyed by its own `id`; the row we want to
+        // overwrite is identified by content_item_id (UNIQUE). Without this,
+        // PostgREST conflicts on the primary key, tries to INSERT a second
+        // row for the same item and fails with a unique-constraint error,
+        // so every edit to existing content failed to save.
+        onConflict: 'content_item_id',
       })
 
     if (detailsError) throw detailsError
 
     return NextResponse.json(contentItem)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to update content:', error)
     return NextResponse.json(
-      { error: 'Failed to update content' },
+      { error: error?.message || 'Failed to update content' },
       { status: 500 }
     )
   }

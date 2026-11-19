@@ -97,11 +97,16 @@ export interface ClaudeSubScore {
   suggested_action: string | null;
 }
 
+export type SourceAlignment = 'matches' | 'differs' | 'not_covered' | 'no_trusted_source';
+
 export interface ClaudeCitation {
   claim_text: string;
   claim_type: ClaimType;
   needs_verification: boolean;
+  /** URL of the trusted page the claim was checked against, if any. */
   suggested_source: string | null;
+  trusted_source_name?: string | null;
+  alignment?: SourceAlignment;
 }
 
 export interface ClaudeCategoryScore {
@@ -117,7 +122,8 @@ export interface ClaudeItemResult {
   item_id: string;
   item_label: string;
   source_table: string;
-  overall_score: number;
+  /** Ignored if present: the overall score is always computed from category weights. */
+  overall_score?: number;
   category_scores: ClaudeCategoryScore[];
 }
 

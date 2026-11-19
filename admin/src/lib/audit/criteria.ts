@@ -11,6 +11,12 @@ export interface AuditCategory {
   description: string;
   weight: number;
   per_item: boolean;
+  /**
+   * Who scores this category. 'ai' categories are sent to the reviewing model;
+   * 'rules' categories are scored by the deterministic evidence checks
+   * (lib/audit/evidence) and never by the model.
+   */
+  scored_by?: 'ai' | 'rules';
   sub_criteria: SubCriterion[];
 }
 
@@ -61,6 +67,61 @@ export const AUDIT_CATEGORIES: AuditCategory[] = [
     ],
   },
   {
+    id: 'source_traceability',
+    label: 'Trusted Source Traceability',
+    description: 'Client rule: all health and wellbeing information must reflect the NHS or trusted sources (NHS, Royal College of Psychiatrists, Mind, Mental Health Foundation; GOV.UK for services and entitlements). Can each claim be traced to one, and does it match?',
+    weight: 1.5,
+    per_item: true,
+    sub_criteria: [
+      {
+        id: 'trusted_source_match',
+        label: 'Trusted Source Match',
+        description: 'Does each health or wellbeing claim match what the relevant NHS, RCPsych, Mind or Mental Health Foundation page says? Name the page.',
+        scoring_guide: '100 = matches a named trusted page. 75 = consistent with trusted guidance but goes beyond it. 50 = not covered by any trusted source. 0 = contradicts a trusted source.',
+      },
+      {
+        id: 'unsourced_claims',
+        label: 'Unsourced Claims',
+        description: '"Research shows", statistics and precise figures presented without a source the reader could check.',
+        scoring_guide: '100 = no unsourced claims, or figures taken from a named trusted page. 50 = vague appeal to research or an unsourced figure. 0 = specific figure that is wrong or untraceable on a safety-relevant topic.',
+      },
+      {
+        id: 'popular_psychology',
+        label: 'Popular Psychology Presented as Fact',
+        description: 'Ideas from self-help books, social media or popular psychology (love languages, power poses, 21-day habits, brain-timing rules) presented as established fact.',
+        scoring_guide: '100 = none, or clearly framed as an optional idea with no health claim. 50 = presented as fact without health claims. 0 = presented as fact with a health or physiological claim.',
+      },
+      {
+        id: 'disputed_research',
+        label: 'Disputed Research Presented as Settled',
+        description: 'Findings that later research has disputed or failed to replicate (Stanford Prison Experiment, marshmallow test, power-pose hormones) presented as settled.',
+        scoring_guide: '100 = none, or the dispute is stated. 50 = presented without caveat in an educational context. 0 = used as the basis for advice.',
+      },
+      {
+        id: 'source_currency',
+        label: 'Source Currency',
+        description: 'Are facts that change (laws in other countries, service names, policies, figures) still current?',
+        scoring_guide: '100 = current. 50 = possibly out of date, needs re-checking. 0 = known to be out of date (repealed law, closed service).',
+      },
+    ],
+  },
+  {
+    id: 'evidence_checks',
+    label: 'Evidence Checks',
+    description: 'Deterministic checks, no AI: every phone number against the verified helpline register, US or non-UK content, client wording rules, links against the trusted-source list, and claims already reviewed against trusted sources.',
+    weight: 1.5,
+    per_item: true,
+    scored_by: 'rules',
+    sub_criteria: [
+      { id: 'helpline_register', label: 'Helpline Register', description: 'Each phone number matches a verified entry, with correct hours and description.', scoring_guide: 'Scored by rule: critical 20, red 45, amber 70, info 85; 100 when nothing is flagged.' },
+      { id: 'uk_applicability', label: 'UK Applicability', description: 'No US or other non-UK systems, numbers or services presented to UK users.', scoring_guide: 'Scored by rule.' },
+      { id: 'client_rules', label: 'Client Wording Rules', description: 'Client instructions, for example not naming the Royal Navy.', scoring_guide: 'Scored by rule.' },
+      { id: 'trusted_links', label: 'Trusted Links', description: 'Links point to NHS, RCPsych, Mind, Mental Health Foundation, GOV.UK or listed UK charities.', scoring_guide: 'Scored by rule.' },
+      { id: 'flagged_claims', label: 'Flagged Claims', description: 'Unsourced "research shows" or statistics, diagnostic-sounding results, medication detail, absolute safety or confidentiality promises.', scoring_guide: 'Scored by rule.' },
+      { id: 'reviewed_claims', label: 'Reviewed Claims Watchlist', description: 'Claims already checked against trusted sources and found wrong or unsupported have not reappeared.', scoring_guide: 'Scored by rule.' },
+    ],
+  },
+  {
     id: 'bias_impartiality',
     label: 'Bias and Impartiality',
     description: 'Is the content fair and balanced across the audiences it serves?',
@@ -107,46 +168,46 @@ export const AUDIT_CATEGORIES: AuditCategory[] = [
   },
   {
     id: 'regional_appropriateness',
-    label: 'Regional Appropriateness',
-    description: 'Is content correct for all regions and clearly labelled when region-specific?',
+    label: 'UK Appropriateness',
+    description: 'Is content correct for UK users (the app\'s audience), with anything from another country clearly labelled or removed?',
     weight: 1.2,
     per_item: true,
     sub_criteria: [
       {
         id: 'jurisdiction_labelling',
         label: 'Jurisdiction Labelling',
-        description: 'Is region-specific advice clearly marked?',
-        scoring_guide: '100 = clearly marked with jurisdiction. 50 = implied but not explicit. 0 = presented as universal.',
+        description: 'Is advice that differs across the four UK nations, or that applies outside the UK, clearly marked?',
+        scoring_guide: '100 = UK-correct, with nation differences (England, Scotland, Wales, Northern Ireland) noted where they matter. 50 = implied. 0 = another country\'s rules presented as applying to UK users.',
       },
       {
         id: 'emergency_numbers',
         label: 'Emergency Numbers',
-        description: 'Are emergency numbers correct and labelled by country?',
-        scoring_guide: '100 = correct with country label. 50 = correct but unlabelled. 0 = wrong or misleading.',
+        description: 'Are emergency and crisis numbers the UK ones (999, NHS 111, Samaritans 116 123)?',
+        scoring_guide: '100 = UK numbers, correct. 50 = UK numbers alongside unlabelled foreign ones. 0 = a foreign number (911, 988) or a wrong number shown to UK users.',
       },
       {
         id: 'helpline_coverage',
-        label: 'Helpline Coverage',
-        description: 'Are support org helplines region-labelled?',
-        scoring_guide: '100 = labelled with country/region. 50 = present but unlabelled. 0 = UK-only without noting it.',
+        label: 'Helpline Accuracy',
+        description: 'Are helplines current UK services, with correct hours, and is each one described for what it is (crisis line or not)?',
+        scoring_guide: '100 = current UK service, correct hours, described accurately. 50 = hours or description inaccurate. 0 = closed, renamed, foreign, or a non-crisis service presented as crisis support.',
       },
       {
         id: 'legal_advice_scope',
         label: 'Legal Advice Scope',
-        description: 'Is legal information jurisdiction-bounded?',
-        scoring_guide: '100 = explicitly states jurisdiction. 50 = implied. 0 = no jurisdiction marker.',
+        description: 'Does legal information reflect UK law (and Service law where relevant)?',
+        scoring_guide: '100 = correct UK law, current. 50 = UK but out of date or vague. 0 = another country\'s law.',
       },
       {
         id: 'entitlements_benefits',
         label: 'Entitlements/Benefits',
-        description: 'Are financial/employment entitlements region-specific?',
-        scoring_guide: '100 = clearly tied to specific country. 50 = implied. 0 = presented as universal.',
+        description: 'Are financial, healthcare, education and employment entitlements the UK ones (NHS, Armed Forces Pension Scheme, ELCAS, Op COURAGE)?',
+        scoring_guide: '100 = UK entitlements, correct. 50 = generic. 0 = a US system (VA, GI Bill, TSP, 401k) or another country\'s entitlements.',
       },
       {
         id: 'regional_gaps',
         label: 'Regional Gaps',
-        description: 'Is there content the app should have for another region but does not?',
-        scoring_guide: '100 = adequate coverage. 50 = minor gaps. 0 = significant gap for a target audience.',
+        description: 'Is there content UK users need that is missing (for example a nation-specific service)?',
+        scoring_guide: '100 = adequate UK coverage. 50 = minor gaps. 0 = significant gap for a UK audience.',
       },
     ],
   },
@@ -539,12 +600,15 @@ export const AUDIT_CATEGORIES: AuditCategory[] = [
   },
 ];
 
+/** Categories the reviewing model scores (everything except the rule-scored ones). */
+export const AI_CATEGORIES = AUDIT_CATEGORIES.filter(c => c.scored_by !== 'rules');
+
 export const CATEGORY_MAP = Object.fromEntries(
   AUDIT_CATEGORIES.map(c => [c.id, c])
 );
 
 export function buildCriteriaPromptText(): string {
-  return AUDIT_CATEGORIES.map(cat => {
+  return AUDIT_CATEGORIES.filter(cat => cat.scored_by !== 'rules').map(cat => {
     const subLines = cat.sub_criteria.map(
       sc => `    - ${sc.id}: ${sc.label} — ${sc.description}\n      Scoring: ${sc.scoring_guide}`
     ).join('\n');

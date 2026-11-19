@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/theme_options.dart';
 import '../data/learn_content.dart';
@@ -171,6 +172,12 @@ class ArticleScreen extends StatelessWidget {
               ),
             ],
             
+            // Sources
+            if (article.sources != null && article.sources!.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              _buildSources(context, article.sources!),
+            ],
+            
             const SizedBox(height: 40),
           ],
         ),
@@ -237,6 +244,86 @@ class ArticleScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+  
+  Widget _buildSources(BuildContext context, List<ArticleSource> sources) {
+    final colours = context.colours;
+    
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colours.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.verified_outlined,
+                color: colours.textMuted,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Sources',
+                style: TextStyle(
+                  color: colours.textMuted,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Based on guidance from these trusted organisations. Tap to read more.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: colours.textMuted,
+                ),
+          ),
+          const SizedBox(height: 8),
+          ...sources.map((source) {
+            return InkWell(
+              onTap: () => _openSource(source.url),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        source.name,
+                        style: TextStyle(
+                          color: colours.accent,
+                          fontSize: 13,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.open_in_new,
+                      color: colours.accent,
+                      size: 14,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+  
+  Future<void> _openSource(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
   
   IconData _getCategoryIcon() {
