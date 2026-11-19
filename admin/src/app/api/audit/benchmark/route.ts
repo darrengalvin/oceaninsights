@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { BENCHMARK_MODELS, MODEL_BY_ID } from '@/lib/audit/models';
+import { CURRENT_BENCHMARK_MODELS, MODEL_BY_ID } from '@/lib/audit/models';
 import { anonymousLabels, shuffle } from '@/lib/audit/benchmark';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     runs: runs || [],
-    available_models: BENCHMARK_MODELS,
+    available_models: CURRENT_BENCHMARK_MODELS,
   });
 }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { AUDIT_CATEGORIES, CATEGORY_MAP } from '@/lib/audit/criteria';
+import { AUDIT_MODEL_LABEL } from '@/lib/audit/claude';
 import { CONTENT_AREAS } from '@/lib/audit/areas';
 import { scoreToTrafficLight } from '@/lib/audit/types';
 
@@ -195,7 +196,7 @@ function buildReportHTML(
   <div class="stat-card"><div class="num" style="color: #16a34a;">${run.findings_green || 0}</div><div class="lbl">Passing</div></div>
 </div>
 
-<p>This report presents the results of an automated content compliance audit conducted on all user-facing content within the Below the Surface application. The audit was performed using AI-powered analysis (Claude) against 14 compliance categories covering factual accuracy, safety, OPSEC, clinical boundaries, safeguarding, bias, regional appropriateness, and more.</p>
+<p>This report presents the results of an automated content compliance audit conducted on all user-facing content within the Below the Surface application. The audit was performed by ${AUDIT_MODEL_LABEL} against ${AUDIT_CATEGORIES.length} compliance categories covering trusted-source traceability, factual accuracy, safety, OPSEC, clinical boundaries, safeguarding, bias, UK appropriateness, and more, alongside fixed evidence checks (helpline register, UK applicability, client wording rules, trusted links) that use no AI.</p>
 <p>Each content item was scored 0–100% per applicable criterion, with weighted averages producing overall scores. Categories with safety or legal implications carry higher weight (1.5x for Safety, Clinical Boundaries, Safeguarding, OPSEC; 1.2x for Factual Accuracy, Regional, Currency).</p>
 
 <!-- Methodology -->
@@ -203,11 +204,11 @@ function buildReportHTML(
 
 <div class="methodology">
   <p><strong>What was audited:</strong> Every piece of user-facing content across ${Object.keys(areaMap).length} content areas — including navigate content, learn articles, crisis pathways, harassment guidance, LGBTQ+ support, brain science, military perks, service family resources, and more.</p>
-  <p><strong>How it was audited:</strong> Each content area was extracted from the database with all related child content, serialised into a structured format, and submitted to Claude (Anthropic AI) with the full 14-category grading rubric. Claude used extended thinking to reason through each assessment before assigning scores.</p>
+  <p><strong>How it was audited:</strong> Each content area was extracted from the database, or from the snapshot of text built into the app, serialised into a structured format, and submitted to ${AUDIT_MODEL_LABEL} with the grading rubric, using adaptive thinking and a fixed response schema. Every item was also run through the deterministic evidence checks.</p>
   <p><strong>Scoring:</strong> Each content item received a score of 0–100% per applicable criterion, producing an overall weighted score. Traffic light grades provide at-a-glance readability: Green (90–100%), Amber (70–89%), Red (50–69%), Critical (0–49%).</p>
 </div>
 
-<h3>The 14 Grading Criteria</h3>
+<h3>The ${AUDIT_CATEGORIES.length} Grading Criteria</h3>
 <table class="crit-table">
   <thead><tr><th>#</th><th>Category</th><th>Weight</th><th>What it checks</th><th>Findings</th></tr></thead>
   <tbody>

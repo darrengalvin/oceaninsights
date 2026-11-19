@@ -1,5 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { ExtractedContentArea, ExtractedContentItem } from './types';
+import { extractAppContentArea } from './app-content';
+import { isAppContentArea } from './app-areas';
 
 interface AreaConfig {
   id: string;
@@ -574,6 +576,9 @@ export async function extractContentArea(
   supabase: SupabaseClient,
   areaId: string
 ): Promise<ExtractedContentArea | null> {
+  // Content built into the app comes from the build-time snapshot, not the database.
+  if (isAppContentArea(areaId)) return extractAppContentArea(areaId);
+
   const config = AREA_CONFIGS.find(a => a.id === areaId);
   if (!config) return null;
 
