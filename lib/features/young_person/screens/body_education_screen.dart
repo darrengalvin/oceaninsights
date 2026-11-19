@@ -129,7 +129,7 @@ class _BodyEducationScreenState extends State<BodyEducationScreen>
           _buildIntroCard(
             colours,
             'Understanding the Female Body',
-            'Your body goes through many changes during puberty — usually between ages 8 and 16. Every person develops at their own pace. There is no "normal" timeline.',
+            'Your body goes through many changes during puberty — usually starting between the ages of 8 and 14. Every person develops at their own pace. There is no "normal" timeline.',
             const Color(0xFFE879A0),
             Icons.favorite_rounded,
           ),
@@ -995,7 +995,7 @@ const _maleTopics = [
         '• Drinking water and eating well can help your skin\n'
         '• Sweating increases — daily showers and deodorant become important\n\n'
         'Acne is not caused by poor hygiene or diet alone — it\'s primarily hormonal. If it\'s severe, a GP can prescribe treatments.',
-    normalRange: 'Acne typically peaks around ages 15–17 and improves in late teens.',
+    normalRange: 'Acne is very common during the teenage years. If it is bothering you or leaving scars, a pharmacist or GP can help.',
   ),
   _BodyTopic(
     title: 'Reproductive Changes',

@@ -157,17 +157,9 @@ class ContactHelpScreen extends StatelessWidget {
             
             _buildContactCard(
               context,
-              'SSAFA',
-              'Armed Forces charity',
-              '0800 731 4880',
-              'Mon-Fri 9am-5pm',
-            ),
-            
-            _buildContactCard(
-              context,
               'SSAFA Forcesline',
               'Free, confidential helpline for serving personnel, veterans and their families. Independent of the chain of command',
-              '0800 260 6780',
+              '0800 260 6767',
               'Mon-Thu 9am-5pm, Fri 9am-4pm',
             ),
             
@@ -189,18 +181,10 @@ class ContactHelpScreen extends StatelessWidget {
             
             _buildContactCard(
               context,
-              'Royal Navy & Royal Marines Charity',
-              'Support for serving personnel and families',
-              '023 9387 1520',
-              'Mon-Fri 9am-5pm',
-            ),
-            
-            _buildContactCard(
-              context,
-              'Veterans Gateway',
-              'First point of contact for veterans',
-              '0808 802 1212',
-              '24/7 support',
+              'Support for veterans (GOV.UK)',
+              'Official directory of UK veterans\' services: health, housing, money, employment and welfare',
+              'www.gov.uk/support-for-veterans',
+              'Online, any time',
             ),
             
             _buildContactCard(
@@ -209,15 +193,6 @@ class ContactHelpScreen extends StatelessWidget {
               'Mental health charity',
               '0300 123 3393',
               'Mon-Fri 9am-6pm',
-            ),
-            
-            _buildContactCard(
-              context,
-              'Big White Wall',
-              'Online mental health support',
-              'www.bigwhitewall.com',
-              '24/7 online',
-              isUrl: true,
             ),
             
             const SizedBox(height: 24),

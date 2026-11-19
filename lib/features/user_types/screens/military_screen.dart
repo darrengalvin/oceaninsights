@@ -649,7 +649,7 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                       ResourceItem(title: 'Annual Training', subtitle: 'AT dates and location', icon: Icons.map, description: 'Annual training typically 2-3 weeks. Confirm dates and location with your chain of command.'),
                     ]),
                     ResourceCategory(title: 'Resources', icon: Icons.folder, resources: [
-                      ResourceItem(title: 'Family Readiness', subtitle: 'Support for families', icon: Icons.family_restroom, description: 'Family Readiness Groups provide support, information, and community for military families.'),
+                      ResourceItem(title: 'Family Support', subtitle: 'Support for families', icon: Icons.family_restroom, description: 'Your unit welfare team and the service families federations provide support, information and community for service families.'),
                       ResourceItem(title: 'Unit Newsletter', subtitle: 'Stay informed', icon: Icons.newspaper, description: 'Subscribe to unit communications for updates, news, and important announcements.'),
                     ]),
                   ],
@@ -729,7 +729,7 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   icon: Icons.description_outlined,
                   tips: const [
                     TipCard(title: 'Format for Impact', content: 'Use a clean, professional format. Lead with a summary, then experience, then education and skills.', keyPoints: ['One page if possible', 'Reverse chronological order', 'Easy to scan quickly']),
-                    TipCard(title: 'Quantify Everything', content: 'Numbers stand out. "Managed inventory" becomes "Managed \$2M equipment inventory with 99% accountability."', keyPoints: ['Dollar amounts', 'Team sizes', 'Percentages and metrics']),
+                    TipCard(title: 'Quantify Everything', content: 'Numbers stand out. "Managed inventory" becomes "Managed £2M equipment inventory with 99% accountability."', keyPoints: ['Money values (£)', 'Team sizes', 'Percentages and metrics']),
                     TipCard(title: 'Action Verbs', content: 'Start bullets with strong verbs: Led, Managed, Developed, Implemented, Trained, Coordinated, Achieved.', keyPoints: ['Avoid passive voice', 'Be specific', 'Show results']),
                     TipCard(title: 'Tailor Each Application', content: 'Customize your resume for each job. Match keywords from the job posting to your experience.', keyPoints: ['Read job description carefully', 'Mirror their language', 'Highlight relevant skills']),
                   ],
@@ -790,12 +790,12 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                 context,
                 MaterialPageRoute(builder: (_) => ResourceListScreen(
                   title: 'Benefits Guide',
-                  subtitle: 'Maximize your transition benefits',
+                  subtitle: 'Make the most of your transition support',
                   icon: Icons.card_giftcard_outlined,
                   categories: const [
                     ResourceCategory(title: 'Healthcare', icon: Icons.local_hospital, resources: [
-                      ResourceItem(title: 'Veteran Healthcare', subtitle: 'Enrollment & eligibility', icon: Icons.health_and_safety, description: 'Veteran healthcare provides comprehensive services. Check your government veteran services for enrollment.', details: ['Apply soon after discharge', 'Bring service documents', 'Priority based on service connection']),
-                      ResourceItem(title: 'Transition Healthcare', subtitle: 'Continued coverage options', icon: Icons.medical_services, description: 'Many countries offer continued healthcare coverage for 12-36 months after separation.'),
+                      ResourceItem(title: 'Register with a GP', subtitle: 'Your NHS starting point', icon: Icons.health_and_safety, description: 'Register with an NHS GP as soon as you leave and tell them you have served, so your service can be recorded and you get the right support.', details: ['Register before you need care', 'Bring your service medical summary', 'Tell them you served']),
+                      ResourceItem(title: 'Moving Your Records', subtitle: 'From Defence Medical Services to the NHS', icon: Icons.medical_services, description: 'Ask for a copy of your medical summary before you leave so your new GP has your history.'),
                     ]),
                     ResourceCategory(title: 'Education', icon: Icons.school, resources: [
                       ResourceItem(title: 'Education Benefits', subtitle: 'Learning support', icon: Icons.school, description: 'Many countries offer education benefits covering tuition, housing, and books. Check your veteran services.', details: ['Months of benefits vary', 'Housing allowance often included', 'May transfer to dependents']),
@@ -954,12 +954,12 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   icon: Icons.school_outlined,
                   categories: const [
                     ResourceCategory(title: 'Education Benefits', icon: Icons.school, resources: [
-                      ResourceItem(title: 'Full Education Benefit', subtitle: 'Comprehensive coverage', icon: Icons.school, description: 'Covers tuition, housing allowance, and books/supplies for approved programs.', details: ['Months of benefits vary by country', 'Housing allowance often included', 'Book allowance typically available']),
-                      ResourceItem(title: 'Alternative Options', subtitle: 'Other programs', icon: Icons.payments, description: 'Monthly benefit paid directly to you. Amount depends on contribution and service.'),
+                      ResourceItem(title: 'Enhanced Learning Credits', subtitle: 'Funding for higher-level courses', icon: Icons.school, description: 'Eligible personnel can use Enhanced Learning Credits towards approved courses, during service and for a period after leaving.', details: ['Check your eligibility', 'Use approved providers', 'Plan before you leave']),
+                      ResourceItem(title: 'Resettlement', subtitle: 'Career Transition Partnership', icon: Icons.payments, description: 'Resettlement courses, advice and job-finding support through the Career Transition Partnership.'),
                     ]),
                     ResourceCategory(title: 'Training Programs', icon: Icons.library_books, resources: [
-                      ResourceItem(title: 'Tech Training', subtitle: 'Tech bootcamps', icon: Icons.computer, description: 'Tuition-free training in high-demand tech fields like coding, data science, and IT.', details: ['Often separate from education benefits', 'Housing allowance may be included', 'Short-term programs']),
-                      ResourceItem(title: 'Apprenticeships', subtitle: 'Earn while you learn', icon: Icons.work, description: 'Use veteran benefits while doing paid apprenticeships.'),
+                      ResourceItem(title: 'Tech Training', subtitle: 'Tech courses', icon: Icons.computer, description: 'Training in high-demand tech fields like coding, data science, and IT, often fundable through resettlement support.', details: ['Check your learning credits', 'Short courses available', 'Use approved providers']),
+                      ResourceItem(title: 'Apprenticeships', subtitle: 'Earn while you learn', icon: Icons.work, description: 'Paid apprenticeships let you train for a new career while earning a wage.'),
                     ]),
                   ],
                 )),
@@ -1001,12 +1001,12 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   icon: Icons.local_hospital_outlined,
                   categories: const [
                     ResourceCategory(title: 'Getting Started', icon: Icons.play_arrow, resources: [
-                      ResourceItem(title: 'Enrollment', subtitle: 'How to enroll in veteran healthcare', icon: Icons.app_registration, description: 'Apply online, by phone, or in person at your local veteran services office.', details: ['Bring service documents', 'Apply soon after discharge for easiest enrollment', 'Priority groups may determine eligibility']),
+                      ResourceItem(title: 'Register with a GP', subtitle: 'How NHS care works after service', icon: Icons.app_registration, description: 'Register with an NHS GP near where you live and tell them you have served in the armed forces.', details: ['Bring your medical summary', 'Register before you need care', 'Tell them you served']),
                       ResourceItem(title: 'Your First Appointment', subtitle: 'What to expect', icon: Icons.calendar_today, description: 'Your first appointment will establish care and assess your health needs.', details: ['Bring medications list', 'Bring medical records', 'Be honest about symptoms']),
                     ]),
                     ResourceCategory(title: 'Services', icon: Icons.medical_services, resources: [
                       ResourceItem(title: 'Primary Care', subtitle: 'Regular health needs', icon: Icons.person, description: 'Your primary care team handles routine care, referrals, and ongoing health management.'),
-                      ResourceItem(title: 'Mental Health', subtitle: 'Counseling and support', icon: Icons.psychology, description: 'Veteran services offer counseling, therapy, and medication management. Ask about community-based care options.'),
+                      ResourceItem(title: 'Mental Health', subtitle: 'Talking therapies and support', icon: Icons.psychology, description: 'Your GP can refer you for mental health support, and you can refer yourself to NHS talking therapies.'),
                       ResourceItem(title: 'Specialty Care', subtitle: 'Specialized treatment', icon: Icons.local_hospital, description: 'Access specialists for specific conditions through referrals from your primary care team.'),
                     ]),
                   ],
@@ -1024,12 +1024,12 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   icon: Icons.psychology_outlined,
                   categories: const [
                     ResourceCategory(title: 'Veteran Services', icon: Icons.local_hospital, resources: [
-                      ResourceItem(title: 'Veteran Mental Health', subtitle: 'Comprehensive care', icon: Icons.psychology, description: 'Veteran services provide therapy, counseling, and medication management. Covered under your veteran healthcare.'),
-                      ResourceItem(title: 'Vet Centers', subtitle: 'Community-based', icon: Icons.location_city, description: 'Vet Centers offer counseling in community settings. No enrollment required for combat veterans.', details: ['More informal setting', 'Peer counselors available', 'Family counseling too']),
+                      ResourceItem(title: 'Op COURAGE', subtitle: 'NHS veterans\' mental health service', icon: Icons.psychology, description: 'In England, Op COURAGE is the NHS mental health service for veterans, service leavers and reservists. You can refer yourself.', details: ['Free on the NHS', 'Self-referral accepted', 'Source: NHS, veterans\' mental health services']),
+                      ResourceItem(title: 'Combat Stress', subtitle: 'Veterans\' mental health charity', icon: Icons.location_city, description: 'Combat Stress runs a 24-hour helpline for veterans and serving personnel on 0800 138 1619.', details: ['24-hour helpline', 'Support for families too', 'Free and confidential']),
                     ]),
                     ResourceCategory(title: 'Crisis Resources', icon: Icons.warning, resources: [
-                      ResourceItem(title: 'Crisis Support', subtitle: 'Emergency help', icon: Icons.phone, description: 'Free, confidential support 24/7. Contact your local veteran crisis line or emergency services.', details: ['Available 24/7', 'Trained counselors', 'Chat and text options often available']),
-                      ResourceItem(title: 'Same Day Mental Health', subtitle: 'Urgent care option', icon: Icons.schedule, description: 'Many veteran medical centers offer same-day mental health services for urgent needs.'),
+                      ResourceItem(title: 'Crisis Support', subtitle: 'Emergency help', icon: Icons.phone, description: 'If you are in immediate danger, call 999 or go to A&E. Samaritans are free on 116 123, 24/7.', details: ['Available 24/7', 'Free to call', 'Text SHOUT to 85258']),
+                      ResourceItem(title: 'NHS 111 Mental Health Option', subtitle: 'Urgent help', icon: Icons.schedule, description: 'Call 111 and choose the mental health option to speak to a trained mental health professional, 24/7.'),
                     ]),
                   ],
                 )),

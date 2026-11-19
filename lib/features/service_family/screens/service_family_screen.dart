@@ -129,7 +129,7 @@ class _ServiceFamilyScreenState extends State<ServiceFamilyScreen>
           _buildHeaderCard(
             colours,
             'The Deployment Cycle',
-            'Deployment affects the whole family. Understanding the emotional phases helps you prepare, cope, and recover together.',
+            'Deployment affects the whole family. Many families find it helps to know the emotional phases people often go through. These phases come from a widely used model of the emotional cycle of deployment, not from NHS guidance, and every family\'s experience is different.',
             const Color(0xFF60A5FA),
             Icons.timeline_rounded,
           ),
@@ -998,7 +998,7 @@ class _SupportOrg {
 const _familySupportOrgs = [
   _SupportOrg('SSAFA', 'The Armed Forces charity providing support to serving families, including emotional, practical, and financial help.', 'ssafa.org.uk — online and local support'),
   _SupportOrg('Army Families Federation (AFF)', 'Independent voice for Army families. Advice on housing, education, health, and deployment.', 'aff.org.uk'),
-  _SupportOrg('Naval Families Federation (NFF)', 'Support and advocacy for Royal Navy and Royal Marines families.', 'nff.org.uk'),
+  _SupportOrg('Naval Families Federation (NFF)', 'Independent support and advocacy for Naval Service families.', 'nff.org.uk'),
   _SupportOrg('RAF Families Federation', 'Independent support for RAF families on all aspects of service life.', 'raf-ff.org.uk'),
   _SupportOrg('Combat Stress', 'Mental health charity for veterans and serving personnel. Also supports families.', 'combatstress.org.uk'),
   _SupportOrg('HIVE Information Service', 'Free, confidential information for service families. Available on most bases.', 'Ask your unit welfare office for local HIVE details'),

@@ -153,7 +153,7 @@ INSERT INTO harassment_wizard_guidance (title, message, guidance_type, icon, pri
 ('Nothing is recorded', 'This assessment is completely private. No data leaves your device. No record is kept. This is just for you.', 'info', 'lock', 95, true, 2),
 ('Your rights', 'Under the Armed Forces Act and the Equality Act 2010, you are protected from harassment, bullying, and discrimination. The military has a zero-tolerance policy. You have the right to serve in an environment free from unwanted behaviour.', 'rights', 'gavel', 90, true, 3),
 ('Formal complaint process', 'You have the right to make a formal Service Complaint. The process is: 1) Speak to your Unit Welfare Officer or another trusted officer. 2) They will guide you through submitting a formal written complaint. 3) An investigation will be conducted. 4) You are protected from retaliation. You can also contact the Service Complaints Ombudsman if you feel the process is not fair.', 'action_formal', 'description', 70, true, 20),
-('Informal options', 'Not ready for a formal complaint? That is completely okay. You can: speak to a trusted colleague, mentor, or Padre. Contact SSAFA or other support services anonymously. Use the Confidential Support Line. Speak to your Medical Officer. Sometimes just talking to someone helps you decide your next step.', 'action_informal', 'chat', 65, true, 21);
+('Informal options', 'Not ready for a formal complaint? That is completely okay. You can: speak to a trusted colleague, mentor, or Padre. Contact SSAFA or other support services anonymously. Call SSAFA Forcesline on 0800 260 6767. Speak to your Medical Officer. Sometimes just talking to someone helps you decide your next step.', 'action_informal', 'chat', 65, true, 21);
 
 -- Tag-matched guidance
 INSERT INTO harassment_wizard_guidance (title, message, guidance_type, icon, priority, match_tags, sort_order) VALUES
@@ -186,8 +186,7 @@ INSERT INTO harassment_wizard_contacts (name, description, phone, website, avail
 
 -- Charities and helplines (accessible from anywhere with phone/internet)
 INSERT INTO harassment_wizard_contacts (name, description, phone, website, availability, icon, is_emergency, sort_order) VALUES
-('Confidential Support Line', 'Free, anonymous, confidential emotional support for Armed Forces. Call from anywhere in the world.', '+44 1011 4131', NULL, '24/7 worldwide', 'phone_in_talk', false, 10),
-('SSAFA', 'Forces charity providing confidential emotional and practical support to serving personnel and families worldwide.', NULL, 'https://www.ssafa.org.uk', 'Online support available worldwide', 'support_agent', false, 11),
+('SSAFA Forcesline', 'Free, confidential helpline for serving personnel, veterans and families, independent of the chain of command.', '0800 260 6767', 'https://www.ssafa.org.uk', 'Mon-Thu 9am-5pm, Fri 9am-4pm', 'support_agent', false, 11),
 ('Service Complaints Ombudsman', 'Independent oversight of the Service Complaints process. Can be contacted from anywhere.', NULL, 'https://www.scoaf.org.uk', 'Online contact form available', 'balance', false, 12),
 ('Combat Stress', 'Mental health charity for veterans and serving personnel. Helpline and online support.', NULL, 'https://combatstress.org.uk', '24/7 helpline and online', 'psychology', false, 13),
 ('Rape Crisis', 'Specialist support for sexual violence. Live chat available online from anywhere.', NULL, 'https://rapecrisis.org.uk', 'Live chat available online', 'healing', false, 14);

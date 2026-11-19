@@ -1432,7 +1432,7 @@ class ContentSyncService {
       HarassmentGuidanceCard(id: '1', title: 'You are not alone', message: 'What you are experiencing is not your fault, and you do not have to deal with it alone.', guidanceType: 'info', priority: 100, matchTags: [], isUniversal: true),
       HarassmentGuidanceCard(id: '2', title: 'Your rights', message: 'Under the Armed Forces Act and the Equality Act 2010, you are protected from harassment, bullying, and discrimination.', guidanceType: 'rights', priority: 90, matchTags: [], isUniversal: true),
       HarassmentGuidanceCard(id: '3', title: 'Formal complaint process', message: 'You have the right to make a formal Service Complaint. Contact your Unit Welfare Officer to begin the process.', guidanceType: 'action_formal', priority: 70, matchTags: [], isUniversal: true),
-      HarassmentGuidanceCard(id: '4', title: 'Informal options', message: 'Not ready for a formal complaint? Speak to a trusted colleague, contact SSAFA, or use the Confidential Support Line.', guidanceType: 'action_informal', priority: 65, matchTags: [], isUniversal: true),
+      HarassmentGuidanceCard(id: '4', title: 'Informal options', message: 'Not ready for a formal complaint? Speak to a trusted colleague, contact SSAFA, or call SSAFA Forcesline on 0800 260 6767.', guidanceType: 'action_informal', priority: 65, matchTags: [], isUniversal: true),
     ];
   }
 
@@ -1454,7 +1454,7 @@ class ContentSyncService {
       HarassmentContact(id: '1', name: 'Local Emergency Services', description: 'If you are in immediate danger, call your local emergency number. UK: 999. International: 112. On base: contact the Guardroom or Duty Officer.', isEmergency: true),
       HarassmentContact(id: '2', name: 'Your Unit Welfare Officer', description: 'Your first point of contact for confidential support within your unit.', availability: 'During working hours or via Duty Officer', isEmergency: false),
       HarassmentContact(id: '3', name: 'Unit Padre / Chaplain', description: 'Completely confidential support. Conversations with a Padre are privileged.', availability: 'Available at all times', isEmergency: false),
-      HarassmentContact(id: '4', name: 'SSAFA', description: 'Forces charity providing confidential support worldwide.', website: 'https://www.ssafa.org.uk', availability: 'Online support available worldwide', isEmergency: false),
+      HarassmentContact(id: '4', name: 'SSAFA Forcesline', description: 'Free, confidential helpline for serving personnel, veterans and families, independent of the chain of command. Call 0800 260 6767.', website: 'https://www.ssafa.org.uk', availability: 'Mon-Thu 9am-5pm, Fri 9am-4pm', isEmergency: false),
     ];
   }
 

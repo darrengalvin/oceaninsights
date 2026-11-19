@@ -79,7 +79,7 @@ class VeteranScreen extends StatelessWidget {
                         TipCard(title: 'Why Try New Things?', content: 'Military life often limited time for hobbies. Now you have the freedom to explore. Finding passions brings purpose and joy.', keyPoints: ['No more waiting', 'Low stakes - just try', 'It\'s about exploration']),
                         TipCard(title: 'Physical Activities', content: 'Many veterans thrive with physical challenges. Consider hiking, martial arts, CrossFit, or team sports.', keyPoints: ['Maintains fitness', 'Community aspect', 'Healthy competition']),
                         TipCard(title: 'Creative Pursuits', content: 'Art, music, writing, and woodworking can be therapeutic and fulfilling. Many veteran programs offer free classes.', keyPoints: ['Expression outlet', 'Often veteran-specific groups', 'No experience needed']),
-                        TipCard(title: 'Learning & Growth', content: 'Take classes in anything that interests you. Languages, cooking, technology, finance - education benefits may cover some.', keyPoints: ['Community colleges', 'Online courses', 'Veteran discounts common']),
+                        TipCard(title: 'Learning & Growth', content: 'Take classes in anything that interests you. Languages, cooking, technology, finance - learning credits from your service may cover some.', keyPoints: ['Local colleges and adult learning', 'Online courses', 'Check your learning credits']),
                       ],
                     )),
                   ),
@@ -149,7 +149,7 @@ class VeteranScreen extends StatelessWidget {
                       tips: const [
                         TipCard(title: 'Adjusting Your Fitness', content: 'Military PT is intense. You may need to adjust to a sustainable civilian routine. Focus on consistency over intensity.', keyPoints: ['Find what you enjoy', 'Recovery is important', 'Set realistic goals']),
                         TipCard(title: 'Dealing with Injuries', content: 'Many veterans have service-related injuries. Work with veteran healthcare or civilian providers to adapt workouts safely.', keyPoints: ['Don\'t push through pain', 'Consider physical therapy', 'Modify, don\'t quit']),
-                        TipCard(title: 'Nutrition Basics', content: 'Without DFAC meals, you control your nutrition. Focus on whole foods, adequate protein, and hydration.', keyPoints: ['Protein with every meal', 'More vegetables', 'Limit processed foods']),
+                        TipCard(title: 'Nutrition Basics', content: 'Without mess or galley meals, you control your nutrition. Focus on whole foods, adequate protein, and hydration.', keyPoints: ['Protein with every meal', 'More vegetables', 'Limit processed foods']),
                         TipCard(title: 'Veteran Fitness Programs', content: 'Many programs offer discounts or free access to veterans. Check gym, fitness, and community programs.', keyPoints: ['Community fitness programs', 'Veteran running groups', 'Local veteran fitness groups']),
                       ],
                     )),
@@ -187,19 +187,19 @@ class VeteranScreen extends StatelessWidget {
                   ),
                 ),
                 _VeteranItem(
-                  title: 'Whole Health VA',
-                  subtitle: 'Integrated approach to mind and body care',
+                  title: 'Whole Health',
+                  subtitle: 'Looking after mind and body together',
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => TipCardsScreen(
                       title: 'Whole Health',
-                      subtitle: 'VA\'s holistic health approach',
+                      subtitle: 'Five steps to mental wellbeing (NHS)',
                       icon: Icons.spa_outlined,
                       tips: const [
-                        TipCard(title: 'What is Whole Health?', content: 'VA\'s Whole Health approach looks at your complete wellbeing - body, mind, and spirit - not just treating symptoms.', keyPoints: ['Patient-centered care', 'You set the goals', 'More than medications']),
-                        TipCard(title: 'The 8 Areas', content: 'Whole Health covers 8 areas: sleep, nutrition, movement, relationships, spirit, environment, personal development, and mind-body.', keyPoints: ['All areas connected', 'Work on what matters to you', 'Small changes add up']),
-                        TipCard(title: 'Getting Started', content: 'Ask your veteran healthcare team about holistic health approaches. Take a personal health inventory to identify your priorities.', keyPoints: ['Talk to your care team', 'Online resources available', 'Wellness coaching offered']),
-                        TipCard(title: 'Available Programs', content: 'Many veteran services offer yoga, tai chi, meditation, nutrition counseling, health coaching, and more - often at no cost.', keyPoints: ['Free to veterans', 'In-person and virtual', 'Community classes too']),
+                        TipCard(title: 'Mind and Body Together', content: 'The NHS describes five steps that can improve mental wellbeing. They work alongside physical health: sleep, food and movement all affect how you feel.', keyPoints: ['Small changes add up', 'Work on what matters to you', 'Source: NHS, five steps to mental wellbeing']),
+                        TipCard(title: 'Connect and Be Active', content: 'Good relationships help you feel valued, and being active can lift your mood. Find something you enjoy, such as walking, a team sport or a class.', keyPoints: ['Make time for people', 'Find activity you enjoy', 'Start with what feels manageable']),
+                        TipCard(title: 'Learn, Give and Notice', content: 'Learning new skills, doing something for others and paying attention to the present moment can all support wellbeing.', keyPoints: ['Try a new skill', 'Volunteer or help someone', 'Notice your thoughts and surroundings']),
+                        TipCard(title: 'Getting Health Support', content: 'Register with a GP and tell them you have served in the armed forces. In England, Op COURAGE is the NHS mental health service for veterans, service leavers and reservists.', keyPoints: ['Tell your GP you served', 'You can refer yourself to Op COURAGE', 'Source: NHS, veterans\' mental health services']),
                       ],
                     )),
                   ),
@@ -220,13 +220,13 @@ class VeteranScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (_) => TipCardsScreen(
                       title: 'Financial Planning',
-                      subtitle: 'Maximize your veteran benefits and income',
+                      subtitle: 'Make the most of the support you are entitled to',
                       icon: Icons.attach_money_outlined,
                       tips: const [
-                        TipCard(title: 'Know Your Benefits', content: 'Many veterans don\'t use all their earned benefits. Review disability compensation, education, healthcare, and loan benefits available in your country.', keyPoints: ['Check your entitlements', 'Education benefits often available', 'Veteran healthcare is earned']),
-                        TipCard(title: 'TSP Management', content: 'Your TSP is portable. You can leave it, roll it to IRA, or combine with new employer 401k. Consider long-term strategy.', keyPoints: ['Don\'t cash out - penalties!', 'Review allocation', 'Consider Roth conversion']),
-                        TipCard(title: 'Tax Benefits', content: 'Veterans have specific tax advantages. Disability compensation is tax-free. Some states exempt military retirement from taxes.', keyPoints: ['Disability = tax-free', 'Check state benefits', 'Property tax exemptions possible']),
-                        TipCard(title: 'Credit Building', content: 'Good credit opens doors. Check your credit report annually, dispute errors, and build positive history.', keyPoints: ['Free credit reports', 'SCRA protections may apply', 'Many veteran credit programs']),
+                        TipCard(title: 'Know Your Support', content: 'Many veterans don\'t use all the support available. GOV.UK lists help with health, housing, money, employment and welfare in one place.', keyPoints: ['Start at gov.uk/support-for-veterans', 'Check your learning credits', 'Ask about compensation if service affected your health']),
+                        TipCard(title: 'Your Armed Forces Pension', content: 'Your Armed Forces pension stays with you when you leave. Check your benefit statement so you know which scheme you are in and what you will get.', keyPoints: ['Keep your benefit statement', 'Get free guidance from MoneyHelper', 'Don\'t make big decisions in a rush']),
+                        TipCard(title: 'Tax and Your New Job', content: 'When you start civilian work, check your tax code on your first payslips. Ask HMRC if anything looks wrong.', keyPoints: ['Check your tax code', 'Keep your P45', 'Ask HMRC if unsure']),
+                        TipCard(title: 'Credit Building', content: 'Good credit opens doors. You can check your credit report for free, correct any errors, and build a positive history.', keyPoints: ['Free credit reports', 'Correct errors quickly', 'Pay bills on time']),
                       ],
                     )),
                   ),
@@ -242,16 +242,16 @@ class VeteranScreen extends StatelessWidget {
                       icon: Icons.card_membership_outlined,
                       categories: const [
                         ResourceCategory(title: 'Healthcare', icon: Icons.local_hospital, resources: [
-                          ResourceItem(title: 'Veteran Healthcare', subtitle: 'Medical coverage', icon: Icons.health_and_safety, description: 'Comprehensive healthcare for enrolled veterans. Check your government veteran services portal.'),
-                          ResourceItem(title: 'Dental & Vision', subtitle: 'Additional coverage', icon: Icons.visibility, description: 'Check what dental and vision coverage is available through your veteran services.'),
+                          ResourceItem(title: 'NHS Care for Veterans', subtitle: 'Your GP is the starting point', icon: Icons.health_and_safety, description: 'Register with a GP and tell them you served, so they can make sure you get the right support.'),
+                          ResourceItem(title: 'Dentist & Opticians', subtitle: 'NHS services', icon: Icons.visibility, description: 'Register with an NHS dentist and book eye tests as you would as a civilian. Your service medical records can be requested if needed.'),
                         ]),
                         ResourceCategory(title: 'Education', icon: Icons.school, resources: [
-                          ResourceItem(title: 'Education Benefits', subtitle: 'Learning support', icon: Icons.school, description: 'Many countries offer education benefits for veterans. Use for college, trade school, or apprenticeships.'),
-                          ResourceItem(title: 'Voc Rehab', subtitle: 'Career training', icon: Icons.work, description: 'VR&E (Chapter 31) for service-connected veterans seeking employment.'),
+                          ResourceItem(title: 'Learning Credits', subtitle: 'Funding for courses', icon: Icons.school, description: 'Eligible service leavers can use Enhanced Learning Credits towards approved courses. Check your eligibility before you leave.'),
+                          ResourceItem(title: 'Resettlement Support', subtitle: 'Career training', icon: Icons.work, description: 'The Career Transition Partnership offers resettlement and employment support to service leavers.'),
                         ]),
                         ResourceCategory(title: 'Financial', icon: Icons.attach_money, resources: [
-                          ResourceItem(title: 'Home Loan Benefits', subtitle: 'Housing support', icon: Icons.home, description: 'Many countries offer veteran home loan programs with favorable terms. Check your local veteran services.'),
-                          ResourceItem(title: 'Disability Compensation', subtitle: 'Monthly payments', icon: Icons.payments, description: 'Tax-free monthly payments for service-connected conditions.'),
+                          ResourceItem(title: 'Housing Support', subtitle: 'Finding a home', icon: Icons.home, description: 'Under the Armed Forces Covenant, councils must take your service into account when you apply for social housing. GOV.UK lists veterans\' housing support.'),
+                          ResourceItem(title: 'Armed Forces Compensation', subtitle: 'Injury or illness from service', icon: Icons.payments, description: 'The Armed Forces Compensation Scheme pays for injury or illness caused by service on or after 6 April 2005. Older claims go through the War Pension Scheme.'),
                         ]),
                       ],
                     )),
@@ -259,7 +259,7 @@ class VeteranScreen extends StatelessWidget {
                 ),
                 _VeteranItem(
                   title: 'Retirement Resources',
-                  subtitle: 'Pension options, TSP, and estate planning',
+                  subtitle: 'Pension options and planning ahead',
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => TipCardsScreen(
@@ -267,9 +267,9 @@ class VeteranScreen extends StatelessWidget {
                       subtitle: 'Secure your financial future',
                       icon: Icons.savings_outlined,
                       tips: const [
-                        TipCard(title: 'Military Pension', content: 'If you served 20+ years, your pension is guaranteed income for life. Understand your options for survivor benefits.', keyPoints: ['Survivor Benefit Plan options', 'COLA adjustments', 'Taxable in most states']),
-                        TipCard(title: 'TSP Options', content: 'Your TSP can stay where it is, roll to IRA, or combine with new employer plan. Consider fees and investment options.', keyPoints: ['TSP has very low fees', 'IRAs offer more flexibility', 'Don\'t cash out early']),
-                        TipCard(title: 'Veteran Pension', content: 'Low-income wartime veterans may qualify for pension benefits. Separate from disability compensation.', keyPoints: ['Income-based', 'Wartime service often required', 'Additional support may be available']),
+                        TipCard(title: 'Armed Forces Pension', content: 'What you receive depends on which Armed Forces Pension Scheme you are in and how long you served. Your benefit statement shows your figures.', keyPoints: ['Check which scheme you are in', 'Keep your details up to date', 'Tell the scheme who your dependants are']),
+                        TipCard(title: 'Workplace Pensions', content: 'Your new employer will usually enrol you in a workplace pension. Keep track of every pension you build up.', keyPoints: ['Check you have been enrolled', 'Keep a list of your pensions', 'Get free guidance from MoneyHelper']),
+                        TipCard(title: 'Get Free Guidance', content: 'MoneyHelper is a free, government-backed service that can explain your pension options before you make decisions.', keyPoints: ['Free and impartial', 'Ask before you transfer anything', 'Beware of pension scams']),
                         TipCard(title: 'Estate Planning', content: 'Ensure your wishes are documented. Create or update will, designate beneficiaries, and consider trust options.', keyPoints: ['Update beneficiaries', 'Power of attorney', 'Healthcare directives']),
                       ],
                     )),
@@ -370,7 +370,7 @@ class VeteranScreen extends StatelessWidget {
                             categories: const [
                               ResourceCategory(title: 'Veteran-Focused', icon: Icons.military_tech, resources: [
                                 ResourceItem(title: 'Mentor Other Vets', subtitle: 'Share your experience', icon: Icons.people, description: 'Help transitioning service members navigate civilian life.'),
-                                ResourceItem(title: 'Honor Guard', subtitle: 'Veteran ceremonies', icon: Icons.flag, description: 'Participate in military funeral honors and ceremonies.'),
+                                ResourceItem(title: 'Remembrance', subtitle: 'Parades and ceremonies', icon: Icons.flag, description: 'Take part in Remembrance events and parades with local veterans\' groups.'),
                               ]),
                               ResourceCategory(title: 'Community', icon: Icons.location_city, resources: [
                                 ResourceItem(title: 'Community Service Projects', subtitle: 'Local volunteering', icon: Icons.groups, description: 'Veteran-led community service projects in cities and towns.'),
@@ -426,7 +426,7 @@ class VeteranScreen extends StatelessWidget {
                     items: [
                       _VeteranItem(
                         title: 'VetTech Training',
-                        subtitle: 'Best schools and free enrollment advice',
+                        subtitle: 'Training options and how to fund them',
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => ResourceListScreen(
@@ -435,7 +435,7 @@ class VeteranScreen extends StatelessWidget {
                             icon: Icons.computer_outlined,
                             categories: const [
                               ResourceCategory(title: 'Veteran Programs', icon: Icons.school, resources: [
-                                ResourceItem(title: 'Tech Training Programs', subtitle: 'Tuition-free tech training', icon: Icons.code, description: 'Many veteran services offer funded tech bootcamps and training programs.', details: ['Check local veteran services', 'Living support often included', 'Many approved providers']),
+                                ResourceItem(title: 'Tech Training Programmes', subtitle: 'Funded tech training', icon: Icons.code, description: 'Learning credits and resettlement support can help fund tech courses and qualifications.', details: ['Check your learning credits', 'Ask the Career Transition Partnership', 'Use approved providers']),
                               ]),
                               ResourceCategory(title: 'Bootcamps', icon: Icons.laptop, resources: [
                                 ResourceItem(title: 'Coding Bootcamps', subtitle: 'Learn to code', icon: Icons.developer_mode, description: 'Intensive programs teaching web development, data science, and cybersecurity.'),
@@ -572,8 +572,8 @@ class VeteranScreen extends StatelessWidget {
                             subtitle: 'Your service is part of history',
                             icon: Icons.history_edu_outlined,
                             tips: const [
-                              TipCard(title: 'Veterans History Project', content: 'Library of Congress collects and preserves veteran stories. You can submit your own or interview other veterans.', keyPoints: ['Free to participate', 'Written, audio, or video', 'Preserved forever']),
-                              TipCard(title: 'StoryCorps', content: 'Record conversations about military service that become part of the American Folklife Center.', keyPoints: ['Easy recording process', 'Shareable with family', 'National archive']),
+                              TipCard(title: 'Record Your Story', content: 'Write down or record your memories of service while they are fresh. Many families value these stories for generations.', keyPoints: ['Written, audio, or video', 'Share with family', 'Keep copies safe']),
+                              TipCard(title: 'Regimental and Corps Museums', content: 'Many service museums collect personal stories and items from people who served. Ask whether they take contributions.', keyPoints: ['Connect with your service history', 'Educate the next generation', 'Preserve memorabilia']),
                               TipCard(title: 'Local Museums', content: 'Many local museums collect military artifacts and stories. Consider donating or volunteering.', keyPoints: ['Connect with local history', 'Educate next generation', 'Preserve memorabilia']),
                             ],
                           )),

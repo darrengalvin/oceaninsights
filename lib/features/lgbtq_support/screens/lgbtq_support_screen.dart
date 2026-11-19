@@ -169,7 +169,7 @@ class _UnderstandTabState extends State<_UnderstandTab> {
     {'term': 'Coming Out', 'meaning': 'The process of sharing one\'s sexual orientation or gender identity with others. It\'s deeply personal and should never be forced or done on someone else\'s behalf.'},
     {'term': 'Ally', 'meaning': 'Someone who supports LGBTQ+ people. You don\'t have to be LGBTQ+ to stand up for equality and inclusion.'},
     {'term': 'Deadnaming', 'meaning': 'Using a transgender person\'s birth name after they\'ve changed it. This can be deeply hurtful, even if unintentional.'},
-    {'term': 'Intersex', 'meaning': 'A person born with physical sex characteristics that don\'t fit typical definitions of male or female. More common than many realise — about 1.7% of people.'},
+    {'term': 'Intersex', 'meaning': 'A person born with physical sex characteristics that don\'t fit typical definitions of male or female. Estimates of how many people are intersex vary widely, depending on which conditions are included.'},
   ];
 
   int _mythIndex = 0;
@@ -606,8 +606,8 @@ class _DeploymentSafetyTab extends StatelessWidget {
       'region': 'High Risk — Imprisonment',
       'color': Color(0xFFE67E22),
       'icon': Icons.warning_rounded,
-      'countries': 'Egypt, Kenya, Malaysia, Myanmar, Oman, Singapore, Sri Lanka, Tanzania, Uganda, and 20+ others',
-      'advice': 'Imprisonment of 10+ years for same-sex activity. Exercise extreme caution. Avoid any public display of affection or disclosure. Be aware of local informant culture.',
+      'countries': 'Egypt, Kenya, Malaysia, Myanmar, Oman, Sri Lanka, Tanzania, Uganda, and 20+ others',
+      'advice': 'Same-sex activity can lead to long prison sentences. Exercise extreme caution. Always check the latest FCDO travel advice for the country before you go. Avoid any public display of affection or disclosure. Be aware of local informant culture.',
     },
     {
       'region': 'Elevated Risk — Criminalised',

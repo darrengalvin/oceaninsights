@@ -145,7 +145,7 @@ class _MythBusterTabState extends State<_MythBusterTab> {
     {'statement': 'Sleep deprivation can cause hallucinations.', 'answer': true, 'explanation': 'After 48-72 hours without sleep, many people experience visual and auditory hallucinations as the brain struggles to function.'},
     {'statement': 'Adults cannot grow new brain cells.', 'answer': false, 'explanation': 'Neurogenesis — the growth of new neurons — continues in the hippocampus throughout adulthood, especially with exercise.'},
     {'statement': 'Listening to Mozart makes you smarter.', 'answer': false, 'explanation': 'The "Mozart Effect" was based on a small, unreplicated study. Music can improve mood and focus, but doesn\'t increase IQ.'},
-    {'statement': 'Exercise is as effective as medication for mild depression.', 'answer': true, 'explanation': 'Multiple studies show regular exercise can be as effective as antidepressants for mild to moderate depression.'},
+    {'statement': 'Regular exercise can help with low mood and mild depression.', 'answer': true, 'explanation': 'The NHS recommends regular exercise for low mood: it may improve your mood and help you sleep better. If low mood lasts more than 2 weeks, speak to a GP.'},
     {'statement': 'Your brain processes rejection like physical pain.', 'answer': true, 'explanation': 'fMRI studies show social rejection activates the same brain regions (anterior insula, anterior cingulate cortex) as physical pain.'},
   ];
 
@@ -546,9 +546,9 @@ class _ExperimentsTabState extends State<_ExperimentsTab> {
       'year': '1971',
       'researcher': 'Philip Zimbardo',
       'steps': [
-        {'text': 'College students are randomly assigned to be either guards or prisoners in a mock prison. It\'s meant to last two weeks.', 'type': 'info'},
+        {'text': 'University students are randomly assigned to be either guards or prisoners in a mock prison. It\'s meant to last two weeks.', 'type': 'info'},
         {'text': 'Within days, "guards" become cruel and authoritarian, and "prisoners" become passive and distressed. If you were assigned as a guard, what do you think you would do?', 'type': 'choice', 'options': ['I\'d stay fair and kind', 'I might get caught up in the role']},
-        {'text': 'The experiment was stopped after just 6 days because the abuse became so severe. It showed how quickly ordinary people adopt roles of power and how situations shape behaviour more than personality.', 'type': 'reveal'},
+        {'text': 'The experiment was stopped after just 6 days because the abuse became so severe. It is often said to show how quickly ordinary people adopt roles of power. Later research has strongly questioned this: the guards were given guidance on how to behave, and the study has never been properly repeated. Treat it as a famous story, not proof.', 'type': 'reveal'},
       ],
     },
     {
@@ -558,7 +558,7 @@ class _ExperimentsTabState extends State<_ExperimentsTab> {
       'steps': [
         {'text': 'A child is placed in a room with a single marshmallow. They\'re told: "You can eat it now, or if you wait 15 minutes, you\'ll get two marshmallows."', 'type': 'info'},
         {'text': 'Imagine you\'re that child. What would you do?', 'type': 'choice', 'options': ['Eat it immediately', 'Wait for two']},
-        {'text': 'About one-third of children waited the full 15 minutes. Follow-up studies found those who waited tended to have better life outcomes — higher test scores, lower substance abuse, better stress management. Delayed gratification is a powerful predictor of success.', 'type': 'reveal'},
+        {'text': 'About one-third of children waited the full 15 minutes. Early follow-up studies linked waiting to better outcomes later in life. Larger, more recent studies found the link is much weaker once family background is taken into account, so it is not a reliable predictor of success.', 'type': 'reveal'},
       ],
     },
     {

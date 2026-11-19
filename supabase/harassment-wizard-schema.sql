@@ -265,7 +265,7 @@ INSERT INTO harassment_wizard_guidance (title, message, guidance_type, icon, pri
 
 -- Informal options
 INSERT INTO harassment_wizard_guidance (title, message, guidance_type, icon, priority, is_universal, sort_order) VALUES
-('Informal options', 'Not ready for a formal complaint? That is completely okay. You can: speak to a trusted colleague, mentor, or Padre. Contact SSAFA or other support services anonymously. Use the Confidential Support Line. Speak to your Medical Officer. Sometimes just talking to someone helps you decide your next step.', 'action_informal', 'chat', 65, true, 21);
+('Informal options', 'Not ready for a formal complaint? That is completely okay. You can: speak to a trusted colleague, mentor, or Padre. Contact SSAFA or other support services anonymously. Call SSAFA Forcesline on 0800 260 6767. Speak to your Medical Officer. Sometimes just talking to someone helps you decide your next step.', 'action_informal', 'chat', 65, true, 21);
 
 -- Deployment-specific guidance
 INSERT INTO harassment_wizard_guidance (title, message, guidance_type, icon, priority, match_tags, sort_order) VALUES
@@ -294,13 +294,10 @@ INSERT INTO harassment_wizard_contacts (name, description, phone, website, avail
 ('Service Police / Chain of Command', 'Report a crime or assault through your Unit Provost staff or Chain of Command', NULL, 'https://www.gov.uk/guidance/report-a-crime-in-the-armed-forces', '24/7 via your unit', 'local_police', false, 10);
 
 INSERT INTO harassment_wizard_contacts (name, description, phone, website, availability, icon, is_emergency, sort_order) VALUES
-('SSAFA', 'Forces charity providing confidential emotional and practical support', '0800 260 6767', 'https://www.ssafa.org.uk', '09:00 - 17:30 Mon-Fri', 'support_agent', false, 3);
+('SSAFA Forcesline', 'Free, confidential helpline for serving personnel, veterans and families, independent of the chain of command', '0800 260 6767', 'https://www.ssafa.org.uk', 'Mon-Thu 9am-5pm, Fri 9am-4pm', 'support_agent', false, 3);
 
 INSERT INTO harassment_wizard_contacts (name, description, phone, website, availability, icon, is_emergency, sort_order) VALUES
-('Confidential Support Line', 'Free, anonymous, confidential emotional support for Armed Forces', '0800 731 4880', NULL, '24/7', 'phone_in_talk', false, 4);
-
-INSERT INTO harassment_wizard_contacts (name, description, phone, website, availability, icon, is_emergency, sort_order) VALUES
-('Service Complaints Ombudsman', 'Independent oversight of the Service Complaints process', '020 7877 3450', 'https://www.scoaf.org.uk', '09:00 - 17:00 Mon-Fri', 'balance', false, 5);
+('Service Complaints Ombudsman', 'Independent oversight of the Service Complaints process. Contact through the online form on the Ombudsman website', NULL, 'https://www.scoaf.org.uk', 'Online contact form', 'balance', false, 5);
 
 INSERT INTO harassment_wizard_contacts (name, description, phone, website, availability, icon, is_emergency, sort_order) VALUES
 ('Combat Stress', 'Mental health charity for veterans and serving personnel', '0800 138 1619', 'https://combatstress.org.uk', '24/7', 'psychology', false, 6);

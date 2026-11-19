@@ -65,33 +65,43 @@ class LearnContent {
   static const List<Article> brainScienceArticles = [
     Article(
       id: 'nine_second_rule',
-      title: 'The 9-Second Rule',
-      summary: 'Why waiting just 9 seconds before reacting can change everything.',
+      title: 'Pause Before You React',
+      summary: 'A short pause gives you time to think before strong feelings take over.',
       category: ArticleCategory.brainScience,
-      readTimeMinutes: 4,
+      readTimeMinutes: 3,
       sections: [
         ArticleSection(
-          content: 'When something triggers an emotional response, your brain\'s amygdala fires first - before your rational thinking brain (prefrontal cortex) has time to process what\'s happening. This is called an "amygdala hijack".',
+          content: 'When something sets off a strong feeling, like anger or panic, it can be hard to think clearly. Your body reacts first: your heart may race and your muscles tense. Giving yourself a moment before you respond can help you choose what to do next.',
         ),
         ArticleSection(
-          heading: 'The Science Behind It',
-          content: 'Research shows it takes approximately 6-9 seconds for your prefrontal cortex to catch up with your amygdala. During this window, you\'re essentially running on pure emotion with limited access to logical thinking.',
+          heading: 'What the NHS Suggests',
+          content: 'The NHS suggests giving yourself time to think before reacting. Try counting to 10 and doing a calming breathing exercise. Noticing the early signs that you are getting angry also helps you calm down sooner.',
         ),
         ArticleSection(
           heading: 'How to Use This',
-          content: 'When you feel a strong emotional reaction rising:\n\n1. Recognise the feeling\n2. Take a breath\n3. Count to 9 slowly\n4. Then respond\n\nThis simple pause allows your thinking brain to come back online.',
-          tip: 'Practice this with small frustrations first. The more you do it, the more automatic it becomes.',
+          content: 'When you feel a strong reaction rising:\n\n1. Notice the feeling\n2. Breathe in gently for 5, and out for 5\n3. Count slowly to 10\n4. Then decide how to respond',
+          tip: 'Practise with small frustrations first. The more you do it, the more natural it becomes.',
         ),
         ArticleSection(
-          heading: 'Why It Matters',
-          content: 'Most regrettable actions - angry words, impulsive decisions, aggressive responses - happen in that first 9 seconds. By simply pausing, you give yourself the choice of how to respond rather than just reacting.',
+          heading: 'If It Feels Out of Control',
+          content: 'If anger or other strong feelings are affecting your life or relationships, talk to someone you trust or your GP. You can also refer yourself to NHS Talking Therapies.',
         ),
       ],
       keyTakeaways: [
-        'Your emotional brain reacts faster than your thinking brain',
-        'It takes about 9 seconds for logic to catch up with emotion',
-        'A simple pause can prevent most regrettable reactions',
-        'This is a skill that improves with practice',
+        'Strong feelings can make it hard to think clearly',
+        'Counting to 10 and calm breathing give you time to think',
+        'Spotting the early signs helps you calm down sooner',
+        'Your GP can help if it feels out of control',
+      ],
+      sources: [
+        ArticleSource(
+          name: 'NHS: Get help with anger',
+          url: 'https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/anger/',
+        ),
+        ArticleSource(
+          name: 'NHS: Breathing exercises for stress',
+          url: 'https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/',
+        ),
       ],
     ),
     
@@ -116,14 +126,20 @@ class LearnContent {
         ),
         ArticleSection(
           heading: 'Resetting Your System',
-          content: 'Once triggered, your body needs to complete the stress cycle to return to baseline:\n\n• Physical movement (even a short walk)\n• Deep breathing exercises\n• Progressive muscle relaxation\n• Social connection\n\nWithout completing the cycle, stress hormones stay elevated.',
+          content: 'Things that can help you feel calmer after a stress response:\n\n• Physical activity, even a short walk\n• Calming breathing exercises\n• Talking to someone you trust\n\nThese are all on the NHS list of things that can help with stress.',
         ),
       ],
       keyTakeaways: [
         'Fight, flight, and freeze are normal survival responses',
         'Your brain treats modern stress the same as physical danger',
         'Recognising your typical response helps you manage it',
-        'Physical movement helps reset your nervous system',
+        'Activity, calm breathing and talking can all help',
+      ],
+      sources: [
+        ArticleSource(
+          name: 'NHS: Stress',
+          url: 'https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/stress/',
+        ),
       ],
     ),
     
@@ -175,7 +191,7 @@ class LearnContent {
         ),
         ArticleSection(
           heading: 'The Sleep-Mood Connection',
-          content: 'Research shows that just one night of poor sleep:\n\n• Increases emotional reactivity by up to 60%\n• Reduces ability to cope with stress\n• Impairs decision-making\n• Affects impulse control\n\nChronic sleep deprivation is strongly linked to anxiety and depression.',
+          content: 'Sleep and mood are closely linked. The NHS notes that low mood can cause problems sleeping, and that getting more sleep is one of the small changes that can help low mood. When you are short of sleep, it is often harder to cope with stress.',
           tip: 'If you\'re feeling emotionally volatile, ask yourself: "How did I sleep last night?"',
         ),
         ArticleSection(
@@ -186,8 +202,14 @@ class LearnContent {
       keyTakeaways: [
         'Sleep is when your brain processes emotions',
         'Poor sleep directly impacts emotional regulation',
-        'Consistent sleep timing is more important than duration',
+        'Regular exercise may improve your mood and help you sleep better',
         'Sleep problems and mental health issues often go together',
+      ],
+      sources: [
+        ArticleSource(
+          name: 'NHS: Low mood, sadness and depression',
+          url: 'https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/low-mood-sadness-depression/',
+        ),
       ],
     ),
   ];
@@ -272,20 +294,30 @@ class LearnContent {
           content: 'Many people focus on eliminating stressors - the things that cause stress. But stressors and stress are not the same thing. You can remove a stressor and still carry the stress in your body.',
         ),
         ArticleSection(
-          heading: 'The Stress Cycle',
-          content: 'Stress is a physiological response - it happens in your body. When you encounter a stressor, your body activates. That activation needs to complete its cycle to return to baseline, regardless of whether the stressor is still present.',
+          heading: 'Stress Is Felt in the Body',
+          content: 'Stress is your body\'s reaction to feeling threatened or under pressure. It can affect how you feel physically, mentally and how you behave, even after the cause has gone.',
         ),
         ArticleSection(
-          heading: 'Completing the Cycle',
-          content: 'Ways to complete the stress cycle:\n\n• Physical activity (most effective)\n• Deep breathing\n• Positive social interaction\n• Laughter\n• Crying\n• Creative expression\n\nThe key is allowing your body to physically process the stress.',
-          tip: 'Even a few minutes of physical movement can help complete a stress cycle.',
+          heading: 'Things That Can Help',
+          content: 'The NHS suggests:\n\n• Talking to a friend, family member or health professional\n• Breathing exercises for stress\n• Setting small targets rather than doing everything at once\n• Planning ahead for stressful days\n• Not relying on alcohol, cigarettes, gambling or drugs to cope',
+          tip: 'Being physically active is also one of the NHS\'s five steps to mental wellbeing.',
         ),
       ],
       keyTakeaways: [
         'Removing a stressor doesn\'t automatically remove the stress',
-        'Stress is a physical response that needs to complete its cycle',
-        'Physical activity is one of the best ways to process stress',
-        'Multiple short stress-relief activities throughout the day help',
+        'Stress affects your body, mind and behaviour',
+        'Talking, breathing exercises and small targets can help',
+        'Speak to a GP if stress is affecting your daily life',
+      ],
+      sources: [
+        ArticleSource(
+          name: 'NHS: Stress',
+          url: 'https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/stress/',
+        ),
+        ArticleSource(
+          name: 'NHS: Five steps to mental wellbeing',
+          url: 'https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/five-steps-to-mental-wellbeing/',
+        ),
       ],
     ),
 

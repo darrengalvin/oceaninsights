@@ -148,9 +148,10 @@ class SupportScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     'If you or someone you know is in immediate danger, please contact emergency services:\n\n'
-                    '• UK: 999 or Samaritans 116 123\n'
-                    '• US: 911 or 988 Suicide & Crisis Lifeline\n'
-                    '• Veterans Crisis Line: 1-800-273-8255 (Press 1)\n\n'
+                    '• Emergency: 999, or go to A&E\n'
+                    '• Urgent mental health help: call NHS 111 and choose the mental health option (24/7)\n'
+                    '• Samaritans: 116 123 (free, 24/7)\n'
+                    '• Text SHOUT to 85258 (24/7)\n\n'
                     'This app is not a substitute for professional help.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       height: 1.6,

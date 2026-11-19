@@ -88,5 +88,5 @@ INSERT INTO brain_myths (statement, is_true, explanation, sort_order) VALUES
 ('Sleep deprivation can cause hallucinations.', true, 'After 48-72 hours without sleep, many people experience visual and auditory hallucinations.', 6),
 ('Adults cannot grow new brain cells.', false, 'Neurogenesis continues in the hippocampus throughout adulthood, especially with exercise.', 7),
 ('Listening to Mozart makes you smarter.', false, 'The "Mozart Effect" was based on a small, unreplicated study. Music can improve mood but doesn''t increase IQ.', 8),
-('Exercise is as effective as medication for mild depression.', true, 'Multiple studies show regular exercise can be as effective as antidepressants for mild to moderate depression.', 9),
+('Regular exercise can help with low mood and mild depression.', true, 'The NHS recommends regular exercise for low mood: it may improve your mood and help you sleep better. If low mood lasts more than 2 weeks, speak to a GP.', 9),
 ('Your brain processes rejection like physical pain.', true, 'fMRI studies show social rejection activates the same brain regions as physical pain.', 10);

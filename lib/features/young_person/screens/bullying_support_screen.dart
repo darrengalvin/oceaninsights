@@ -1790,18 +1790,18 @@ class _CopingStrategy {
 
 const _copingStrategies = [
   _CopingStrategy(
-    title: 'The Grey Rock Technique',
-    subtitle: 'Become uninteresting to the bully',
-    emoji: '🪨',
+    title: 'Stay Safe in the Moment',
+    subtitle: 'What to do when it is happening',
+    emoji: '🛡️',
     colour: Color(0xFF94A3B8),
     content:
-        'Bullies want a reaction. The grey rock technique is about being as boring and unreactive as possible.\n\n'
-        '• Give short, dull responses: "okay", "sure", "cool"\n'
-        '• Don\'t show anger, sadness, or frustration\n'
-        '• Keep your face neutral\n'
-        '• Don\'t engage in arguments\n'
-        '• Walk away calmly\n\n'
-        'This doesn\'t mean what they\'re doing is okay — it\'s a strategy to make them lose interest while you get proper help.',
+        'If someone is bullying you, your safety comes first.\n\n'
+        '• Walk away if you can, and go somewhere you feel safe\n'
+        '• Stay near friends or adults you trust\n'
+        '• Don\'t fight back — it could get you hurt or in trouble\n'
+        '• Keep a record of what happened, when and who saw it\n'
+        '• Tell someone you trust as soon as you can\n\n'
+        'What is happening is not your fault, and you don\'t have to deal with it on your own. Childline is free on 0800 1111.',
   ),
   _CopingStrategy(
     title: 'Breathing to Stay Calm',
@@ -1810,13 +1810,12 @@ const _copingStrategies = [
     colour: Color(0xFF60A5FA),
     content:
         'When bullying triggers anxiety, panic, or anger, your body goes into fight-or-flight. Breathing brings you back to calm.\n\n'
-        'Box Breathing (4-4-4-4):\n'
-        '• Breathe IN for 4 seconds\n'
-        '• HOLD for 4 seconds\n'
-        '• Breathe OUT for 4 seconds\n'
-        '• HOLD for 4 seconds\n'
-        '• Repeat 4 times\n\n'
-        'This works because it activates your parasympathetic nervous system — your body\'s natural calming mechanism.',
+        'The NHS calming breath:\n'
+        '• Breathe IN gently through your nose, counting to 5\n'
+        '• Breathe OUT gently through your mouth, counting to 5\n'
+        '• Don\'t force it, and don\'t hold your breath\n'
+        '• Keep going for a few minutes\n\n'
+        'The NHS recommends this exercise for stress, anxiety and panic.',
   ),
   _CopingStrategy(
     title: 'Build Your Support Team',
@@ -1839,7 +1838,7 @@ const _copingStrategies = [
     colour: Color(0xFFA78BFA),
     content:
         'Bullying tries to redefine who you are. Don\'t let it.\n\n'
-        '• The things bullies say are projections of their own insecurities\n'
+        '• What a bully says says nothing true about you\n'
         '• Make a mental list of things you like about yourself\n'
         '• Spend time with people who genuinely appreciate you\n'
         '• Do things you\'re good at — hobbies, sports, creativity\n'
