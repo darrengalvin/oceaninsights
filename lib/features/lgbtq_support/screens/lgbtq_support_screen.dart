@@ -154,9 +154,9 @@ class _UnderstandTabState extends State<_UnderstandTab> {
     {'myth': 'LGBTQ+ people can\'t handle the pressure of military life.', 'truth': false, 'explanation': 'LGBTQ+ people have served with distinction throughout history — often while hiding their identity, which required extraordinary resilience on top of their duties.'},
     {'myth': 'The UK lifted its ban on LGBTQ+ military service in 2000.', 'truth': true, 'explanation': 'The ban was lifted on 12 January 2000 after the European Court of Human Rights ruled it a violation of human rights. Before this, an estimated 5,000+ people were dismissed.'},
     {'myth': 'Being LGBTQ+ is accepted worldwide.', 'truth': false, 'explanation': 'As of 2025, 65 countries still criminalise same-sex activity. In some, the penalty is death. Service members deployed to these regions face real danger if their identity is discovered.'},
-    {'myth': 'LGBTQ+ veterans have the same mental health outcomes as other veterans.', 'truth': false, 'explanation': 'Research shows LGBTQ+ veterans face significantly higher rates of depression, anxiety, and suicidal ideation — not because of their identity, but because of stigma, discrimination, and isolation.'},
+    {'myth': 'LGBTQ+ veterans have the same mental health outcomes as other veterans.', 'truth': false, 'explanation': 'Many LGBTQ+ veterans have faced stigma, discrimination and isolation, which can take a toll on mental health. Being LGBTQ+ is not the cause; how people are treated is.'},
     {'myth': 'If someone hasn\'t "come out" they\'re probably not LGBTQ+.', 'truth': false, 'explanation': 'Many people don\'t feel safe to come out, especially in military environments. Someone\'s silence about their identity doesn\'t mean it doesn\'t exist — it often means they don\'t feel safe.'},
-    {'myth': 'Allies aren\'t important — it\'s up to LGBTQ+ people to support themselves.', 'truth': false, 'explanation': 'Allies are vital. Research shows that even one supportive person can dramatically reduce the risk of depression and suicide in LGBTQ+ individuals. Your support literally saves lives.'},
+    {'myth': 'Allies aren\'t important — it\'s up to LGBTQ+ people to support themselves.', 'truth': false, 'explanation': 'Allies are vital. Feeling accepted and supported by people around you protects mental health. Being a visible, supportive ally can make a real difference.'},
     {'myth': 'The UK military is now fully inclusive — the work is done.', 'truth': false, 'explanation': 'While huge progress has been made, many LGBTQ+ veterans who were dismissed before 2000 are still waiting for full recognition and support. And serving members can still face day-to-day prejudice.'},
     {'myth': 'Gender identity and sexual orientation are the same thing.', 'truth': false, 'explanation': 'Sexual orientation is about who you\'re attracted to. Gender identity is about who you are. A transgender person can be straight, gay, bisexual, or any other orientation.'},
   ];
@@ -807,13 +807,6 @@ class _SupportTab extends StatelessWidget {
       'contact': '0808 801 0400',
       'website': 'mermaidsuk.org.uk',
       'emoji': '🧜',
-    },
-    {
-      'name': 'Modern Military Association (US/International)',
-      'description': 'The largest US advocacy group for LGBTQ+ military and veterans. Resources, legal support, and community.',
-      'contact': 'Via website',
-      'website': 'modernmilitary.org',
-      'emoji': '🇺🇸',
     },
   ];
 

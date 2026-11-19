@@ -133,9 +133,9 @@ INSERT INTO lgbtq_myths (myth, is_true, explanation, sort_order) VALUES
   ('LGBTQ+ people can''t handle the pressure of military life.', false, 'LGBTQ+ people have served with distinction throughout history — often while hiding their identity, which required extraordinary resilience on top of their duties.', 1),
   ('The UK lifted its ban on LGBTQ+ military service in 2000.', true, 'The ban was lifted on 12 January 2000 after the European Court of Human Rights ruled it a violation of human rights. Before this, an estimated 5,000+ people were dismissed.', 2),
   ('Being LGBTQ+ is accepted worldwide.', false, 'As of 2025, 65 countries still criminalise same-sex activity. In some, the penalty is death. Service members deployed to these regions face real danger if their identity is discovered.', 3),
-  ('LGBTQ+ veterans have the same mental health outcomes as other veterans.', false, 'Research shows LGBTQ+ veterans face significantly higher rates of depression, anxiety, and suicidal ideation — not because of their identity, but because of stigma, discrimination, and isolation.', 4),
+  ('LGBTQ+ veterans have the same mental health outcomes as other veterans.', false, 'Many LGBTQ+ veterans have faced stigma, discrimination and isolation, which can take a toll on mental health. Being LGBTQ+ is not the cause; how people are treated is.', 4),
   ('If someone hasn''t "come out" they''re probably not LGBTQ+.', false, 'Many people don''t feel safe to come out, especially in military environments. Someone''s silence about their identity doesn''t mean it doesn''t exist — it often means they don''t feel safe.', 5),
-  ('Allies aren''t important — it''s up to LGBTQ+ people to support themselves.', false, 'Allies are vital. Research shows that even one supportive person can dramatically reduce the risk of depression and suicide in LGBTQ+ individuals. Your support literally saves lives.', 6),
+  ('Allies aren''t important — it''s up to LGBTQ+ people to support themselves.', false, 'Allies are vital. Feeling accepted and supported by people around you protects mental health. Being a visible, supportive ally can make a real difference.', 6),
   ('The UK military is now fully inclusive — the work is done.', false, 'While huge progress has been made, many LGBTQ+ veterans who were dismissed before 2000 are still waiting for full recognition and support. And serving members can still face day-to-day prejudice.', 7),
   ('Gender identity and sexual orientation are the same thing.', false, 'Sexual orientation is about who you''re attracted to. Gender identity is about who you are. A transgender person can be straight, gay, bisexual, or any other orientation.', 8);
 
@@ -161,8 +161,7 @@ INSERT INTO lgbtq_support_orgs (name, description, contact, website, emoji, sort
   ('Op COURAGE', 'NHS veteran mental health and wellbeing service. Confidential, free, and designed for veterans. Available across England.', 'Via GP or self-referral', 'nhs.uk/opcourage', '💚', 2),
   ('Samaritans', 'Available 24/7 for anyone struggling. You don''t have to be suicidal to call. They listen without judgement.', '116 123 (free, 24/7)', 'samaritans.org', '📞', 3),
   ('Switchboard LGBT+ Helpline', 'A safe space for anyone to discuss anything, including sexuality, gender identity, and emotional wellbeing.', '0800 0119 100', 'switchboard.lgbt', '💜', 4),
-  ('Mermaids', 'Support for transgender, non-binary, and gender-diverse young people and their families.', '0808 801 0400', 'mermaidsuk.org.uk', '🧜', 5),
-  ('Modern Military Association (US/International)', 'The largest US advocacy group for LGBTQ+ military and veterans. Resources, legal support, and community.', 'Via website', 'modernmilitary.org', '🇺🇸', 6);
+  ('Mermaids', 'Support for transgender, non-binary, and gender-diverse young people and their families.', '0808 801 0400', 'mermaidsuk.org.uk', '🧜', 5);
 
 INSERT INTO lgbtq_affirmations (text, sort_order) VALUES
   ('Your identity is not a weakness — it''s part of your strength.', 1),

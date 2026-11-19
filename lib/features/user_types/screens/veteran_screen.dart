@@ -457,7 +457,7 @@ class VeteranScreen extends StatelessWidget {
                             categories: const [
                               ResourceCategory(title: 'Job Boards', icon: Icons.search, resources: [
                                 ResourceItem(title: 'Veteran Job Placement', subtitle: 'Free job placement', icon: Icons.work, description: 'Free career coaching and job placement services for veterans and spouses available in many countries.'),
-                                ResourceItem(title: 'Military.com', subtitle: 'Job listings', icon: Icons.list, description: 'Large job board with veteran-friendly employer listings.'),
+                                ResourceItem(title: 'Career Transition Partnership', subtitle: 'Job listings', icon: Icons.list, description: 'Job listings from employers looking to hire service leavers, as part of resettlement support.'),
                               ]),
                             ],
                           )),

@@ -128,3 +128,26 @@ UPDATE tips SET title = 'Vocational Courses',
        content = 'College vocational courses teach specific skills quickly. You can start earning sooner in high-demand fields.',
        key_points = ARRAY['Often 1 to 2 years', 'Hands-on learning', 'Lower cost, faster income', 'High demand: plumbing, electrical, engineering']
  WHERE title = 'Trade School Path';
+
+-- R18: rituals titles and cold-water wording
+UPDATE ritual_items SET title = replace(title, 'Power pose', 'Stand tall') WHERE title LIKE 'Power pose%';
+UPDATE ritual_items SET title = 'Cool water reset',
+       how_to = replace(how_to, 'Run cold water over your wrists for 30 seconds, or splash cold water on your face.', 'Run cool water over your wrists for 30 seconds, or splash some on your face.')
+ WHERE title = 'Cold water reset';
+UPDATE ritual_items SET title = 'Cool water splash', description = 'A quick way to feel more awake',
+       how_to = 'Splash cool water on your face a few times, or let it run over your wrists for 30 seconds.'
+ WHERE title = 'Cold water face splash';
+UPDATE ritual_items SET how_to = replace(how_to, '(Wonder Woman pose) ', '') WHERE how_to LIKE '%Wonder Woman pose%';
+
+-- R2: US-only organisation in a UK app
+DELETE FROM lgbtq_support_orgs WHERE name LIKE 'Modern Military Association%';
+
+-- Unsourced claims found by the evidence checks
+UPDATE lgbtq_myths SET explanation = 'Many LGBTQ+ veterans have faced stigma, discrimination and isolation, which can take a toll on mental health. Being LGBTQ+ is not the cause; how people are treated is.'
+ WHERE explanation LIKE 'Research shows LGBTQ+ veterans face significantly higher rates%';
+UPDATE lgbtq_myths SET explanation = 'Feeling accepted and supported by people around you protects mental health. Being a visible, supportive ally can make a real difference.'
+ WHERE explanation LIKE 'Research shows that even one supportive person%';
+UPDATE ritual_tips SET content = 'Moving your body can help when you feel anxious: walk, stretch, shake it out. Being active is one of the NHS''s five steps to mental wellbeing.'
+ WHERE content LIKE 'Anxiety is energy. Sometimes the best cure%';
+UPDATE ritual_items SET why_it_helps = 'Caffeine stays in your body for hours, so an afternoon coffee can still affect your sleep at night.'
+ WHERE why_it_helps LIKE 'Caffeine has a half-life%';

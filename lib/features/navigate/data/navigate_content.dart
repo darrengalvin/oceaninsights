@@ -490,7 +490,7 @@ class NavigateContent {
         ),
         GuidanceCard(
           id: 'men_3',
-          title: 'What Men Often Need',
+          title: 'Feeling Respected and Valued',
           content: 'Many men want the same things as everyone else: to feel respected and not belittled. Appreciation — to know their actions and feelings are seen. Emotional safety — a space with no judgement. Desire — to feel wanted. To matter — to know their presence makes a difference. Acceptance — being loved for exactly who they are, not what they provide.',
           affirmation: 'Your needs are valid.',
         ),
@@ -565,7 +565,7 @@ class NavigateContent {
     ),
     NavigateTopic(
       id: 'what_women_want',
-      title: 'What Women Often Need',
+      title: 'Feeling Valued in a Relationship',
       subtitle: 'Understanding emotional needs in relationships',
       area: LifeArea.relationships,
       type: ContentType.understand,

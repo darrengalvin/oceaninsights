@@ -135,10 +135,6 @@ class QuotesData {
     
     // Military & Service Related
     Quote(
-      text: 'The only easy day was yesterday.',
-      author: 'U.S. Navy SEALs',
-    ),
-    Quote(
       text: 'Under pressure, you don\'t rise to the occasion, you sink to the level of your training.',
       author: 'Navy SEAL Saying',
       context: 'This is why building good habits matters.',

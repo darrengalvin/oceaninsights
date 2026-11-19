@@ -1076,7 +1076,7 @@ const _mythFactQuestions = [
     statement: 'Everyone goes through puberty at the same age.',
     isFact: false,
     explanation:
-        'This is a myth. Puberty can start anywhere between ages 8–16 depending on genetics and other factors. Starting earlier or later than friends is completely normal.',
+        'This is a myth. The NHS says puberty usually starts between the ages of 8 and 14, depending on genetics and other factors. Starting earlier or later than friends is completely normal.',
   ),
   _MythFactQuestion(
     statement: 'Vaginal discharge before periods start is normal.',

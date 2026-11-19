@@ -164,7 +164,7 @@ class LearnContent {
         ),
         ArticleSection(
           heading: 'Building New Pathways',
-          content: 'To change a pattern:\n\n1. Become aware of the existing pattern\n2. Deliberately choose a different response\n3. Repeat consistently over time\n\nResearch suggests it takes roughly 66 days of consistent practice to form a new automatic behaviour.',
+          content: 'To change a pattern:\n\n1. Become aware of the existing pattern\n2. Deliberately choose a different response\n3. Repeat consistently over time\n\nNew habits take time to become automatic, often a couple of months or more. Keep going even when it feels slow.',
         ),
       ],
       keyTakeaways: [

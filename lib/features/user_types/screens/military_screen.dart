@@ -242,7 +242,7 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
                   subtitle: 'Perform when it matters most',
                   icon: Icons.psychology_outlined,
                   tips: const [
-                    TipCard(title: 'Box Breathing', content: 'Inhale 4 seconds, hold 4 seconds, exhale 4 seconds, hold 4 seconds. Repeat 4 times. This activates your calm response.', keyPoints: ['Used by Navy SEALs', 'Lowers heart rate', 'Clears mental fog']),
+                    TipCard(title: 'Calming Breath', content: 'The NHS breathing exercise for stress: breathe in gently through your nose for a count of 5, then out through your mouth for 5, with no holding. Keep going for at least 5 minutes.', keyPoints: ['Recommended by the NHS', 'No breath holding', 'Works anywhere']),
                     TipCard(title: 'The 5-Second Rule', content: 'When you hesitate, count 5-4-3-2-1 and move. Don\'t give your brain time to talk you out of action.', keyPoints: ['Interrupt hesitation', 'Create forward momentum', 'Works for any decision']),
                     TipCard(title: 'Visualization', content: 'Before high-pressure situations, mentally rehearse success. See yourself performing calmly and confidently.', keyPoints: ['Picture each step clearly', 'Include the feeling of success', 'Do this daily for key tasks']),
                     TipCard(title: 'Focus Cue', content: 'Choose a physical trigger - touching your thumb to finger, deep breath - to activate focus. Practice linking it to calm, clear thinking.', keyPoints: ['Pick a simple gesture', 'Practice in calm moments', 'Use before high-stakes moments']),
@@ -418,7 +418,7 @@ class _MilitaryScreenState extends State<MilitaryScreen> {
               ),
             ),
             _MilitaryItem(
-              title: 'What Women Often Need',
+              title: 'Feeling Valued in a Relationship',
               subtitle: 'Understanding emotional needs in relationships',
               onTap: () => Navigator.push(
                 context,
