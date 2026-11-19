@@ -501,15 +501,6 @@ const AREA_CONFIGS: AreaConfig[] = [
     },
   },
   {
-    id: 'donations',
-    label: 'Donations',
-    primary_table: 'donation_impacts',
-    extract: async (sb) => {
-      const rows = await queryTable(sb, 'donation_impacts');
-      return toItems(rows, 'donations', 'donation_impacts', 'impact_text');
-    },
-  },
-  {
     id: 'lgbtq_support',
     label: 'LGBTQ+ Support',
     primary_table: 'lgbtq_timeline',

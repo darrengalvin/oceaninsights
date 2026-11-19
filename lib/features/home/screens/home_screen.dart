@@ -46,7 +46,6 @@ import '../../kindness/screens/kindness_screen.dart';
 import '../../service_culture/screens/service_culture_screen.dart';
 import '../../military_perks/screens/military_perks_screen.dart';
 import '../../brain_science/screens/brain_science_screen.dart';
-import '../../donations/screens/donations_screen.dart';
 import '../../lgbtq_support/screens/lgbtq_support_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -455,15 +454,6 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const LgbtqSupportScreen()),
-          ),
-        ),
-        _FeatureRow(
-          icon: Icons.volunteer_activism_rounded,
-          title: 'Support Charities',
-          subtitle: 'Donate to our monthly partner charities',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const DonationsScreen()),
           ),
         ),
       ],

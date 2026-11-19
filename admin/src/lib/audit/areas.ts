@@ -33,7 +33,6 @@ export const CONTENT_AREAS: ContentAreaInfo[] = [
   { id: 'service_culture', label: 'Service Culture (C2 Drill)', primary_table: 'culture_values' },
   { id: 'military_perks', label: 'Military Perks', primary_table: 'perks_facts' },
   { id: 'brain_science', label: 'Brain Science & Psychology', primary_table: 'brain_myths' },
-  { id: 'donations', label: 'Donations', primary_table: 'donation_impacts' },
   { id: 'lgbtq_support', label: 'LGBTQ+ Support', primary_table: 'lgbtq_timeline' },
   { id: 'scenarios_v2', label: 'Scenarios & Protocols', primary_table: 'scenarios' },
   { id: 'rituals', label: 'Rituals', primary_table: 'ritual_topics' },
