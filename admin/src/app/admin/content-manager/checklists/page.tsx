@@ -110,7 +110,7 @@ export default function ChecklistsContentPage() {
           <h1 className="text-3xl font-bold text-gray-900">Checklists</h1>
           <p className="text-gray-600 mt-1">Interactive checklist templates</p>
         </div>
-        <button onClick={() => setShowAddTemplate(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
+        <button onClick={() => setShowAddTemplate(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">
           + Add Checklist
         </button>
       </div>
@@ -148,7 +148,7 @@ export default function ChecklistsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddTemplate(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addTemplate} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Template</button>
+            <button onClick={addTemplate} className="px-4 py-2 bg-cyan-600 rounded-lg text-white">Add Template</button>
           </div>
         </div>
       )}

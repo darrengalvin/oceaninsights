@@ -113,7 +113,7 @@ export default function ResourcesContentPage() {
           <h1 className="text-3xl font-bold text-gray-900">Resources</h1>
           <p className="text-gray-600 mt-1">Resource directories and links</p>
         </div>
-        <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
+        <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">
           + Add Category
         </button>
       </div>
@@ -151,7 +151,7 @@ export default function ResourcesContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addCategory} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Category</button>
+            <button onClick={addCategory} className="px-4 py-2 bg-cyan-600 rounded-lg text-white">Add Category</button>
           </div>
         </div>
       )}

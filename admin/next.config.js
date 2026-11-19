@@ -36,6 +36,19 @@ const nextConfig = {
       },
     ]
   },
+  // Old copies of the admin screens used to live outside /admin, without the
+  // sidebar or the login check. They have been removed; send old bookmarks to
+  // the real admin screens instead.
+  async redirects() {
+    const legacy = [
+      'content', 'domains', 'import', 'journeys', 'learn', 'objectives',
+      'protocols', 'rituals', 'scenarios', 'subscriptions', 'analytics',
+    ]
+    return legacy.flatMap((section) => [
+      { source: `/${section}`, destination: `/admin/${section}`, permanent: false },
+      { source: `/${section}/:path*`, destination: `/admin/${section}/:path*`, permanent: false },
+    ])
+  },
   // Don't try to fetch data from API routes during build
   generateBuildId: async () => {
     return 'build-' + Date.now()

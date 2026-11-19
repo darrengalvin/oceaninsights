@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, Search, Eye, EyeOff, Edit, Trash2 } from 'lucide-react'
+import { Plus, Search, Eye, EyeOff, Edit, Trash2, AlertTriangle } from 'lucide-react'
 
 interface LearnArticle {
   id: string
@@ -113,6 +113,18 @@ export default function LearnPage() {
             <Plus className="w-4 h-4" />
             New Article
           </Link>
+        </div>
+
+        <div className="flex gap-3 p-4 mb-6 rounded-xl border border-amber-300 bg-amber-50 text-amber-900">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div className="text-sm space-y-1">
+            <p><strong>Articles here do not appear in the app yet.</strong></p>
+            <p>
+              The app&apos;s Learn screen (Brain Science, Psychology and Life Situations) uses articles built into the app itself, so new or edited articles here
+              will not reach people until a developer connects this list to the app. To change a Learn article today, send the wording and its NHS or trusted
+              source to the developer.
+            </p>
+          </div>
         </div>
 
         {/* Stats */}

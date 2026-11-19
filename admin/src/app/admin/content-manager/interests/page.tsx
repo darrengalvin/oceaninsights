@@ -118,8 +118,8 @@ export default function InterestsContentPage() {
           <p className="text-gray-600 mt-1">Interest categories and activities for youth</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-teal-600 rounded-lg hover:bg-teal-700">+ Category</button>
-          <button onClick={() => setShowAddActivity(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">+ Activity</button>
+          <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-teal-600 rounded-lg hover:bg-teal-700 text-white">+ Category</button>
+          <button onClick={() => setShowAddActivity(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">+ Activity</button>
         </div>
       </div>
 
@@ -147,7 +147,7 @@ export default function InterestsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addCategory} className="px-4 py-2 bg-teal-600 rounded-lg">Add Category</button>
+            <button onClick={addCategory} className="px-4 py-2 bg-teal-600 rounded-lg text-white">Add Category</button>
           </div>
         </div>
       )}
@@ -172,7 +172,7 @@ export default function InterestsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddActivity(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addActivity} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Activity</button>
+            <button onClick={addActivity} className="px-4 py-2 bg-cyan-600 rounded-lg text-white">Add Activity</button>
           </div>
         </div>
       )}
