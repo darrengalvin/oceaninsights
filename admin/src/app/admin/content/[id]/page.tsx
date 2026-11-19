@@ -153,12 +153,13 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
       })
 
       if (!res.ok) {
-        throw new Error('Failed to save content')
+        const body = await res.json().catch(() => null)
+        throw new Error(body?.error || `Server responded ${res.status}`)
       }
 
-      router.push('/content')
-    } catch (err) {
-      setError('Failed to save content. Please try again.')
+      router.push('/admin/content')
+    } catch (err: any) {
+      setError(`Failed to save content: ${err?.message || 'unknown error'}`)
     } finally {
       setSaving(false)
     }
@@ -169,7 +170,7 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
     
     try {
       await fetch(`/api/content/${params.id}`, { method: 'DELETE' })
-      router.push('/content')
+      router.push('/admin/content')
     } catch (error) {
       setError('Failed to delete content')
     }

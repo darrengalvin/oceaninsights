@@ -82,8 +82,25 @@ export async function POST(request: NextRequest) {
       affirmation,
     } = body
 
-    // Generate slug from label
-    const slug = `${pillar}.${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50)}`
+    if (!domain_id || !pillar || !label?.trim()) {
+      return NextResponse.json(
+        { error: 'Domain, pillar and label are required' },
+        { status: 400 }
+      )
+    }
+
+    // Generate slug from label. Slugs are UNIQUE, so if another item already
+    // uses this one (e.g. the same label in another domain) add a suffix
+    // rather than failing the save.
+    const baseSlug = `${pillar}.${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50)}`
+    const { data: taken, error: slugError } = await supabaseAdmin
+      .from('content_items')
+      .select('slug')
+      .like('slug', `${baseSlug}%`)
+    if (slugError) throw slugError
+    const takenSlugs = new Set((taken || []).map((r: { slug: string }) => r.slug))
+    let slug = baseSlug
+    for (let n = 2; takenSlugs.has(slug); n++) slug = `${baseSlug}-${n}`
 
     // Insert content item
     const { data: contentItem, error: itemError } = await supabaseAdmin
@@ -124,13 +141,18 @@ export async function POST(request: NextRequest) {
         affirmation,
       })
 
-    if (detailsError) throw detailsError
+    if (detailsError) {
+      // Don't leave a half-created item behind: it would hold the slug and
+      // make the next attempt fail too.
+      await supabaseAdmin.from('content_items').delete().eq('id', contentItem.id)
+      throw detailsError
+    }
 
     return NextResponse.json(contentItem, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to create content:', error)
     return NextResponse.json(
-      { error: 'Failed to create content' },
+      { error: error?.message || 'Failed to create content' },
       { status: 500 }
     )
   }
