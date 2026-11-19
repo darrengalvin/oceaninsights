@@ -163,7 +163,7 @@ ${criticalLines || '  No critical findings.'}
 
 ## Audit Criteria
 
-This audit assessed content against 14 categories:
+This audit assessed content against ${Object.keys(CATEGORY_MAP).length} categories:
 ${Object.values(CATEGORY_MAP).map(c => `  ${c.label} (${c.weight}x weight)`).join('\n')}
 
 ---

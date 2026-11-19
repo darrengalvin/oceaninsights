@@ -16,18 +16,31 @@ export interface BenchmarkModel {
   inputCostPerMtok: number;
   outputCostPerMtok: number;
   maxOutputTokens: number;
+  /** Older model kept only so historical runs resolve; hidden from new runs. */
+  legacy?: boolean;
 }
 
 export const BENCHMARK_MODELS: BenchmarkModel[] = [
   {
-    id: 'claude-opus-4-7-xhigh',
-    label: 'Claude Opus 4.7 (xhigh thinking)',
+    id: 'claude-opus-5-5-xhigh',
+    label: 'Claude Opus 5.5 (xhigh effort)',
     provider: 'anthropic',
-    apiModel: 'claude-opus-4-7',
+    apiModel: 'claude-opus-5-5',
     thinkingMode: 'adaptive_xhigh',
-    description: 'Anthropic\'s flagship — adaptive thinking with maximum effort. Best agentic reasoning available.',
-    inputCostPerMtok: 15,
-    outputCostPerMtok: 75,
+    description: 'Anthropic\'s current Opus model and the audit\'s reviewer. Adaptive thinking at xhigh effort.',
+    inputCostPerMtok: 4,
+    outputCostPerMtok: 20,
+    maxOutputTokens: 32000,
+  },
+  {
+    id: 'claude-sonnet-5-5-high',
+    label: 'Claude Sonnet 5.5 (high effort)',
+    provider: 'anthropic',
+    apiModel: 'claude-sonnet-5-5',
+    thinkingMode: 'adaptive_high',
+    description: 'Anthropic\'s current Sonnet model. Faster and cheaper baseline against the flagships.',
+    inputCostPerMtok: 2,
+    outputCostPerMtok: 10,
     maxOutputTokens: 32000,
   },
   {
@@ -52,18 +65,39 @@ export const BENCHMARK_MODELS: BenchmarkModel[] = [
     outputCostPerMtok: 30,
     maxOutputTokens: 32000,
   },
+  // Previous generation, kept so earlier benchmark runs still resolve their
+  // model ids and costs. Not offered for new runs.
+  {
+    id: 'claude-opus-4-7-xhigh',
+    label: 'Claude Opus 4.7 (xhigh thinking)',
+    provider: 'anthropic',
+    apiModel: 'claude-opus-4-7',
+    thinkingMode: 'adaptive_xhigh',
+    description: 'Previous Opus generation (used for runs before November 2026).',
+    inputCostPerMtok: 5,
+    outputCostPerMtok: 25,
+    maxOutputTokens: 32000,
+    legacy: true,
+  },
   {
     id: 'claude-sonnet-4-6-adaptive',
     label: 'Claude Sonnet 4.6 (adaptive thinking)',
     provider: 'anthropic',
     apiModel: 'claude-sonnet-4-6',
     thinkingMode: 'adaptive_high',
-    description: 'Fast smart tier — useful baseline against the flagships.',
+    description: 'Previous Sonnet generation (used for runs before November 2026).',
     inputCostPerMtok: 3,
     outputCostPerMtok: 15,
     maxOutputTokens: 32000,
+    legacy: true,
   },
 ];
+
+/** Models offered for new benchmark and Auto-Fix runs. */
+export const CURRENT_BENCHMARK_MODELS = BENCHMARK_MODELS.filter(m => !m.legacy);
+
+/** Default model for Auto-Fix. */
+export const DEFAULT_FIX_MODEL_ID = 'claude-opus-5-5-xhigh';
 
 export const MODEL_BY_ID = Object.fromEntries(
   BENCHMARK_MODELS.map(m => [m.id, m])

@@ -12,7 +12,7 @@
 //
 //   POST /api/audit/auto-fix
 //     Body: { model_id?: string, finding_ids?: string[], audit_run_id?: string, notes?: string }
-//     Defaults: model_id = 'claude-opus-4-7-xhigh'; finding_ids = all open
+//     Defaults: model_id = DEFAULT_FIX_MODEL_ID (Claude Opus 5.5); finding_ids = all open
 //     findings on the latest completed audit run.
 //     Returns: { run, finding_ids } — caller then iterates /benchmark/propose
 //     per finding to fan out the work and stream progress to the UI.
@@ -22,12 +22,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { MODEL_BY_ID, BENCHMARK_MODELS } from '@/lib/audit/models';
+import { MODEL_BY_ID, CURRENT_BENCHMARK_MODELS, DEFAULT_FIX_MODEL_ID } from '@/lib/audit/models';
 import { anonymousLabels } from '@/lib/audit/benchmark';
 
 export const dynamic = 'force-dynamic';
 
-const DEFAULT_MODEL_ID = 'claude-opus-4-7-xhigh';
+const DEFAULT_MODEL_ID = DEFAULT_FIX_MODEL_ID;
 
 export async function GET() {
   // Auto-fix runs are benchmark_runs where judge_models is empty.
@@ -52,7 +52,7 @@ export async function GET() {
 
   return NextResponse.json({
     runs: autoFixRuns.slice(0, 10),
-    available_models: BENCHMARK_MODELS,
+    available_models: CURRENT_BENCHMARK_MODELS,
   });
 }
 

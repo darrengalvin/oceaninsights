@@ -1,3 +1,5 @@
+import { APP_CONTENT_AREAS } from './app-areas';
+
 export interface ContentAreaInfo {
   id: string;
   label: string;
@@ -6,7 +8,7 @@ export interface ContentAreaInfo {
 
 export const CONTENT_AREAS: ContentAreaInfo[] = [
   { id: 'navigate_content', label: 'Navigate Content', primary_table: 'content_items' },
-  { id: 'learn_articles', label: 'Learn Articles', primary_table: 'learn_articles' },
+  { id: 'learn_articles', label: 'Learn Articles (admin table; the app shows App: Learn Articles)', primary_table: 'learn_articles' },
   { id: 'user_type_screens', label: 'User Type Screens', primary_table: 'user_type_items' },
   { id: 'mission_objectives', label: 'Mission Objectives', primary_table: 'mission_objectives' },
   { id: 'mood_system', label: 'Mood System', primary_table: 'mood_reasons' },
@@ -36,4 +38,6 @@ export const CONTENT_AREAS: ContentAreaInfo[] = [
   { id: 'lgbtq_support', label: 'LGBTQ+ Support', primary_table: 'lgbtq_timeline' },
   { id: 'scenarios_v2', label: 'Scenarios & Protocols', primary_table: 'scenarios' },
   { id: 'rituals', label: 'Rituals', primary_table: 'ritual_topics' },
+  // Content built into the app itself (see app-areas.ts).
+  ...APP_CONTENT_AREAS.map(({ id, label, primary_table }) => ({ id, label, primary_table })),
 ];

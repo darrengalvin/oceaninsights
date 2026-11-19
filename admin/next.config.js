@@ -14,6 +14,9 @@ const nextConfig = {
   },
   experimental: {
     skipTrailingSlashRedirect: true,
+    // Load the Anthropic SDK from node_modules at runtime instead of bundling
+    // it: Next 14's bundler mangles a Unicode regex inside the SDK.
+    serverComponentsExternalPackages: ['@anthropic-ai/sdk'],
   },
   async rewrites() {
     return [

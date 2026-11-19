@@ -253,14 +253,14 @@ function LandingView({ onStartAudit, hasHistory, onViewResults }: { onStartAudit
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Audit</h1>
         <p className="text-gray-600 max-w-2xl">
-          This system reviews every piece of content in the app against 14 compliance categories using AI-powered analysis. Each content item is scored 0-100% and graded with a traffic light system.
+          This system reviews every piece of content, in the database and built into the app, against {AUDIT_CATEGORIES.length} compliance categories. Claude Opus 5.5 scores {AUDIT_CATEGORIES.filter(c => c.scored_by !== 'rules').length} of them; fixed evidence checks (helpline register, UK applicability, client wording rules, trusted links) score the rest, with no AI. Each content item is scored 0-100% and graded with a traffic light system.
         </p>
       </div>
 
       {/* What will be audited */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-1">What gets audited</h2>
-        <p className="text-sm text-gray-500 mb-4">{CONTENT_AREAS.length} content areas covering every piece of user-facing content in the app</p>
+        <p className="text-sm text-gray-500 mb-4">{CONTENT_AREAS.length} content areas covering every piece of user-facing content: database areas, plus areas starting &quot;App:&quot; for text built into the app itself</p>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {CONTENT_AREAS.map(area => (
             <div key={area.id} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-700">
@@ -271,9 +271,9 @@ function LandingView({ onStartAudit, hasHistory, onViewResults }: { onStartAudit
         </div>
       </div>
 
-      {/* The 14 criteria */}
+      {/* The grading criteria */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-1">14 Grading Criteria</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-1">{AUDIT_CATEGORIES.length} Grading Criteria</h2>
         <p className="text-sm text-gray-500 mb-4">Every content item is scored against each applicable criterion</p>
 
         <div className="space-y-3">
@@ -326,7 +326,7 @@ function LandingView({ onStartAudit, hasHistory, onViewResults }: { onStartAudit
           ))}
         </div>
         <p className="text-xs text-gray-400 mt-3">
-          Safety-critical categories (Safety, Clinical Boundaries, Safeguarding, OPSEC) are weighted at 1.5x. Factual Accuracy, Regional, and Currency at 1.2x.
+          Weighted at 1.5x: {AUDIT_CATEGORIES.filter(c => c.weight === 1.5).map(c => c.label).join(', ')}. At 1.2x: {AUDIT_CATEGORIES.filter(c => c.weight === 1.2).map(c => c.label).join(', ')}.
         </p>
       </div>
 
@@ -335,6 +335,9 @@ function LandingView({ onStartAudit, hasHistory, onViewResults }: { onStartAudit
         <button onClick={onStartAudit} className="px-8 py-3 bg-cyan-700 text-white rounded-xl font-semibold hover:bg-cyan-800 transition text-sm">
           Run Full Audit
         </button>
+        <a href="/admin/audit/evidence" className="px-6 py-3 bg-teal-700 text-white rounded-xl font-semibold hover:bg-teal-800 transition text-sm">
+          Evidence Register
+        </a>
         {hasHistory && (
           <button onClick={onViewResults} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition text-sm">
             View Previous Results
@@ -372,7 +375,7 @@ function RunningView({ run, completedAreas, currentArea, currentPhase, currentIt
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Audit in Progress</h1>
-        <p className="text-gray-600">Reviewing {total} content areas against 14 compliance criteria</p>
+        <p className="text-gray-600">Reviewing {total} content areas against {AUDIT_CATEGORIES.length} compliance criteria</p>
       </div>
 
       {/* Main progress */}
@@ -535,6 +538,9 @@ function ResultsView({ run, areaSummary, previousScore, findings, citations, run
           </p>
         </div>
         <div className="flex gap-2">
+          <a href="/admin/audit/evidence" className="px-4 py-2 bg-teal-700 text-white rounded-xl text-sm font-semibold hover:bg-teal-800 transition">
+            Evidence
+          </a>
           <a href="/api/audit/mod-brief" target="_blank" className="px-4 py-2 bg-blue-900 text-white rounded-xl text-sm font-semibold hover:bg-blue-950 transition">
             MOD Brief
           </a>

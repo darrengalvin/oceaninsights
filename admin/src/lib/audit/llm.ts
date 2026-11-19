@@ -1,15 +1,15 @@
 // Thin unified LLM client for the audit benchmark.
 //
-// Both providers are called via raw fetch (not their SDKs) so we can:
-//   * support brand-new model parameters (Opus 4.7 adaptive thinking,
-//     GPT-5.5 reasoning effort) without waiting for SDK bumps;
-//   * keep latency/token bookkeeping in one place.
+// Claude is called through the Anthropic SDK (see claude.ts). OpenAI is
+// called via raw fetch to its Responses API. Latency and token bookkeeping
+// stay in one place.
 //
 // The caller specifies the model by its internal id; this module looks up
 // the provider config and dispatches accordingly. The return shape is
 // identical across providers so the benchmark code is provider-agnostic.
 
 import { BenchmarkModel, MODEL_BY_ID, estimateCostUsd } from './models';
+import { callClaude } from './claude';
 
 export interface LlmCallResult {
   text: string;
@@ -28,7 +28,6 @@ export interface LlmCallOptions {
   maxOutputTokens?: number;
 }
 
-const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const OPENAI_URL = 'https://api.openai.com/v1/responses';
 
 // Strip leading/trailing fences and pull the first JSON object out of a string.
@@ -67,62 +66,27 @@ async function callAnthropic(
   model: BenchmarkModel,
   options: LlmCallOptions
 ): Promise<LlmCallResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
-
-  // Adaptive thinking is the only thinking-on mode for Opus 4.7. Sonnet 4.6
-  // also supports adaptive (recommended) and we use it across the board so
-  // both flagships are evaluated under their best-known setting.
-  const body: Record<string, unknown> = {
+  // Through the official SDK (lib/audit/claude.ts): streaming, adaptive
+  // thinking with the model's effort level, structured output when a schema
+  // is given, and server-side refusal fallbacks on current models.
+  const result = await callClaude({
     model: model.apiModel,
-    max_tokens: options.maxOutputTokens ?? model.maxOutputTokens,
-    messages: [{ role: 'user', content: options.userPrompt }],
     system: options.systemPrompt,
-  };
-
-  if (model.thinkingMode === 'adaptive_xhigh') {
-    body.thinking = { type: 'adaptive', display: 'omitted' };
-    body.output_config = { effort: 'xhigh' };
-  } else if (model.thinkingMode === 'adaptive_high') {
-    body.thinking = { type: 'adaptive', display: 'omitted' };
-    body.output_config = { effort: 'high' };
-  }
-
-  const startedAt = Date.now();
-  const response = await fetch(ANTHROPIC_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify(body),
+    user: options.userPrompt,
+    schema: options.responseSchema as Record<string, unknown> | undefined,
+    effort: model.thinkingMode === 'adaptive_xhigh' ? 'xhigh' : 'high',
+    maxTokens: options.maxOutputTokens ?? model.maxOutputTokens,
   });
-  const latencyMs = Date.now() - startedAt;
-
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Anthropic ${model.apiModel} ${response.status}: ${errorBody}`);
-  }
-
-  const result = await response.json();
-  const textBlock = result.content?.find((b: { type: string }) => b.type === 'text');
-  const text = textBlock?.text ?? '';
-
-  const inputTokens = result.usage?.input_tokens ?? 0;
-  const outputTokens = result.usage?.output_tokens ?? 0;
-  // Anthropic charges thinking tokens as output tokens, but exposes the
-  // breakdown in usage when available so we surface it for transparency.
-  const reasoningTokens = result.usage?.cache_creation_input_tokens ?? 0;
 
   return {
-    text,
-    inputTokens,
-    outputTokens,
-    reasoningTokens,
-    latencyMs,
-    costUsd: estimateCostUsd(model, inputTokens, outputTokens),
-    raw: result,
+    text: result.text,
+    inputTokens: result.inputTokens,
+    outputTokens: result.outputTokens,
+    // Anthropic bills thinking as output tokens and does not break it out here.
+    reasoningTokens: 0,
+    latencyMs: result.latencyMs,
+    costUsd: estimateCostUsd(model, result.inputTokens, result.outputTokens),
+    raw: { model: result.model, stop_reason: result.stopReason, cache_read_input_tokens: result.cacheReadTokens },
   };
 }
 
