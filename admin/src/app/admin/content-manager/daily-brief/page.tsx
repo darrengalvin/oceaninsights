@@ -120,7 +120,7 @@ export default function DailyBriefContentPage() {
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 transition flex items-center gap-2"
+          className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 transition flex items-center gap-2 text-white"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -221,7 +221,7 @@ export default function DailyBriefContentPage() {
             <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-gray-600">Cancel</button>
             <button
               onClick={addItem}
-              className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700"
+              className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white"
             >
               Add Item
             </button>

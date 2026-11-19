@@ -114,7 +114,7 @@ export default function LearningContentPage() {
           <h1 className="text-3xl font-bold text-gray-900">Learning & Study</h1>
           <p className="text-gray-600 mt-1">Learning styles and study strategies</p>
         </div>
-        <button onClick={() => setShowAddForm(!showAddForm)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
+        <button onClick={() => setShowAddForm(!showAddForm)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">
           + Add {activeTab === 'styles' ? 'Style' : 'Strategy'}
         </button>
       </div>
@@ -169,7 +169,7 @@ export default function LearningContentPage() {
           
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={activeTab === 'styles' ? addStyle : addStrategy} className="px-4 py-2 bg-cyan-600 rounded-lg">Add</button>
+            <button onClick={activeTab === 'styles' ? addStyle : addStrategy} className="px-4 py-2 bg-cyan-600 rounded-lg text-white">Add</button>
           </div>
         </div>
       )}

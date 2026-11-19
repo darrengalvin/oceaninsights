@@ -113,10 +113,10 @@ export default function FeelingsContentPage() {
           <p className="text-gray-600 mt-1">Feelings and coping tools for youth</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowAddFeeling(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
+          <button onClick={() => setShowAddFeeling(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">
             + Add Feeling
           </button>
-          <button onClick={() => setShowAddTool(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
+          <button onClick={() => setShowAddTool(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">
             + Add Coping Tool
           </button>
         </div>
@@ -146,7 +146,7 @@ export default function FeelingsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddFeeling(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addFeeling} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Feeling</button>
+            <button onClick={addFeeling} className="px-4 py-2 bg-cyan-600 rounded-lg text-white">Add Feeling</button>
           </div>
         </div>
       )}
@@ -166,7 +166,7 @@ export default function FeelingsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddTool(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addTool} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Tool</button>
+            <button onClick={addTool} className="px-4 py-2 bg-cyan-600 rounded-lg text-white">Add Tool</button>
           </div>
         </div>
       )}

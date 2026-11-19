@@ -68,7 +68,7 @@ export default function DomainsPage() {
             <p className="text-gray-500 mt-1">Manage the 11 core life areas for content organisation</p>
           </div>
           <Link 
-            href="/admin/domains/new"
+            href="/admin/content-manager/edit/domains?new=1"
             className="flex items-center gap-2 bg-ocean-600 text-white px-4 py-2 rounded-lg hover:bg-ocean-700"
           >
             <Plus className="w-4 h-4" />
@@ -140,7 +140,7 @@ export default function DomainsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
-                      href={`/admin/domains/${domain.id}`}
+                      href={`/admin/content-manager/edit/domains?id=${domain.id}`}
                       className="text-ocean-600 hover:text-ocean-900 mr-4"
                     >
                       <Pencil className="w-4 h-4 inline" />

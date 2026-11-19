@@ -117,7 +117,7 @@ export default function QuizzesContentPage() {
           <h1 className="text-3xl font-bold text-gray-900">Quizzes</h1>
           <p className="text-gray-600 mt-1">Interactive quizzes like "Who Am I?"</p>
         </div>
-        <button onClick={() => setShowAddQuiz(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">
+        <button onClick={() => setShowAddQuiz(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">
           + Add Quiz
         </button>
       </div>
@@ -159,7 +159,7 @@ export default function QuizzesContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddQuiz(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addQuiz} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Quiz</button>
+            <button onClick={addQuiz} className="px-4 py-2 bg-cyan-600 rounded-lg text-white">Add Quiz</button>
           </div>
         </div>
       )}

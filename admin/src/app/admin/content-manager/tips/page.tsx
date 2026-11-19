@@ -118,8 +118,8 @@ export default function TipsContentPage() {
           <p className="text-gray-600 mt-1">Swipeable tip cards for various topics</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">+ Category</button>
-          <button onClick={() => setShowAddTip(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">+ Tip</button>
+          <button onClick={() => setShowAddCategory(true)} className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 text-white">+ Category</button>
+          <button onClick={() => setShowAddTip(true)} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">+ Tip</button>
         </div>
       </div>
 
@@ -153,7 +153,7 @@ export default function TipsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addCategory} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700">Add Category</button>
+            <button onClick={addCategory} className="px-4 py-2 bg-cyan-600 rounded-lg hover:bg-cyan-700 text-white">Add Category</button>
           </div>
         </div>
       )}
@@ -173,7 +173,7 @@ export default function TipsContentPage() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <button onClick={() => setShowAddTip(false)} className="px-4 py-2 text-gray-600">Cancel</button>
-            <button onClick={addTip} className="px-4 py-2 bg-cyan-600 rounded-lg">Add Tip</button>
+            <button onClick={addTip} className="px-4 py-2 bg-cyan-600 rounded-lg text-white">Add Tip</button>
           </div>
         </div>
       )}
