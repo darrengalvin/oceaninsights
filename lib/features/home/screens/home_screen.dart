@@ -47,6 +47,8 @@ import '../../service_culture/screens/service_culture_screen.dart';
 import '../../military_perks/screens/military_perks_screen.dart';
 import '../../brain_science/screens/brain_science_screen.dart';
 import '../../lgbtq_support/screens/lgbtq_support_screen.dart';
+import '../../suicide_awareness/screens/suicide_awareness_screen.dart';
+import '../../neurodiversity/screens/neurodiversity_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -83,7 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                   const SizedBox(height: 16),
                   _buildHeader(context),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
+                  const _SuicideAwarenessCard(),
+                  const SizedBox(height: 16),
                   const MoodCheckCard(),
                   const SizedBox(height: 16),
                   const DailyAffirmationCard(),
@@ -454,6 +458,15 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const LgbtqSupportScreen()),
+          ),
+        ),
+        _FeatureRow(
+          icon: Icons.extension_outlined,
+          title: 'Neurodiversity',
+          subtitle: 'Autism, ADHD, dyslexia & learning difficulties',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NeurodiversityScreen()),
           ),
         ),
       ],
@@ -1174,4 +1187,62 @@ class _LogoWaveConfig {
     required this.strokeWidth,
     required this.opacity,
   });
+}
+
+/// Prominent entry to Suicide Awareness, shown near the top of the home screen.
+class _SuicideAwarenessCard extends StatelessWidget {
+  const _SuicideAwarenessCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = context.colours;
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        UISoundService().playClick();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SuicideAwarenessScreen()),
+        );
+      },
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colours.error.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colours.error.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.health_and_safety_outlined, color: colours.error, size: 26),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Suicide Awareness',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colours.textBright,
+                        ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Help if you feel suicidal, what happens when you ask for help, and how to support someone',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colours.textLight,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.arrow_forward_ios_rounded, color: colours.error, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
 }
