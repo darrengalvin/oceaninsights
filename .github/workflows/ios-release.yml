@@ -1,0 +1,130 @@
+# Builds the iOS app on a GitHub-hosted Mac and uploads it to App Store Connect.
+#
+# Run it from the Actions tab ("iOS release" > "Run workflow"), choosing the branch to build,
+# or push a tag such as ios-1.2.0-4 on the commit to build.
+# The build appears in App Store Connect / TestFlight after Apple finishes processing it
+# (usually 10-30 minutes). Submitting it for App Review is still done in App Store Connect.
+#
+# Required repository secrets (Settings > Secrets and variables > Actions):
+#   APP_STORE_CONNECT_API_KEY_ID      Key ID of an App Store Connect API key (Admin role)
+#   APP_STORE_CONNECT_API_ISSUER_ID   Issuer ID shown above the keys list
+#   APP_STORE_CONNECT_API_KEY_P8      Full contents of the downloaded AuthKey_XXXX.p8 file
+# Optional repository variable:
+#   APPLE_TEAM_ID                     Apple Developer team ID (defaults to the one in the Xcode project)
+#
+# Signing is fully automatic: Xcode uses the API key to create or fetch the
+# distribution certificate and App Store provisioning profile (cloud-managed signing),
+# so no certificates or profiles are stored in this repo or in secrets.
+
+name: iOS release
+
+on:
+  workflow_dispatch:
+  # Pushing a tag like ios-1.2.0-4 also runs it (works before this file is on main)
+  push:
+    tags:
+      - 'ios-*'
+
+concurrency:
+  group: ios-release
+  cancel-in-progress: false
+
+jobs:
+  build-and-upload:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      FLUTTER_VERSION: "3.50.1"
+      TEAM_ID: ${{ vars.APPLE_TEAM_ID || '6QLS3Z8W8Y' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets are set
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          missing=0
+          for v in KEY_ID ISSUER_ID KEY_P8; do
+            if [ -z "${!v}" ]; then echo "::error::Secret for $v is not set"; missing=1; fi
+          done
+          exit $missing
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Show versions
+        run: |
+          flutter --version
+          xcodebuild -version
+          grep '^version:' pubspec.yaml
+
+      - name: Write API key file
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/asc"
+          printf '%s\n' "$KEY_P8" > "$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8"
+          chmod 600 "$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8"
+          echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8" >> "$GITHUB_ENV"
+
+      - name: Flutter dependencies and iOS config
+        run: |
+          flutter pub get
+          # Generates ios/Flutter/Generated.xcconfig with the pubspec version and runs pod install
+          flutter build ios --release --config-only --no-codesign
+
+      - name: Archive
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          xcodebuild archive \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic
+
+      - name: Export and upload to App Store Connect
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID"
+
+      - name: Remove API key file
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc"
