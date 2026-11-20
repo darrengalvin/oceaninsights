@@ -10,7 +10,7 @@
 #   APP_STORE_CONNECT_API_ISSUER_ID   Issuer ID shown above the keys list
 #   APP_STORE_CONNECT_API_KEY_P8      Full contents of the downloaded AuthKey_XXXX.p8 file
 # Optional repository variable:
-#   APPLE_TEAM_ID                     Apple Developer team ID (defaults to the one in the Xcode project)
+#   APPLE_TEAM_ID                     Apple Developer team ID (default: looked up from the bundle ID)
 #
 # Signing is fully automatic: Xcode uses the API key to create or fetch the
 # distribution certificate and App Store provisioning profile (cloud-managed signing),
@@ -38,7 +38,9 @@ jobs:
     timeout-minutes: 60
     env:
       FLUTTER_VERSION: "3.50.1"
-      TEAM_ID: ${{ vars.APPLE_TEAM_ID || '6QLS3Z8W8Y' }}
+      # Leave APPLE_TEAM_ID unset to look the team up from the app's bundle ID (see "Find team ID")
+      TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+      BUNDLE_ID: com.ocean.darrengalvin
     steps:
       - uses: actions/checkout@v4
 
@@ -89,6 +91,34 @@ jobs:
           PY
           chmod 600 "$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8"
           echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8" >> "$GITHUB_ENV"
+
+      - name: Find team ID
+        if: env.TEAM_ID == ''
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          # The App ID prefix (seedId) of the app's bundle ID is the team that owns it
+          python3 -m pip install --quiet --break-system-packages 'pyjwt[crypto]' 2>/dev/null \
+            || python3 -m pip install --quiet 'pyjwt[crypto]'
+          python3 - <<'PY'
+          import os, time, json, urllib.request, urllib.parse, jwt
+          key = open(os.environ["ASC_KEY_PATH"]).read()
+          token = jwt.encode(
+              {"iss": os.environ["ISSUER_ID"], "iat": int(time.time()), "exp": int(time.time()) + 600,
+               "aud": "appstoreconnect-v1"},
+              key, algorithm="ES256", headers={"kid": os.environ["KEY_ID"], "typ": "JWT"})
+          q = urllib.parse.urlencode({"filter[identifier]": os.environ["BUNDLE_ID"], "fields[bundleIds]": "identifier,seedId"})
+          req = urllib.request.Request(f"https://api.appstoreconnect.apple.com/v1/bundleIds?{q}",
+                                       headers={"Authorization": f"Bearer {token}"})
+          data = json.load(urllib.request.urlopen(req))["data"]
+          match = [d for d in data if d["attributes"]["identifier"] == os.environ["BUNDLE_ID"]]
+          if not match:
+              raise SystemExit(f"::error::Bundle ID {os.environ['BUNDLE_ID']} not found in this App Store Connect team")
+          team = match[0]["attributes"]["seedId"]
+          print(f"Team ID for {os.environ['BUNDLE_ID']}: {team}")
+          open(os.environ["GITHUB_ENV"], "a").write(f"TEAM_ID={team}\n")
+          PY
 
       - name: Flutter dependencies and iOS config
         run: |
