@@ -72,7 +72,21 @@ jobs:
           KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
         run: |
           mkdir -p "$RUNNER_TEMP/asc"
-          printf '%s\n' "$KEY_P8" > "$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8"
+          # Rebuild a clean PEM whatever way the key was pasted (Windows line endings, all on
+          # one line, literal \n, missing BEGIN/END lines). Never prints the key.
+          python3 - "$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8" <<'PY'
+          import os, re, sys, base64, textwrap
+          raw = os.environ["KEY_P8"].replace("\\n", "\n")
+          body = re.sub(r"-----(BEGIN|END)[A-Z ]*-----", "", raw)
+          body = re.sub(r"[^A-Za-z0-9+/=]", "", body)
+          try:
+              base64.b64decode(body, validate=True)
+          except Exception:
+              sys.exit("::error::APP_STORE_CONNECT_API_KEY_P8 is not a valid .p8 key; paste the whole AuthKey file again")
+          pem = "-----BEGIN PRIVATE KEY-----\n" + "\n".join(textwrap.wrap(body, 64)) + "\n-----END PRIVATE KEY-----\n"
+          open(sys.argv[1], "w").write(pem)
+          print(f"Key file written ({len(body)} base64 chars)")
+          PY
           chmod 600 "$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8"
           echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8" >> "$GITHUB_ENV"
 
