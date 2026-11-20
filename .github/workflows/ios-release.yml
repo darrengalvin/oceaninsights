@@ -1,7 +1,7 @@
 # Builds the iOS app on a GitHub-hosted Mac and uploads it to App Store Connect.
 #
 # Run it from the Actions tab ("iOS release" > "Run workflow"), choosing the branch to build,
-# or push a tag such as ios-1.2.0-4 on the commit to build.
+# or push a tag such as ios-1.2.0-4, or a branch such as ios-release/1.2.0-4, on the commit to build.
 # The build appears in App Store Connect / TestFlight after Apple finishes processing it
 # (usually 10-30 minutes). Submitting it for App Review is still done in App Store Connect.
 #
@@ -20,10 +20,13 @@ name: iOS release
 
 on:
   workflow_dispatch:
-  # Pushing a tag like ios-1.2.0-4 also runs it (works before this file is on main)
+  # Pushing a tag like ios-1.2.0-4 or a branch like ios-release/1.2.0-4 also runs it
+  # (works before this file is on main)
   push:
     tags:
       - 'ios-*'
+    branches:
+      - 'ios-release/**'
 
 concurrency:
   group: ios-release
