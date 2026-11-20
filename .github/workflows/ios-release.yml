@@ -1,0 +1,177 @@
+# Builds the iOS app on a GitHub-hosted Mac and uploads it to App Store Connect.
+#
+# Run it from the Actions tab ("iOS release" > "Run workflow"), choosing the branch to build,
+# or push a tag such as ios-1.2.0-4, or a branch such as ios-release/1.2.0-4, on the commit to build.
+# The build appears in App Store Connect / TestFlight after Apple finishes processing it
+# (usually 10-30 minutes). Submitting it for App Review is still done in App Store Connect.
+#
+# Required repository secrets (Settings > Secrets and variables > Actions):
+#   APP_STORE_CONNECT_API_KEY_ID      Key ID of an App Store Connect API key (Admin role)
+#   APP_STORE_CONNECT_API_ISSUER_ID   Issuer ID shown above the keys list
+#   APP_STORE_CONNECT_API_KEY_P8      Full contents of the downloaded AuthKey_XXXX.p8 file
+# Optional repository variable:
+#   APPLE_TEAM_ID                     Apple Developer team ID (default: looked up from the bundle ID)
+#
+# Signing is fully automatic: Xcode uses the API key to create or fetch the
+# distribution certificate and App Store provisioning profile (cloud-managed signing),
+# so no certificates or profiles are stored in this repo or in secrets.
+
+name: iOS release
+
+on:
+  workflow_dispatch:
+  # Pushing a tag like ios-1.2.0-4 or a branch like ios-release/1.2.0-4 also runs it
+  # (works before this file is on main)
+  push:
+    tags:
+      - 'ios-*'
+    branches:
+      - 'ios-release/**'
+
+concurrency:
+  group: ios-release
+  cancel-in-progress: false
+
+jobs:
+  build-and-upload:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      FLUTTER_VERSION: "3.50.1"
+      # Leave APPLE_TEAM_ID unset to look the team up from the app's bundle ID (see "Find team ID")
+      TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+      BUNDLE_ID: com.ocean.darrengalvin
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets are set
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          missing=0
+          for v in KEY_ID ISSUER_ID KEY_P8; do
+            if [ -z "${!v}" ]; then echo "::error::Secret for $v is not set"; missing=1; fi
+          done
+          exit $missing
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Show versions
+        run: |
+          flutter --version
+          xcodebuild -version
+          grep '^version:' pubspec.yaml
+
+      - name: Write API key file
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/asc"
+          # Rebuild a clean PEM whatever way the key was pasted (Windows line endings, all on
+          # one line, literal \n, missing BEGIN/END lines). Never prints the key.
+          python3 - "$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8" <<'PY'
+          import os, re, sys, base64, textwrap
+          raw = os.environ["KEY_P8"].replace("\\n", "\n")
+          body = re.sub(r"-----(BEGIN|END)[A-Z ]*-----", "", raw)
+          body = re.sub(r"[^A-Za-z0-9+/=]", "", body)
+          try:
+              base64.b64decode(body, validate=True)
+          except Exception:
+              sys.exit("::error::APP_STORE_CONNECT_API_KEY_P8 is not a valid .p8 key; paste the whole AuthKey file again")
+          pem = "-----BEGIN PRIVATE KEY-----\n" + "\n".join(textwrap.wrap(body, 64)) + "\n-----END PRIVATE KEY-----\n"
+          open(sys.argv[1], "w").write(pem)
+          print(f"Key file written ({len(body)} base64 chars)")
+          PY
+          chmod 600 "$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8"
+          echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/AuthKey_${KEY_ID}.p8" >> "$GITHUB_ENV"
+
+      - name: Find team ID
+        if: env.TEAM_ID == ''
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          # The App ID prefix (seedId) of the app's bundle ID is the team that owns it
+          python3 -m pip install --quiet --break-system-packages 'pyjwt[crypto]' 2>/dev/null \
+            || python3 -m pip install --quiet 'pyjwt[crypto]'
+          python3 - <<'PY'
+          import os, time, json, urllib.request, urllib.parse, jwt
+          key = open(os.environ["ASC_KEY_PATH"]).read()
+          token = jwt.encode(
+              {"iss": os.environ["ISSUER_ID"], "iat": int(time.time()), "exp": int(time.time()) + 600,
+               "aud": "appstoreconnect-v1"},
+              key, algorithm="ES256", headers={"kid": os.environ["KEY_ID"], "typ": "JWT"})
+          q = urllib.parse.urlencode({"filter[identifier]": os.environ["BUNDLE_ID"], "fields[bundleIds]": "identifier,seedId"})
+          req = urllib.request.Request(f"https://api.appstoreconnect.apple.com/v1/bundleIds?{q}",
+                                       headers={"Authorization": f"Bearer {token}"})
+          data = json.load(urllib.request.urlopen(req))["data"]
+          match = [d for d in data if d["attributes"]["identifier"] == os.environ["BUNDLE_ID"]]
+          if not match:
+              raise SystemExit(f"::error::Bundle ID {os.environ['BUNDLE_ID']} not found in this App Store Connect team")
+          team = match[0]["attributes"]["seedId"]
+          print(f"Team ID for {os.environ['BUNDLE_ID']}: {team}")
+          open(os.environ["GITHUB_ENV"], "a").write(f"TEAM_ID={team}\n")
+          PY
+
+      - name: Flutter dependencies and iOS config
+        run: |
+          flutter pub get
+          # Generates ios/Flutter/Generated.xcconfig with the pubspec version and runs pod install
+          flutter build ios --release --config-only --no-codesign
+
+      - name: Archive
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          xcodebuild archive \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic
+
+      - name: Export and upload to App Store Connect
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID"
+
+      - name: Remove API key file
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc"
